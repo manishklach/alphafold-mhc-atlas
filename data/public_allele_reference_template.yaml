@@ -1,0 +1,21 @@
+# Public allele reference template.
+# Preferred source: IPD-IMGT/HLA official allele sequences.
+#
+# This file is intentionally left unpopulated so the repo does not ship
+# copied biological sequences without explicit provenance management.
+# Use it as a local working file when adapting the public-data example configs.
+#
+# Suggested starter alleles for the example configs:
+# - HLA-A*02:01
+# - HLA-B*07:02
+# - HLA-A*11:01
+#
+# Schema:
+#
+# alleles:
+#   "HLA-A*02:01":
+#     class_type: "I"
+#     heavy_chain_sequence: "PASTE_IPD_IMGT_HLA_SEQUENCE_HERE"
+#     beta2m_sequence: "PASTE_B2M_SEQUENCE_HERE"
+
+alleles: {}

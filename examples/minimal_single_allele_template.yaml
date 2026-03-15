@@ -1,0 +1,59 @@
+# Minimal single-allele template.
+# Use this when you want the smallest possible runnable-shaped config.
+# To generate true multichain FASTA inputs, populate ../data/allele_reference.yaml
+# with trusted public allele sequences from IPD-IMGT/HLA.
+
+project_name: "example_minimal_single_allele"
+output_dir: "../outputs/example_minimal_single_allele"
+
+alleles:
+  - allele_name: "HLA-A*02:01"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "NLVPMVATV"
+  mutation_positions: [2, 9]
+  allowed_substitutions: ["A", "V", "L", "I", "F"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/example_minimal_single_allele/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: false
+  mutated_positions_of_interest: []
+  anchor_positions: [2, 9]
+  require_confident_chain_mapping: true
+
+clustering:
+  enabled: false
+
+cross_allele_analysis:
+  enabled: false
+
+reporting:
+  enabled: true
+  generate_markdown_report: true
+  generate_publication_bundle: false
+  include_case_studies: false
+  include_hypotheses: false
+  core_figure_limit: 4
+  core_table_limit: 4

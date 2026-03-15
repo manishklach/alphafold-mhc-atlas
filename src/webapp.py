@@ -30,12 +30,13 @@ def create_app() -> Flask:
     app = Flask(__name__, template_folder="templates", static_folder="static")
     app.config["REPO_ROOT"] = REPO_ROOT
     app.config["OUTPUTS_ROOT"] = OUTPUTS_ROOT
+    app.config["EXAMPLES_ROOT"] = EXAMPLES_ROOT
     app.jinja_env.filters["markdown_like"] = render_markdown_like
 
     @app.route("/")
     def index():
         projects = discover_projects(app.config["OUTPUTS_ROOT"])
-        configs = discover_configs(EXAMPLES_ROOT)
+        configs = discover_configs(app.config["EXAMPLES_ROOT"])
         return render_template("index.html", projects=projects, configs=configs)
 
     @app.route("/run", methods=["POST"])
@@ -215,6 +216,10 @@ def discover_configs(examples_root: Path) -> list[Path]:
     if not examples_root.exists():
         return []
     return sorted(path for path in examples_root.glob("*.y*ml")) + sorted(path for path in examples_root.glob("*.json"))
+
+
+def relative_config_path(path: Path) -> str:
+    return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
 
 
 def list_analysis_tables(project_dir: Path) -> list[dict[str, object]]:

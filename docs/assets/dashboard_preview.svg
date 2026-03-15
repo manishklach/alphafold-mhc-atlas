@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#f5efe3"/>
+  <rect x="24" y="24" width="1152" height="72" rx="20" fill="#fffaf2" stroke="#d4c4aa"/>
+  <text x="48" y="68" font-family="Georgia, serif" font-size="34" fill="#1d403b">Peptide-MHC Atlas Decision Support</text>
+  <text x="864" y="67" font-family="Arial, sans-serif" font-size="20" fill="#4d6f68">workspace mode</text>
+  <rect x="24" y="124" width="280" height="560" rx="24" fill="#fffaf2" stroke="#d4c4aa"/>
+  <text x="48" y="168" font-family="Arial, sans-serif" font-size="24" fill="#1d403b">Start Here</text>
+  <text x="48" y="202" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">1. Workspace Overview</text>
+  <text x="48" y="232" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">2. Changes Since Last Review</text>
+  <text x="48" y="262" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">3. Weekly Review Packet</text>
+  <text x="48" y="292" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">4. Role Views</text>
+  <text x="48" y="322" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">5. Next Actions</text>
+  <rect x="332" y="124" width="844" height="250" rx="24" fill="#fffaf2" stroke="#d4c4aa"/>
+  <text x="364" y="170" font-family="Georgia, serif" font-size="30" fill="#1d403b">Workspace Overview</text>
+  <rect x="364" y="198" width="180" height="112" rx="18" fill="#1d7b71"/>
+  <rect x="566" y="198" width="180" height="112" rx="18" fill="#1d7b71"/>
+  <rect x="768" y="198" width="180" height="112" rx="18" fill="#1d7b71"/>
+  <rect x="970" y="198" width="180" height="112" rx="18" fill="#1d7b71"/>
+  <text x="395" y="238" font-family="Arial, sans-serif" font-size="18" fill="#ffffff">Projects</text>
+  <text x="425" y="276" font-family="Georgia, serif" font-size="34" fill="#ffffff">3</text>
+  <text x="604" y="238" font-family="Arial, sans-serif" font-size="18" fill="#ffffff">Variants</text>
+  <text x="619" y="276" font-family="Georgia, serif" font-size="34" fill="#ffffff">11</text>
+  <text x="792" y="238" font-family="Arial, sans-serif" font-size="18" fill="#ffffff">Review</text>
+  <text x="807" y="276" font-family="Georgia, serif" font-size="34" fill="#ffffff">1</text>
+  <text x="996" y="238" font-family="Arial, sans-serif" font-size="18" fill="#ffffff">Packets</text>
+  <text x="1017" y="276" font-family="Georgia, serif" font-size="34" fill="#ffffff">2</text>
+  <rect x="332" y="402" width="404" height="282" rx="24" fill="#fffaf2" stroke="#d4c4aa"/>
+  <rect x="772" y="402" width="404" height="282" rx="24" fill="#fffaf2" stroke="#d4c4aa"/>
+  <text x="364" y="446" font-family="Georgia, serif" font-size="28" fill="#1d403b">Weekly Review Packet</text>
+  <text x="364" y="488" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">- what changed since last review</text>
+  <text x="364" y="518" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">- shortlist and panel status</text>
+  <text x="364" y="548" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">- open questions</text>
+  <text x="364" y="578" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">- next actions</text>
+  <text x="804" y="446" font-family="Georgia, serif" font-size="28" fill="#1d403b">Manager Role View</text>
+  <text x="804" y="488" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">- what needs discussion this week</text>
+  <text x="804" y="518" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">- open questions and caveats</text>
+  <text x="804" y="548" font-family="Arial, sans-serif" font-size="18" fill="#4b4b4b">- next actions before handoff</text>
+</svg>

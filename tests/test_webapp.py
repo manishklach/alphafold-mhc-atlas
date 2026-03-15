@@ -5,11 +5,14 @@ from src.webapp import create_app
 
 def test_index_and_project_routes(tmp_path, monkeypatch) -> None:
     outputs_root = tmp_path / "outputs"
+    examples_root = tmp_path / "examples"
     project_dir = outputs_root / "demo_project"
     analysis_dir = project_dir / "analysis"
     plots_dir = project_dir / "plots"
     analysis_dir.mkdir(parents=True)
     plots_dir.mkdir(parents=True)
+    examples_root.mkdir(parents=True)
+    (examples_root / "public_cross_allele_influenza_panel.yaml").write_text("project_name: demo\n", encoding="utf-8")
 
     (analysis_dir / "analysis_snapshot.json").write_text(
         json.dumps({"num_variants": 10, "num_alleles": 2, "prediction_coverage": 4}),
@@ -41,12 +44,14 @@ def test_index_and_project_routes(tmp_path, monkeypatch) -> None:
     app = create_app()
     app.config["TESTING"] = True
     monkeypatch.setitem(app.config, "OUTPUTS_ROOT", outputs_root)
+    monkeypatch.setitem(app.config, "EXAMPLES_ROOT", examples_root)
 
     client = app.test_client()
     index_response = client.get("/")
     assert index_response.status_code == 200
     assert b"demo_project" in index_response.data
     assert b"Predictions found" in index_response.data
+    assert b"public_cross_allele_influenza_panel.yaml" in index_response.data
 
     project_response = client.get("/project/demo_project")
     assert project_response.status_code == 200

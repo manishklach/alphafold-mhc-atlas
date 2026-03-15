@@ -12,6 +12,14 @@
 <section class="panel">
   <h2>Run Pipeline</h2>
   <form method="post" action="{{ url_for('run_pipeline') }}" class="run-form">
+    <label for="config_example">Example config</label>
+    <select id="config_example" onchange="document.getElementById('config_path').value = this.value">
+      <option value="">Select an example config</option>
+      {% for config in configs %}
+      {% set config_value = config.relative_to(config.parents[1]) %}
+      <option value="{{ config_value }}">{{ config.name }}</option>
+      {% endfor %}
+    </select>
     <label for="config_path">Config path</label>
     <input id="config_path" name="config_path" list="config-options" value="examples/sample_input.yaml">
     <datalist id="config-options">

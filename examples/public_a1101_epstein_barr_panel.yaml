@@ -1,0 +1,42 @@
+# Public-data-style single-allele example using HLA-A*11:01 and the EBV peptide AVFDRKSDAK.
+# Populate the local allele reference file from IPD-IMGT/HLA for true sequence-resolved runs.
+
+project_name: "example_public_a1101_epstein_barr_panel"
+output_dir: "../outputs/example_public_a1101_epstein_barr_panel"
+
+alleles:
+  - allele_name: "HLA-A*11:01"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "AVFDRKSDAK"
+  mutation_positions: [2, 9]
+  allowed_substitutions: ["A", "F", "I", "K", "L", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/example_public_a1101_epstein_barr_panel/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: true
+  mutated_positions_of_interest: [2, 9]
+  anchor_positions: [2, 9]
+  require_confident_chain_mapping: true

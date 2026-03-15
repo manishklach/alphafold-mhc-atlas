@@ -1,0 +1,67 @@
+# Public-data-style example centered on HLA-A*02:01 and the CMV pp65 peptide NLVPMVATV.
+# Allele sequences should be populated locally from IPD-IMGT/HLA.
+
+project_name: "example_public_a0201_cmv_panel"
+output_dir: "../outputs/example_public_a0201_cmv_panel"
+
+alleles:
+  - allele_name: "HLA-A*02:01"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "NLVPMVATV"
+  mutation_positions: [2, 9]
+  allowed_substitutions: ["A", "F", "I", "L", "V", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/example_public_a0201_cmv_panel/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: true
+  mutated_positions_of_interest: [2, 9]
+  anchor_positions: [2, 9]
+  require_confident_chain_mapping: true
+
+reporting:
+  enabled: true
+  generate_markdown_report: true
+  generate_publication_bundle: true
+  include_case_studies: false
+  include_hypotheses: true
+  core_figure_limit: 6
+  core_table_limit: 6
+
+prioritization:
+  enabled: true
+  default_top_k: 10
+  ranking_modes:
+    disruptive_mutations:
+      enabled: true
+      normalize_features: true
+      require_structural_support: false
+      features:
+        - name: "delta_total_contacts_vs_wt"
+          weight: -1.0
+        - name: "delta_mean_min_distance_vs_wt"
+          weight: 0.75
+        - name: "anchor_disruption_flag"
+          weight: 1.0

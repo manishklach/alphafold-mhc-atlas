@@ -1,0 +1,53 @@
+# Public-data-style anchor-focused example for HLA-B*07:02.
+# The peptide RPHERNGFTVL is a common public example for B*07:02-oriented workflows.
+# Populate ../data/allele_reference.yaml from IPD-IMGT/HLA before expecting true FASTA generation.
+
+project_name: "example_public_b0702_anchor_review"
+output_dir: "../outputs/example_public_b0702_anchor_review"
+
+alleles:
+  - allele_name: "HLA-B*07:02"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "RPHERNGFTVL"
+  mutation_positions: [2, 10]
+  allowed_substitutions: ["A", "F", "L", "P", "V", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/example_public_b0702_anchor_review/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: false
+  mutated_positions_of_interest: [2, 10]
+  anchor_positions: [2, 10]
+  require_confident_chain_mapping: true
+
+case_studies:
+  enabled: true
+  definitions:
+    - case_id: "anchor_review"
+      description: "Anchor-focused review at positions 2 and 10 for a B*07:02-centered peptide panel."
+      alleles: ["HLA-B*07:02"]
+      peptides: ["RPHERNGFTVL"]
+      mutation_positions: [2, 10]
+      substitutions: ["A", "F", "L", "P", "V", "Y"]

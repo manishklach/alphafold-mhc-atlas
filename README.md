@@ -8,6 +8,8 @@ It is best described as AlphaFold-family compatible analysis tooling, not as an 
 
 It is designed for teams who want more than raw structure predictions: a reproducible way to generate peptide-MHC mutation panels, compare mutants to WT, aggregate effects across alleles, carry shortlists and review history forward across meetings, and make experimental prioritization more evidence-linked and less ad hoc.
 
+![Dashboard preview](docs/assets/dashboard_preview.svg)
+
 ## Product Vision
 
 Build an interpretable decision platform for structure-guided experimental prioritization.
@@ -29,6 +31,8 @@ What the current product seed is for:
 - RCSB PDB for experimentally solved peptide-MHC structures and benchmark/reference structures
 - AlphaFold DB only for monomeric reference/support use cases, not as peptide-MHC complex truth
 - lightweight synthetic demo artifacts built on top of public-derived project outputs for pilot and workflow demos
+
+![Weekly review workflow](docs/assets/weekly_review_flow.svg)
 
 ## Why This Repo Exists
 
@@ -230,6 +234,19 @@ That demo is the cleanest end-to-end story for the product wedge:
 4. role views
 5. shortlist and next actions
 6. decision packet
+
+## Example Configs
+
+The repo now includes multiple example configs under [examples](examples):
+
+- [examples/sample_input.yaml](examples/sample_input.yaml): full feature reference config
+- [examples/minimal_single_allele_template.yaml](examples/minimal_single_allele_template.yaml): smallest single-allele template
+- [examples/public_a0201_cmv_panel.yaml](examples/public_a0201_cmv_panel.yaml): HLA-A*02:01 + CMV-style panel
+- [examples/public_cross_allele_influenza_panel.yaml](examples/public_cross_allele_influenza_panel.yaml): shared influenza-style multi-allele panel
+- [examples/public_b0702_anchor_review.yaml](examples/public_b0702_anchor_review.yaml): anchor-focused HLA-B*07:02 review
+- [examples/public_a1101_epstein_barr_panel.yaml](examples/public_a1101_epstein_barr_panel.yaml): HLA-A*11:01 public-style panel
+
+Public-data-oriented examples use real allele names and common public peptide examples, but they intentionally rely on your local allele reference file rather than shipping copied biological sequences in-repo. See [data/public_allele_reference_template.yaml](data/public_allele_reference_template.yaml) and [examples/README.md](examples/README.md).
 
 ## Quick Start
 
