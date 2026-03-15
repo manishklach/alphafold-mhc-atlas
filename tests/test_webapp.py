@@ -13,6 +13,7 @@ def test_index_and_project_routes(tmp_path, monkeypatch) -> None:
     plots_dir.mkdir(parents=True)
     examples_root.mkdir(parents=True)
     (examples_root / "public_cross_allele_influenza_panel.yaml").write_text("project_name: demo\n", encoding="utf-8")
+    (examples_root / "researcher_project_template.yaml").write_text("project_name: researcher_demo\n", encoding="utf-8")
 
     (analysis_dir / "analysis_snapshot.json").write_text(
         json.dumps({"num_variants": 10, "num_alleles": 2, "prediction_coverage": 4}),
@@ -52,6 +53,8 @@ def test_index_and_project_routes(tmp_path, monkeypatch) -> None:
     assert b"demo_project" in index_response.data
     assert b"Predictions found" in index_response.data
     assert b"public_cross_allele_influenza_panel.yaml" in index_response.data
+    assert b"Start Your Own Project" in index_response.data
+    assert b"researcher_project_template.yaml" in index_response.data
 
     project_response = client.get("/project/demo_project")
     assert project_response.status_code == 200

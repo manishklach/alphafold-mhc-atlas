@@ -39,3 +39,11 @@
 - Added interactive local app
 - Added scenario analysis and comparison
 - Added evidence drilldown and demo projects
+# Changelog
+
+## v0.10.2
+
+- added a researcher-first onboarding path with [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md)
+- added [examples/researcher_project_template.yaml](examples/researcher_project_template.yaml)
+- added a `Start Your Own Project` panel to the local HTML dashboard
+- updated README, quickstart, and examples docs to support real-project setup

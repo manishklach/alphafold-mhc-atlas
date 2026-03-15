@@ -116,6 +116,7 @@ This repo replaces that with a local, evidence-linked review workflow:
 - Install guide: [INSTALL.md](INSTALL.md)
 - Quickstart: [QUICKSTART.md](QUICKSTART.md)
 - First-run guide: [FIRST_RUN.md](FIRST_RUN.md)
+- Researcher first project guide: [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md)
 - Demo guide: [DEMOS.md](DEMOS.md)
 - Pilot workflow guide: [PILOT_WORKFLOW.md](PILOT_WORKFLOW.md)
 - CLI guide: [CLI_USAGE.md](CLI_USAGE.md)
@@ -240,6 +241,7 @@ That demo is the cleanest end-to-end story for the product wedge:
 The repo now includes multiple example configs under [examples](examples):
 
 - [examples/sample_input.yaml](examples/sample_input.yaml): full feature reference config
+- [examples/researcher_project_template.yaml](examples/researcher_project_template.yaml): best starting point for a real researcher project
 - [examples/minimal_single_allele_template.yaml](examples/minimal_single_allele_template.yaml): smallest single-allele template
 - [examples/public_a0201_cmv_panel.yaml](examples/public_a0201_cmv_panel.yaml): HLA-A*02:01 + CMV-style panel
 - [examples/public_cross_allele_influenza_panel.yaml](examples/public_cross_allele_influenza_panel.yaml): shared influenza-style multi-allele panel
@@ -247,6 +249,30 @@ The repo now includes multiple example configs under [examples](examples):
 - [examples/public_a1101_epstein_barr_panel.yaml](examples/public_a1101_epstein_barr_panel.yaml): HLA-A*11:01 public-style panel
 
 Public-data-oriented examples use real allele names and common public peptide examples, but they intentionally rely on your local allele reference file rather than shipping copied biological sequences in-repo. See [data/public_allele_reference_template.yaml](data/public_allele_reference_template.yaml) and [examples/README.md](examples/README.md).
+
+## Start Your Own Project
+
+If you are a researcher using this on a real study, start here:
+
+1. copy [examples/researcher_project_template.yaml](examples/researcher_project_template.yaml)
+2. fill in your allele names, WT peptides, mutation positions, and substitutions
+3. provide real allele sequences directly or via [data/allele_reference.yaml](data/allele_reference.yaml)
+4. run:
+
+```bash
+mhc-atlas run --config examples/researcher_project_template.yaml
+```
+
+5. put AlphaFold or ColabFold outputs under your project `predictions/` directory
+6. rerun the same command
+7. inspect results with:
+
+```bash
+mhc-atlas app --project outputs/my_peptide_mhc_project
+```
+
+Full step-by-step guide:
+- [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md)
 
 ## Quick Start
 
@@ -257,6 +283,19 @@ python -m venv .venv
 mhc-atlas list-demos
 mhc-atlas app --workspace demo/golden_weekly_review_demo/workspace.yaml
 ```
+
+## Researcher Workflow
+
+Use this repo on your own project in this order:
+
+1. copy [examples/researcher_project_template.yaml](examples/researcher_project_template.yaml)
+2. add your real allele names, trusted sequences, WT peptide(s), mutation positions, and substitutions
+3. run `mhc-atlas run --config path/to/your_config.yaml`
+4. place AlphaFold or ColabFold outputs in `outputs/<project>/predictions/`
+5. rerun the same command
+6. inspect the project with `mhc-atlas app --project outputs/<project>`
+
+If you want the shortest researcher-specific walkthrough, start with [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md).
 
 Recommended first-time workflow:
 

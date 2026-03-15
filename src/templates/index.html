@@ -32,6 +32,19 @@
 </section>
 
 <section class="panel">
+  <h2>Start Your Own Project</h2>
+  <p>This repo is not just for demos. The shortest researcher path is: copy the researcher template, add trusted allele sequences and WT peptide(s), generate FASTA inputs, run AlphaFold or ColabFold outside this repo, then rerun analysis and inspect the resulting project.</p>
+  <ol>
+    <li>Start from <code>examples/researcher_project_template.yaml</code>.</li>
+    <li>Provide real heavy-chain and beta-2 microglobulin sequences directly or via <code>data/allele_reference.yaml</code>.</li>
+    <li>Run <code>mhc-atlas run --config examples/researcher_project_template.yaml</code>.</li>
+    <li>Place prediction outputs under <code>outputs/&lt;project&gt;/predictions/</code> and rerun the same command.</li>
+    <li>Open the result with <code>mhc-atlas app --project outputs/my_peptide_mhc_project</code>.</li>
+  </ol>
+  <p>Guide: <code>MY_FIRST_PROJECT.md</code></p>
+</section>
+
+<section class="panel">
   <h2>Detected Projects</h2>
   {% if projects %}
   <div class="project-grid">

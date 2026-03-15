@@ -42,6 +42,29 @@ mhc-atlas review init --project demo/cross_allele_demo/project --scenario disrup
 mhc-atlas handoff create --project demo/cross_allele_demo/project --bundle-id pilot_bundle --scenario disruptive_shortlist
 ```
 
+## Start your own project
+
+If you are evaluating the repo for a real study, do this after the demo:
+
+1. Copy [examples/researcher_project_template.yaml](examples/researcher_project_template.yaml).
+2. Fill in your allele names, trusted sequences, WT peptide(s), mutation positions, and substitutions.
+3. Run:
+
+```bash
+mhc-atlas run --config examples/researcher_project_template.yaml
+```
+
+4. Add AlphaFold or ColabFold outputs under `outputs/<project>/predictions/`.
+5. Rerun the same command.
+6. Open the project:
+
+```bash
+mhc-atlas app --project outputs/my_peptide_mhc_project
+```
+
+Detailed guide:
+- [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md)
+
 ## Workspace path
 
 ```bash
