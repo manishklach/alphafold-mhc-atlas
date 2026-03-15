@@ -2,6 +2,26 @@
 
 This repository is a local-workspace-friendly Python framework for peptide-MHC perturbation studies built around AlphaFold or ColabFold outputs.
 
+It is designed for researchers who want more than raw structure predictions: a reproducible way to generate peptide-MHC mutation panels, compare mutants to WT, aggregate effects across alleles, and produce report-ready structural summaries without collapsing everything into an opaque score.
+
+## Why This Repo Exists
+
+There is a recurring gap in peptide-MHC projects:
+
+- one tool prepares FASTA files
+- another tool runs AlphaFold or ColabFold
+- a notebook parses a few structures
+- a separate slide deck or figure folder captures the conclusions
+
+This repository is meant to close that gap with one coherent workflow.
+
+Its core idea is simple:
+
+- treat peptide-MHC perturbation studies as a comparative analysis problem
+- keep the outputs interpretable
+- stay explicit about missing data and scientific limits
+- make the results reusable in papers, talks, notebooks, and collaborator handoffs
+
 It started as an input-preparation scaffold and now supports:
 
 - allele-aware mutant panel generation
@@ -12,6 +32,10 @@ It started as an input-preparation scaffold and now supports:
 - reporting, publication-bundle export, case studies, and exploratory hypothesis generation
 
 The project is intentionally conservative. It does not claim binding affinity prediction, immunogenicity prediction, or experimental validation. Structural summaries are presented as transparent derived features from predicted models.
+
+## Elevator Pitch
+
+This is a reproducible peptide-MHC comparative structural analysis framework that turns mutation panels and AlphaFold or ColabFold outputs into interpretable WT-relative, cross-allele, and publication-oriented structural summaries.
 
 ## Documentation Map
 
