@@ -1,0 +1,21 @@
+{
+  "project_name": "project",
+  "generated_at": "2026-03-15T06:15:09.677452+00:00",
+  "coverage": {
+    "num_variants": 4,
+    "num_alleles": 2,
+    "prediction_coverage": 4,
+    "structural_coverage": 4,
+    "prioritization_rows": 3,
+    "panel_rows": 2,
+    "review_queue_rows": 2,
+    "shortlist_rows": 1,
+    "feedback_rows": 1
+  },
+  "review_queue_rows": 2,
+  "shortlist_rows": 1,
+  "feedback_rows": 1,
+  "handoff_bundle_count": 1,
+  "review_packet_count": 1,
+  "decision_packet_count": 1
+}

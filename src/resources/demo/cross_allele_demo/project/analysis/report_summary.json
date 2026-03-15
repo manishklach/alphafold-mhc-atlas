@@ -1,0 +1,7 @@
+{
+  "project_name": "cross_allele_demo",
+  "num_alleles": 2,
+  "num_variants": 4,
+  "num_predictions_with_structures": 4,
+  "num_variants_with_structural_metrics": 4
+}

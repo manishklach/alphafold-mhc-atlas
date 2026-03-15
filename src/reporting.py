@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from .config import ReportingConfig
+from .scope_text import brief_scope_markdown, expanded_scope_markdown
 
 
 def build_report_summary(
@@ -112,6 +113,7 @@ def build_markdown_report(
     lines.extend(["", "## Caveats", ""])
     for caveat in caveats:
         lines.append(f"- {caveat}")
+    lines.extend(["", brief_scope_markdown(), "", expanded_scope_markdown()])
     return "\n".join(lines)
 
 

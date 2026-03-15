@@ -1,0 +1,28 @@
+templates:
+  - template_id: disruptive_ranking_review
+    label: "Disruptive Ranking Review"
+    items:
+      - item_id: evidence_coverage_reviewed
+        description: "Evidence coverage reviewed for top-ranked disruptive variants."
+      - item_id: uncertainty_reviewed
+        description: "Uncertainty flags inspected for shortlisted disruptive variants."
+      - item_id: caveats_acknowledged
+        description: "Biological caveats acknowledged before sharing conclusions."
+  - template_id: panel_design_review
+    label: "Panel Design Review"
+    items:
+      - item_id: panel_diversity_checked
+        description: "Panel diversity across alleles, positions, and substitutions reviewed."
+      - item_id: shortlist_rationale_documented
+        description: "Shortlist rationale documented for selected panel entries."
+      - item_id: export_bundle_validated
+        description: "Export bundle validated before collaborator handoff."
+  - template_id: pilot_handoff_review
+    label: "Pilot Handoff Review"
+    items:
+      - item_id: scenario_scope_checked
+        description: "Scenario scope and intended interpretation were reviewed."
+      - item_id: scope_statement_included
+        description: "Conservative scope statement included in the handoff materials."
+      - item_id: next_actions_recorded
+        description: "Next actions and follow-up questions recorded."

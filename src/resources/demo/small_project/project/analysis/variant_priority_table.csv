@@ -1,0 +1,3 @@
+variant_id,allele_name,mutant_peptide,mutated_position,wt_residue,mut_residue,ranking_mode,priority_rank,priority_score,evidence_components_serialized,evidence_coverage_score,structural_support_status,uncertainty_flag,prioritization_notes
+demoA_pos2_A,HLA-A*02:01,GALGFVFTL,2,I,A,disruptive_mutations,1,1.8,delta_total_contacts_vs_wt=-3.000;delta_mean_min_distance_vs_wt=0.800,0.8,available,low,High contact loss relative to WT.
+demoA_pos9_F,HLA-A*02:01,GILGFVFTF,9,L,F,tolerated_mutations,1,0.9,delta_total_contacts_vs_wt=1.000;delta_mean_min_distance_vs_wt=-0.200,0.8,available,moderate,Shows preserved or improved contact pattern.

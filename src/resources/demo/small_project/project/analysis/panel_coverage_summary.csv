@@ -1,0 +1,2 @@
+panel_id,num_variants,num_alleles_covered,num_positions_covered,num_substitutions_covered,mean_priority_score,mean_evidence_coverage,diversity_score,design_notes
+balanced_exploration_panel,1,1,1,1,1.8,0.8,3.0,Greedy score-plus-diversity panel selection with explicit per-feature quotas.

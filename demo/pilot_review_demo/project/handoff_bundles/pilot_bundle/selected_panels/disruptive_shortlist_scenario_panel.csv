@@ -1,0 +1,3 @@
+panel_id,ranking_goal,variant_id,allele_name,mutant_peptide,mutated_position,substitution,selection_reason,supporting_metrics_serialized,redundancy_penalty,evidence_coverage_score,uncertainty_level,mean_priority_score
+allele_discrimination_panel,allele_discriminating_mutations,demoA_pos9_F,HLA-A*02:01,GILGFVFTF,9,F,Selected for allele discrimination in the toy demo.,cross_allele_contact_divergence=3,0.0,0.7,moderate,1.2
+top_disruptive_panel,disruptive_mutations,demoB_pos2_A,HLA-B*07:02,GALGFVFTL,2,A,Selected as top disruptive toy row.,delta_total_contacts_vs_wt=-6;delta_mean_min_distance_vs_wt=1.4,0.0,0.9,low,2.5

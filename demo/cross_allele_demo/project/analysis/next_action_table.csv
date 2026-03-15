@@ -1,0 +1,2 @@
+entity_type,entity_id,action_type,priority_level,rationale,supporting_artifacts,owner_role_suggestion,status
+project,project,review_in_meeting,high,Prioritization rows exist but no review queue has been initialized.,analysis/variant_priority_table.csv,computational_lead,open

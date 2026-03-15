@@ -1,0 +1,5 @@
+variant_id,allele_name,wildtype_peptide,mutant_peptide,mutated_position,wt_residue,mut_residue,prediction_present,total_peptide_mhc_contacts,delta_total_contacts_vs_wt,delta_mean_min_distance_vs_wt,structure_path
+demoA_pos2_A,HLA-A*02:01,GILGFVFTL,GALGFVFTL,2,I,A,True,18,-3,0.8,ranked_0.pdb
+demoB_pos2_A,HLA-B*07:02,GILGFVFTL,GALGFVFTL,2,I,A,True,12,-6,1.4,ranked_0.pdb
+demoA_pos9_F,HLA-A*02:01,GILGFVFTL,GILGFVFTF,9,L,F,True,22,1,-0.2,ranked_0.pdb
+demoB_pos9_F,HLA-B*07:02,GILGFVFTL,GILGFVFTF,9,L,F,True,16,-2,0.4,ranked_0.pdb

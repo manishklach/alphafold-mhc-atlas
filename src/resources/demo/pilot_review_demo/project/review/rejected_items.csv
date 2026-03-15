@@ -1,0 +1,1 @@
+entity_type,entity_id,scenario_id,review_status,review_tags_serialized,rationale,reviewer,timestamp,linked_evidence_bundle,uncertainty_level,next_action,ranking_mode,priority_score,evidence_coverage_score,allele_name,mutant_peptide,mutated_position,mut_residue

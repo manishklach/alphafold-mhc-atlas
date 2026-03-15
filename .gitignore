@@ -6,3 +6,8 @@ outputs/
 .ipynb_checkpoints/
 *.pyo
 .streamlit/
+build/
+dist/
+*.egg-info/
+.coverage
+.mypy_cache/

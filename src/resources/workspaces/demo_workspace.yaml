@@ -1,0 +1,24 @@
+workspace:
+  workspace_id: "pilot_workspace_01"
+  name: "Peptide-MHC Pilot Workspace"
+  description: "Workspace for recurring weekly decision reviews across demo projects."
+  output_dir: "../outputs/workspaces/pilot_workspace_01"
+  projects:
+    - id: "pilot_review"
+      path: "../demo/pilot_review_demo/project"
+      tags: ["weekly_review", "shortlist"]
+      notes: "Primary pilot-review workflow demo."
+    - id: "cross_allele"
+      path: "../demo/cross_allele_demo/project"
+      tags: ["cross_allele", "portfolio"]
+      notes: "Cross-allele comparison demo."
+    - id: "small_project"
+      path: "../demo/small_project/project"
+      tags: ["minimal", "baseline"]
+      notes: "Minimal project inventory demo."
+  role_views:
+    enabled: true
+  review_packets:
+    enabled: true
+  decision_packets:
+    enabled: true

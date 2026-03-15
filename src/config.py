@@ -228,6 +228,43 @@ class ScenarioTemplatesConfig:
 
 
 @dataclass(frozen=True)
+class PilotWorkflowConfig:
+    enabled: bool
+    save_sessions: bool
+    enable_review_queue: bool
+    enable_annotations: bool
+    enable_feedback: bool
+    enable_handoff_bundles: bool
+
+
+@dataclass(frozen=True)
+class FeedbackConfig:
+    enabled: bool
+    require_reviewer_name: bool
+    allowed_concern_types: list[str]
+
+
+@dataclass(frozen=True)
+class ChecklistsConfig:
+    enabled: bool
+    template_file: Path | None
+
+
+@dataclass(frozen=True)
+class HandoffConfig:
+    enabled: bool
+    include_annotations: bool
+    include_feedback_snapshot: bool
+    include_scope_statement: bool
+
+
+@dataclass(frozen=True)
+class SessionLoggingConfig:
+    enabled: bool
+    redact_paths: bool
+
+
+@dataclass(frozen=True)
 class CaseStudySpec:
     case_id: str
     description: str
@@ -265,6 +302,11 @@ class ProjectConfig:
     scenario_analysis: ScenarioAnalysisConfig
     demo_mode: DemoModeConfig
     scenario_templates: ScenarioTemplatesConfig
+    pilot_workflow: PilotWorkflowConfig
+    feedback: FeedbackConfig
+    checklists: ChecklistsConfig
+    handoff: HandoffConfig
+    session_logging: SessionLoggingConfig
     case_studies_enabled: bool
     case_studies: list[CaseStudySpec]
     source_config_path: Path
@@ -331,6 +373,11 @@ def _normalize_config_shape(data: dict[str, Any]) -> dict[str, Any]:
             "scenario_analysis": data.get("scenario_analysis", {}),
             "demo_mode": data.get("demo_mode", {}),
             "scenario_templates": data.get("scenario_templates", {}),
+            "pilot_workflow": data.get("pilot_workflow", {}),
+            "feedback": data.get("feedback", {}),
+            "checklists": data.get("checklists", {}),
+            "handoff": data.get("handoff", {}),
+            "session_logging": data.get("session_logging", {}),
             "case_studies": data.get("case_studies", []),
         }
 
@@ -378,6 +425,11 @@ def _normalize_config_shape(data: dict[str, Any]) -> dict[str, Any]:
         "scenario_analysis": {},
         "demo_mode": {},
         "scenario_templates": {},
+        "pilot_workflow": {},
+        "feedback": {},
+        "checklists": {},
+        "handoff": {},
+        "session_logging": {},
         "case_studies": [],
     }
 
@@ -411,6 +463,11 @@ def _build_project_config(config_path: Path, data: dict[str, Any]) -> ProjectCon
     scenario_analysis_raw = _require_mapping(data, "scenario_analysis", optional=True) or {}
     demo_mode_raw = _require_mapping(data, "demo_mode", optional=True) or {}
     scenario_templates_raw = _require_mapping(data, "scenario_templates", optional=True) or {}
+    pilot_workflow_raw = _require_mapping(data, "pilot_workflow", optional=True) or {}
+    feedback_raw = _require_mapping(data, "feedback", optional=True) or {}
+    checklists_raw = _require_mapping(data, "checklists", optional=True) or {}
+    handoff_raw = _require_mapping(data, "handoff", optional=True) or {}
+    session_logging_raw = _require_mapping(data, "session_logging", optional=True) or {}
     case_studies_value = data.get("case_studies", [])
 
     alleles = [_build_allele_spec(config_path.parent, entry, index) for index, entry in enumerate(alleles_raw)]
@@ -625,6 +682,50 @@ def _build_project_config(config_path: Path, data: dict[str, Any]) -> ProjectCon
         enabled=bool(scenario_templates_raw.get("enabled", True)),
         template_file=_resolve_optional_path(config_path.parent, scenario_templates_raw.get("template_file")),
     )
+    pilot_workflow = PilotWorkflowConfig(
+        enabled=bool(pilot_workflow_raw.get("enabled", True)),
+        save_sessions=bool(pilot_workflow_raw.get("save_sessions", True)),
+        enable_review_queue=bool(pilot_workflow_raw.get("enable_review_queue", True)),
+        enable_annotations=bool(pilot_workflow_raw.get("enable_annotations", True)),
+        enable_feedback=bool(pilot_workflow_raw.get("enable_feedback", True)),
+        enable_handoff_bundles=bool(pilot_workflow_raw.get("enable_handoff_bundles", True)),
+    )
+    feedback = FeedbackConfig(
+        enabled=bool(feedback_raw.get("enabled", True)),
+        require_reviewer_name=bool(feedback_raw.get("require_reviewer_name", False)),
+        allowed_concern_types=_normalize_string_list(
+            feedback_raw.get(
+                "allowed_concern_types",
+                [
+                    "insufficient_evidence",
+                    "unclear_ranking",
+                    "biological_caveat",
+                    "missing_context",
+                    "scenario_needs_adjustment",
+                    "panel_needs_diversity_change",
+                    "export_needs_improvement",
+                    "ui_confusing",
+                    "data_quality_issue",
+                    "other",
+                ],
+            ),
+            "feedback.allowed_concern_types",
+        ),
+    )
+    checklists = ChecklistsConfig(
+        enabled=bool(checklists_raw.get("enabled", True)),
+        template_file=_resolve_optional_path(config_path.parent, checklists_raw.get("template_file")),
+    )
+    handoff = HandoffConfig(
+        enabled=bool(handoff_raw.get("enabled", True)),
+        include_annotations=bool(handoff_raw.get("include_annotations", True)),
+        include_feedback_snapshot=bool(handoff_raw.get("include_feedback_snapshot", True)),
+        include_scope_statement=bool(handoff_raw.get("include_scope_statement", True)),
+    )
+    session_logging = SessionLoggingConfig(
+        enabled=bool(session_logging_raw.get("enabled", True)),
+        redact_paths=bool(session_logging_raw.get("redact_paths", False)),
+    )
     case_studies_enabled, case_studies = _build_case_studies(case_studies_value, reporting.include_case_studies)
 
     _validate_project_config(
@@ -650,6 +751,11 @@ def _build_project_config(config_path: Path, data: dict[str, Any]) -> ProjectCon
         scenario_analysis,
         demo_mode,
         scenario_templates,
+        pilot_workflow,
+        feedback,
+        checklists,
+        handoff,
+        session_logging,
         case_studies,
     )
 
@@ -679,6 +785,11 @@ def _build_project_config(config_path: Path, data: dict[str, Any]) -> ProjectCon
         scenario_analysis=scenario_analysis,
         demo_mode=demo_mode,
         scenario_templates=scenario_templates,
+        pilot_workflow=pilot_workflow,
+        feedback=feedback,
+        checklists=checklists,
+        handoff=handoff,
+        session_logging=session_logging,
         case_studies_enabled=case_studies_enabled,
         case_studies=case_studies,
         source_config_path=config_path,
@@ -999,6 +1110,11 @@ def _validate_project_config(
     scenario_analysis: ScenarioAnalysisConfig,
     demo_mode: DemoModeConfig,
     scenario_templates: ScenarioTemplatesConfig,
+    pilot_workflow: PilotWorkflowConfig,
+    feedback: FeedbackConfig,
+    checklists: ChecklistsConfig,
+    handoff: HandoffConfig,
+    session_logging: SessionLoggingConfig,
     case_studies: list[CaseStudySpec],
 ) -> None:
     if not project_name:
@@ -1078,6 +1194,8 @@ def _validate_project_config(
         raise ValueError("scenario_analysis.default_evidence_coverage_threshold must be between 0 and 1.")
     if not scenario_analysis.default_uncertainty_levels_allowed:
         raise ValueError("scenario_analysis.default_uncertainty_levels_allowed must not be empty.")
+    if feedback.require_reviewer_name and not feedback.enabled:
+        raise ValueError("feedback.require_reviewer_name cannot be true when feedback.enabled is false.")
     for index, case_study in enumerate(case_studies):
         if not case_study.case_id:
             raise ValueError(f"case_studies[{index}].case_id must not be empty.")

@@ -1,0 +1,9 @@
+{
+  "project_name": "cross_allele_demo",
+  "num_alleles": 2,
+  "num_variants": 4,
+  "prediction_coverage": 4,
+  "structural_coverage": 4,
+  "priority_row_count": 3,
+  "panel_row_count": 2
+}

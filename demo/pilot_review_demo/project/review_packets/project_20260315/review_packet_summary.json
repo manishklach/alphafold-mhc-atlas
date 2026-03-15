@@ -1,0 +1,13 @@
+{
+  "packet_id": "project_20260315",
+  "project_name": "project",
+  "generated_at": "2026-03-15T06:13:38.196615+00:00",
+  "change_summary_path": "C:\\Users\\ManishKL\\Documents\\Playground\\alphafold_mhc_atlas\\demo\\pilot_review_demo\\project\\history\\change_summary.md",
+  "next_actions_path": "C:\\Users\\ManishKL\\Documents\\Playground\\alphafold_mhc_atlas\\demo\\pilot_review_demo\\project\\analysis\\next_action_table.csv",
+  "open_questions_path": "C:\\Users\\ManishKL\\Documents\\Playground\\alphafold_mhc_atlas\\demo\\pilot_review_demo\\project\\analysis\\open_questions.csv",
+  "role_views": {
+    "scientist": "C:\\Users\\ManishKL\\Documents\\Playground\\alphafold_mhc_atlas\\demo\\pilot_review_demo\\project\\analysis\\role_views\\role_view_scientist.md",
+    "comp_lead": "C:\\Users\\ManishKL\\Documents\\Playground\\alphafold_mhc_atlas\\demo\\pilot_review_demo\\project\\analysis\\role_views\\role_view_comp_lead.md",
+    "manager": "C:\\Users\\ManishKL\\Documents\\Playground\\alphafold_mhc_atlas\\demo\\pilot_review_demo\\project\\analysis\\role_views\\role_view_manager.md"
+  }
+}

@@ -1,0 +1,31 @@
+templates:
+  - template_id: weekly_scientific_review
+    label: "Weekly Scientific Review"
+    description: "Recurring weekly review focused on shortlist quality, uncertainty, and next experiments."
+    emphasis:
+      - changes_since_last_review
+      - shortlist_review
+      - open_questions
+      - next_actions
+  - template_id: biweekly_program_review
+    label: "Biweekly Program Review"
+    description: "Cross-project portfolio review for computational and program leads."
+    emphasis:
+      - workspace_summary
+      - role_views
+      - review_packets
+      - decision_packets
+  - template_id: shortlist_review
+    label: "Shortlist Review"
+    description: "Focused review of shortlisted variants and panel updates."
+    emphasis:
+      - shortlist_review
+      - uncertainty_review
+      - handoff_readiness
+  - template_id: pre-handoff_review
+    label: "Pre-handoff Review"
+    description: "Final internal review before sharing a collaborator packet."
+    emphasis:
+      - scope_statement
+      - caveats
+      - handoff_bundle_validation

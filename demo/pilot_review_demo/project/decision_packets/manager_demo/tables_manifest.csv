@@ -1,0 +1,5 @@
+table_id,source_path,bundled_path
+shortlist,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project\review\shortlist.csv,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project\decision_packets\manager_demo\shortlist.csv
+optimized_mutation_panel,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project\analysis\optimized_mutation_panel.csv,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project\decision_packets\manager_demo\optimized_mutation_panel.csv
+open_questions,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project\analysis\open_questions.csv,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project\decision_packets\manager_demo\open_questions.csv
+next_action_table,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project\analysis\next_action_table.csv,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project\decision_packets\manager_demo\next_action_table.csv

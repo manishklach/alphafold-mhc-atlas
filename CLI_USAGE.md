@@ -1,0 +1,38 @@
+# CLI Usage
+
+## Main commands
+
+```bash
+mhc-atlas run --config examples/sample_input.yaml
+mhc-atlas app --project outputs/mhc_phase6_demo
+mhc-atlas list-demos
+mhc-atlas inventory outputs/mhc_phase6_demo
+mhc-atlas scenario --project outputs/mhc_phase6_demo --template disruptive_shortlist
+mhc-atlas export --project outputs/mhc_phase6_demo --scenario outputs/mhc_phase6_demo/saved_scenarios/a_disruptive_shortlist.json
+mhc-atlas report --project outputs/mhc_phase6_demo
+mhc-atlas validate-config examples/sample_input.yaml
+mhc-atlas check-environment
+mhc-atlas version
+```
+
+## Pilot workflow commands
+
+```bash
+mhc-atlas review init --project demo/cross_allele_demo/project --scenario disruptive_shortlist
+mhc-atlas review shortlist --project demo/cross_allele_demo/project
+mhc-atlas feedback add --project demo/cross_allele_demo/project --entity-type variant --entity-id demoA_pos2_A --comment "Needs more evidence review"
+mhc-atlas checklist run --project demo/cross_allele_demo/project --template pilot_handoff_review
+mhc-atlas handoff create --project demo/cross_allele_demo/project --bundle-id pilot_bundle --scenario disruptive_shortlist
+```
+
+## Workspace and decision-review commands
+
+```bash
+mhc-atlas workspace init --config workspaces/demo_workspace.yaml
+mhc-atlas workspace inventory --workspace workspaces/demo_workspace.yaml
+mhc-atlas review-packet generate --workspace workspaces/demo_workspace.yaml
+mhc-atlas decision-packet generate --workspace workspaces/demo_workspace.yaml
+mhc-atlas role-view export --project demo/pilot_review_demo/project --role manager
+mhc-atlas changes summarize --project demo/pilot_review_demo/project
+mhc-atlas next-actions build --project demo/pilot_review_demo/project
+```

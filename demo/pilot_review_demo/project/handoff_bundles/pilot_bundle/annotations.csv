@@ -1,0 +1,2 @@
+entity_type,entity_id,reviewer,timestamp,category,tags_serialized,note_path
+variant,demoB_pos2_A,pilot_user,2026-03-15T05:57:48.622835+00:00,discussion,demo;shortlist,demo\pilot_review_demo\project\review\notes\demoB_pos2_A.md

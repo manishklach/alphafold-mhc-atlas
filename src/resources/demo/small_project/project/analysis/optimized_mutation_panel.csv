@@ -1,0 +1,2 @@
+panel_id,ranking_goal,variant_id,allele_name,mutant_peptide,mutated_position,substitution,selection_reason,supporting_metrics_serialized,redundancy_penalty,evidence_coverage_score,uncertainty_level,mean_priority_score
+balanced_exploration_panel,exploratory_followup_candidates,demoA_pos2_A,HLA-A*02:01,GALGFVFTL,2,A,Selected from exploratory_followup_candidates with diversity constraints.,delta_total_contacts_vs_wt=-3;delta_mean_min_distance_vs_wt=0.8,0.0,0.8,low,1.8

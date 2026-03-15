@@ -1,0 +1,4 @@
+template_id,item_id,description,status,reviewer,timestamp
+pilot_handoff_review,scenario_scope_checked,Scenario scope and intended interpretation were reviewed.,pending,pilot_user,2026-03-15T05:57:21.356877+00:00
+pilot_handoff_review,scope_statement_included,Conservative scope statement included in the handoff materials.,pending,pilot_user,2026-03-15T05:57:21.356877+00:00
+pilot_handoff_review,next_actions_recorded,Next actions and follow-up questions recorded.,pending,pilot_user,2026-03-15T05:57:21.356877+00:00

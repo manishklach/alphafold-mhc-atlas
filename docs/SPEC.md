@@ -4,6 +4,8 @@
 
 This repository provides a conservative, modular framework for peptide-MHC structural perturbation analysis centered on AlphaFold or ColabFold outputs.
 
+It is intentionally version-tolerant and should not be presented as an AlphaFold 3-specific implementation unless a future release adds AF3-native input and output assumptions explicitly.
+
 The design goals are:
 
 - local reproducibility
@@ -11,6 +13,8 @@ The design goals are:
 - graceful handling of missing predictions
 - transparent derived metrics
 - report-ready outputs without overstating biological interpretation
+- local pilot workflows and collaborator handoffs without adding a cloud backend
+- recurring team-review workflows across multiple local projects
 
 ## Scope
 
@@ -26,15 +30,34 @@ The design goals are:
 - WT-relative mutant comparison
 - allele-level aggregation and cross-allele comparison
 - reporting, publication bundle export, case studies, and exploratory hypotheses
+- pilot review queues, shortlists, feedback logs, annotations, checklists, and handoff bundles
+- workspace inventories, review packets, decision packets, role views, and project history
 
 ### Out of scope
 
 - direct AlphaFold or ColabFold execution
+- AlphaFold 3-specific orchestration or AF3-only output assumptions
 - experimental validation
 - binding affinity prediction
 - immunogenicity prediction
 - definitive biochemical pocket annotation
 - opaque machine-learned ranking models
+- cloud collaboration infrastructure or hidden multi-user state
+- generic PM tooling or enterprise workflow software
+
+## Conservative By Design
+
+This framework is built for exploratory structural analysis of peptide–MHC perturbations. It helps users compare variants, inspect structural contact changes, generate transparent summaries, and formulate follow-up hypotheses.
+
+It does not claim to be:
+
+- a binding affinity predictor
+- an immunogenicity predictor
+- proof of biological mechanism
+- a replacement for wet-lab validation
+- a canonical residue-equivalence system without explicit mapping
+
+In practical terms: this framework is meant to support interpretation, prioritization, and experimental planning, while keeping uncertainty and biological caveats explicit.
 
 ## Input Specification
 

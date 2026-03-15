@@ -1,0 +1,3 @@
+allele_name,mhc_residue_identifier,mhc_residue_name,contact_frequency,num_variants_contacted,peptide_positions_contacted,anchor_contact_frequency,mean_min_distance_to_peptide,signature_status,signature_notes
+HLA-A*02:01,63,ALA,0.5,2,2;9,0.5,3.2,ok,Toy residue contact.
+HLA-B*07:02,63,ALA,1.0,2,2;9,1.0,2.8,ok,Toy residue contact.

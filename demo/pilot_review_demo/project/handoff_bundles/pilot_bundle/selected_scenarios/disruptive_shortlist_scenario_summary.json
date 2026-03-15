@@ -1,0 +1,13 @@
+{
+  "scenario_id": "disruptive_shortlist",
+  "label": "Most disruptive mutants",
+  "ranking_mode": "disruptive_mutations",
+  "num_ranked_variants": 2,
+  "num_panel_rows": 2,
+  "num_alleles_covered": 2,
+  "num_positions_covered": 1,
+  "mean_evidence_coverage": 0.8500000000000001,
+  "uncertainty_levels": [
+    "low"
+  ]
+}

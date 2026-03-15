@@ -1,0 +1,4 @@
+variant_id,allele_name,mutant_peptide,mutated_position,wt_residue,mut_residue,ranking_mode,priority_rank,priority_score,evidence_components_serialized,evidence_coverage_score,structural_support_status,uncertainty_flag,prioritization_notes
+demoB_pos2_A,HLA-B*07:02,GALGFVFTL,2,I,A,disruptive_mutations,1,2.5,delta_total_contacts_vs_wt=-6.000;delta_mean_min_distance_vs_wt=1.400,0.9,available,low,Strong contact loss in B*07:02 toy row.
+demoA_pos2_A,HLA-A*02:01,GALGFVFTL,2,I,A,disruptive_mutations,2,1.8,delta_total_contacts_vs_wt=-3.000;delta_mean_min_distance_vs_wt=0.800,0.8,available,low,Contact loss but weaker than B*07:02 toy row.
+demoA_pos9_F,HLA-A*02:01,GILGFVFTF,9,L,F,allele_discriminating_mutations,1,1.2,cross_allele_contact_divergence=3.000,0.7,available,moderate,Cross-allele divergence in toy demo.

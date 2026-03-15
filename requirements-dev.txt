@@ -1,0 +1,4 @@
+-r requirements.txt
+-r requirements-app.txt
+pytest>=7.0
+build>=1.2

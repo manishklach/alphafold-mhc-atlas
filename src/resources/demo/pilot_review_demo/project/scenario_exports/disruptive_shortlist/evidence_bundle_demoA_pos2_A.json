@@ -1,0 +1,66 @@
+{
+  "variant_id": "demoA_pos2_A",
+  "priority_rows": [
+    {
+      "variant_id": "demoA_pos2_A",
+      "allele_name": "HLA-A*02:01",
+      "mutant_peptide": "GALGFVFTL",
+      "mutated_position": 2,
+      "wt_residue": "I",
+      "mut_residue": "A",
+      "ranking_mode": "disruptive_mutations",
+      "priority_rank": 2,
+      "priority_score": 1.8,
+      "evidence_components_serialized": "delta_total_contacts_vs_wt=-3.000;delta_mean_min_distance_vs_wt=0.800",
+      "evidence_coverage_score": 0.8,
+      "structural_support_status": "available",
+      "uncertainty_flag": "low",
+      "prioritization_notes": "Contact loss but weaker than B*07:02 toy row."
+    }
+  ],
+  "evidence_rows": [],
+  "uncertainty_rows": [
+    {
+      "variant_id": "demoA_pos2_A",
+      "ranking_mode": "disruptive_mutations",
+      "evidence_coverage_score": 0.8,
+      "num_supporting_features": 2,
+      "num_missing_features": 0,
+      "structural_data_present": true,
+      "wt_reference_present": true,
+      "chain_mapping_confident": true,
+      "prediction_complete": true,
+      "uncertainty_level": "low",
+      "uncertainty_reasons_serialized": NaN
+    }
+  ],
+  "summary_rows": [
+    {
+      "variant_id": "demoA_pos2_A",
+      "allele_name": "HLA-A*02:01",
+      "wildtype_peptide": "GILGFVFTL",
+      "mutant_peptide": "GALGFVFTL",
+      "mutated_position": 2,
+      "wt_residue": "I",
+      "mut_residue": "A",
+      "prediction_present": true,
+      "total_peptide_mhc_contacts": 18,
+      "delta_total_contacts_vs_wt": -3,
+      "delta_mean_min_distance_vs_wt": 0.8,
+      "structure_path": "ranked_0.pdb"
+    }
+  ],
+  "panel_rows": [],
+  "cross_allele_rows": [],
+  "review_rows": [],
+  "shortlist_rows": [],
+  "feedback_rows": [],
+  "annotation_rows": [],
+  "ranking_modes": [
+    "disruptive_mutations"
+  ],
+  "notes": [
+    "Evidence bundle is file-backed and reflects existing analysis outputs only.",
+    "Priority scores remain drillable to component evidence rows."
+  ]
+}

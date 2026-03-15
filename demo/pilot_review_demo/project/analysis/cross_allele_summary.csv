@@ -1,0 +1,3 @@
+allele_name,comparison_target,mean_abs_contact_change,notes
+HLA-A*02:01,HLA-B*07:02,2.5,Toy cross-allele comparison.
+HLA-B*07:02,HLA-A*02:01,4.0,Toy cross-allele comparison.

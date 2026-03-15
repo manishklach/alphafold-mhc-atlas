@@ -1,0 +1,2 @@
+hypothesis_id,category,statement,supporting_metrics,supporting_tables,supporting_figures,confidence_level,caveats,status
+h1,anchor_disruption_pattern,Position 2 substitution A appears disruptive in the toy single-allele demo.,delta_total_contacts_vs_wt;delta_mean_min_distance_vs_wt,variant_priority_table.csv,,exploratory,Toy demo only,descriptive

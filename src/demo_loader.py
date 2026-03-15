@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from .resource_paths import repo_or_resource_path
 
-DEMO_ROOT = Path(__file__).resolve().parents[1] / "demo"
+DEMO_ROOT = repo_or_resource_path("demo")
 
 
 def list_demo_projects() -> list[str]:
     if not DEMO_ROOT.exists():
         return []
-    return sorted(path.name for path in DEMO_ROOT.iterdir() if path.is_dir())
+    return sorted(path.name for path in DEMO_ROOT.iterdir() if path.is_dir() and (path / "project").exists())
 
 
 def resolve_demo_project(name: str) -> Path:

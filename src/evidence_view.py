@@ -13,6 +13,10 @@ def build_variant_evidence_bundle(variant_id: str, tables: dict[str, pd.DataFram
     summary_df = tables.get("summary", pd.DataFrame())
     cross_allele_df = tables.get("cross_allele_summary", pd.DataFrame())
     panel_df = tables.get("panel", pd.DataFrame())
+    review_queue_df = tables.get("review_queue", pd.DataFrame())
+    shortlist_df = tables.get("shortlist", pd.DataFrame())
+    feedback_df = tables.get("feedback", pd.DataFrame())
+    annotations_df = tables.get("annotations", pd.DataFrame())
 
     priority_rows = _rows_for_variant(priority_df, variant_id)
     ranking_modes = sorted({row.get("ranking_mode", "") for row in priority_rows if row.get("ranking_mode")})
@@ -24,6 +28,10 @@ def build_variant_evidence_bundle(variant_id: str, tables: dict[str, pd.DataFram
         "summary_rows": _rows_for_variant(summary_df, variant_id),
         "panel_rows": _rows_for_variant(panel_df, variant_id),
         "cross_allele_rows": _rows_for_variant(cross_allele_df, variant_id),
+        "review_rows": _rows_for_variant(review_queue_df, variant_id),
+        "shortlist_rows": _rows_for_variant(shortlist_df, variant_id),
+        "feedback_rows": _rows_for_variant(feedback_df, variant_id),
+        "annotation_rows": _rows_for_variant(annotations_df, variant_id),
         "ranking_modes": ranking_modes,
         "notes": _bundle_notes(priority_rows),
     }

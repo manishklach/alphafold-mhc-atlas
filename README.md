@@ -2,6 +2,8 @@
 
 This repository is a local-workspace-friendly Python framework for peptide-MHC perturbation studies built around AlphaFold or ColabFold outputs.
 
+It is best described as AlphaFold-family compatible analysis tooling, not as an AlphaFold 3-native pipeline. The current code prepares sequence-resolved inputs and analyzes common AlphaFold or ColabFold-style outputs conservatively, but it does not implement an AF3-specific workflow contract.
+
 It is designed for researchers who want more than raw structure predictions: a reproducible way to generate peptide-MHC mutation panels, compare mutants to WT, aggregate effects across alleles, and produce report-ready structural summaries without collapsing everything into an opaque score.
 
 ## Why This Repo Exists
@@ -32,6 +34,9 @@ It started as an input-preparation scaffold and now supports:
 - reporting, publication-bundle export, case studies, and exploratory hypothesis generation
 - transparent variant prioritization, robustness checks, benchmarking hooks, and compact mutation-panel design
 - a local interactive analyst app with scenario analysis, evidence drilldown, demo projects, and scenario exports
+- installable packaging, unified CLI entrypoints, Docker/devcontainer support, and demo-ready onboarding docs
+- pilot-user review workflows with queues, shortlists, feedback capture, checklists, handoff bundles, and session logging
+- multi-project workspace inventories, weekly review packets, role-oriented exports, project history, open questions, and decision packets
 
 The project is intentionally conservative. It does not claim binding affinity prediction, immunogenicity prediction, or experimental validation. Structural summaries are presented as transparent derived features from predicted models.
 
@@ -50,7 +55,14 @@ This is a reproducible peptide-MHC comparative structural analysis framework tha
 - Research-facing pitch language: [docs/PITCH.md](docs/PITCH.md)
 - Abstract text: [docs/ABSTRACT.md](docs/ABSTRACT.md)
 - Slide outline: [docs/SLIDES.md](docs/SLIDES.md)
+- Markdown project story: [docs/PROJECT_STORY.md](docs/PROJECT_STORY.md)
 - HTML pitch and vision page: [docs/project_story.html](docs/project_story.html)
+- Install guide: [INSTALL.md](INSTALL.md)
+- Quickstart: [QUICKSTART.md](QUICKSTART.md)
+- Demo guide: [DEMOS.md](DEMOS.md)
+- CLI guide: [CLI_USAGE.md](CLI_USAGE.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## What This Repo Does
 
@@ -72,14 +84,48 @@ Given one or more class-I HLA alleles and one or more reference peptides, the pi
 14. create and compare deterministic scenarios from existing artifacts without rerunning inference
 15. export scenario-specific tables, markdown summaries, and evidence bundles
 16. export reports, publication tables, figures, notebook-ready files, and case-study subsets
+17. install as a package, launch a unified CLI, and run demos in Docker/devcontainer environments
+18. run pilot-style review workflows with shortlists, annotations, feedback logs, checklists, handoff bundles, and local session traces
+19. define workspaces across multiple projects and generate recurring weekly review packets
+20. export scientist, computational lead, and manager views plus meeting-ready decision packets
 
 ## What This Repo Does Not Do
 
 - it does not run AlphaFold or ColabFold inference itself
+- it is not an AlphaFold 3-specific inference or parsing stack
 - it does not claim binding affinity or immunogenicity prediction
 - it does not treat AlphaFold confidence as biological ground truth
 - it does not assume canonical residue comparability across alleles unless the user supplies a mapping layer
 - it does not generate black-box overall scores and present them as truth
+
+## What It Does Not Claim
+
+Conservative by design
+
+Key points:
+- not a binding affinity predictor
+- not an immunogenicity predictor
+- not proof of mechanism
+- not a substitute for experimental validation
+- residue overlap is not treated as canonical equivalence without explicit mapping
+
+Takeaway:
+The framework is intended for exploratory structural analysis and hypothesis generation.
+
+## What This Framework Is — and Is Not
+
+Conservative by design
+
+This framework is built for exploratory structural analysis of peptide–MHC perturbations. It helps users compare variants, inspect structural contact changes, generate transparent summaries, and formulate follow-up hypotheses.
+
+It does not claim to be:
+- a binding affinity predictor
+- an immunogenicity predictor
+- proof of biological mechanism
+- a replacement for wet-lab validation
+- a canonical residue-equivalence system without explicit mapping
+
+In practical terms: this framework is meant to support interpretation, prioritization, and experimental planning, while keeping uncertainty and biological caveats explicit.
 
 ## Repository Structure
 
@@ -118,29 +164,72 @@ alphafold_mhc_atlas/
 ```bash
 cd C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas
 python -m venv .venv
-.\.venv\Scripts\python -m pip install -r requirements.txt
-.\.venv\Scripts\python -m src.main --config examples/sample_input.yaml
+.\.venv\Scripts\python -m pip install -e .[app,dev]
+mhc-atlas run --config examples/sample_input.yaml
 .\.venv\Scripts\python -m pytest -q
+```
+
+Recommended first-time workflow:
+
+```bash
+mhc-atlas check-environment
+mhc-atlas run --config examples/sample_input.yaml
+mhc-atlas app --demo pilot_review_demo
+```
+
+Pilot workflow example:
+
+```bash
+mhc-atlas review init --project demo/cross_allele_demo/project --scenario disruptive_shortlist
+mhc-atlas review shortlist --project demo/cross_allele_demo/project
+mhc-atlas feedback add --project demo/cross_allele_demo/project --entity-type variant --entity-id demoA_pos2_A --comment "Needs collaborator review"
+mhc-atlas handoff create --project demo/cross_allele_demo/project --bundle-id pilot_bundle --scenario disruptive_shortlist
+```
+
+Workspace workflow example:
+
+```bash
+mhc-atlas workspace inventory --workspace workspaces/demo_workspace.yaml
+mhc-atlas review-packet generate --workspace workspaces/demo_workspace.yaml
+mhc-atlas decision-packet generate --workspace workspaces/demo_workspace.yaml
+mhc-atlas app --workspace workspaces/demo_workspace.yaml
+```
+
+Package install examples:
+
+```bash
+pip install -e .[app,dev]
+pip install .[app]
+pip install .
+```
+
+Requirements fallback:
+
+```bash
+pip install -r requirements.txt
+pip install -r requirements-app.txt
 ```
 
 Primary CLI:
 
 ```bash
-python -m src.main --config examples/sample_input.yaml
+mhc-atlas --help
+mhc-atlas run --config examples/sample_input.yaml
+mhc-atlas validate-config examples/sample_input.yaml
+mhc-atlas inventory outputs/mhc_phase6_demo
+mhc-atlas list-demos
+mhc-atlas app --demo small_project
+mhc-atlas review init --project demo/cross_allele_demo/project --scenario disruptive_shortlist
+mhc-atlas handoff create --project demo/cross_allele_demo/project --bundle-id pilot_bundle --scenario disruptive_shortlist
+mhc-atlas workspace inventory --workspace workspaces/demo_workspace.yaml
+mhc-atlas review-packet generate --workspace workspaces/demo_workspace.yaml
+mhc-atlas role-view export --project demo/pilot_review_demo/project --role manager
 ```
-
-Local HTML UI:
-
-```bash
-python -m src.webapp
-```
-
-Then open [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 Interactive analyst app:
 
 ```bash
-python -m src.app --project outputs/mhc_phase6_demo
+mhc-atlas app --project outputs/mhc_phase6_demo
 ```
 
 Canonical Streamlit launch:
@@ -149,13 +238,47 @@ Canonical Streamlit launch:
 python -m streamlit run src/app.py -- --project outputs/mhc_phase6_demo
 ```
 
+Legacy entrypoints still work:
+
+```bash
+python -m src.main --config examples/sample_input.yaml
+python -m src.app --demo cross_allele_demo
+python -m src.webapp
+```
+
 Demo mode:
 
 ```bash
-python -m src.app --demo cross_allele_demo
-python -m src.app --list-demos
-python -m src.app --list-project-artifacts outputs/mhc_phase6_demo
+mhc-atlas app --demo cross_allele_demo
+mhc-atlas list-demos
+mhc-atlas inventory outputs/mhc_phase6_demo
 ```
+
+## Phase 9: Pilot Workflow And Reviewability
+
+Phase 9 adds a local, auditable reviewer workflow on top of the phase-8 package:
+
+- file-backed review queues and shortlists
+- structured feedback capture with deterministic summaries
+- annotation and note support
+- checklist templates for ranking, panel, and handoff review
+- collaborator handoff bundles with explicit caveats and selected evidence
+- lightweight session/action logging and descriptive review analytics
+
+These pilot artifacts are written under `review/`, `handoff_bundles/`, and `scenario_exports/` inside a project directory. They remain local and transparent; the project does not add a database, cloud sync, or multi-user backend.
+
+## Phase 10: Weekly Decision Review Workflows
+
+Phase 10 adds a program-level layer on top of phase 9:
+
+- multi-project workspaces defined by YAML or JSON
+- project history snapshots and change summaries
+- weekly review packets for projects or workspaces
+- role-oriented exports for scientist, computational lead, and manager review
+- explicit open-question and next-action generation
+- meeting-ready decision packets for recurring team reviews
+
+These outputs are still local-first and file-backed. They are intended to support recurring scientific review cycles, not to replace experimental judgment or to present rankings as validated biology.
 
 ## Minimal Example Config
 
@@ -242,6 +365,16 @@ Phase-7 interactive assets and exports:
 - `scenario_exports/<scenario_id>/`
 - `saved_scenarios/<scenario_id>.json`
 - `analysis/project_inventory.json` when written from the app or CLI
+
+Phase-8 packaging and delivery assets:
+
+- `pyproject.toml`
+- `requirements-app.txt`
+- `requirements-dev.txt`
+- `Dockerfile`
+- `.devcontainer/devcontainer.json`
+- `scripts/check_environment.py`
+- `src/cli.py`
 
 Phase-5 reporting outputs still remain:
 
@@ -446,6 +579,68 @@ App limitations:
 - missing tables or plots are shown as unavailable rather than inferred
 - scenario outputs are analyst filters, not new structural computations
 - selected variants and panels are still exploratory and evidence-linked, not validated biological truths
+
+## Phase 8: Packaging And Distribution
+
+Phase 8 makes the repository installable, easier to launch, and easier to hand to collaborators.
+
+What phase 8 adds:
+
+- `pyproject.toml` packaging
+- `mhc-atlas` console entrypoint
+- install extras for app, test, and dev use
+- Docker and devcontainer support
+- quickstart, install, demo, and CLI docs
+- package resource fallback for demos and scenario templates
+- environment check and demo validation commands
+
+Example install commands:
+
+```bash
+pip install -e .[app,dev]
+pip install .[app]
+pip install .[test]
+```
+
+Example CLI commands:
+
+```bash
+mhc-atlas run --config examples/sample_input.yaml
+mhc-atlas app --demo small_project
+mhc-atlas list-demos
+mhc-atlas inventory demo/cross_allele_demo/project
+mhc-atlas scenario --project outputs/mhc_phase6_demo --template disruptive_shortlist
+mhc-atlas validate-config examples/sample_input.yaml
+mhc-atlas check-environment
+mhc-atlas version
+```
+
+Docker usage:
+
+```bash
+docker build -t mhc-atlas .
+docker run --rm -it -p 8501:8501 -v ${PWD}:/workspace mhc-atlas app --project /workspace/outputs/mhc_phase6_demo --host 0.0.0.0 --port 8501
+```
+
+Devcontainer:
+
+- open the repo in VS Code
+- reopen in container
+- run `pip install -e .[dev,app]` if needed
+- use `mhc-atlas app --demo cross_allele_demo`
+
+Packaging limitations:
+
+- this is still a local-first research package, not a hosted product
+- Docker support is for reproducible local/demo use, not orchestration
+- demo outputs are lightweight and illustrative, not large production datasets
+
+Phase 9 should focus on:
+
+- optional build/release automation
+- stricter packaging checks and CI
+- richer installer validation for cross-platform collaborator setups
+- stronger demo/report screenshots and evaluator-oriented walkthrough assets
 
 ## Testing
 

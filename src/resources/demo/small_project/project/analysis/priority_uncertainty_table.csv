@@ -1,0 +1,3 @@
+variant_id,ranking_mode,evidence_coverage_score,num_supporting_features,num_missing_features,structural_data_present,wt_reference_present,chain_mapping_confident,prediction_complete,uncertainty_level,uncertainty_reasons_serialized
+demoA_pos2_A,disruptive_mutations,0.8,2,0,True,True,True,True,low,
+demoA_pos9_F,tolerated_mutations,0.8,2,0,True,True,True,True,moderate,Missing some optional geometry metrics.

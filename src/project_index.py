@@ -21,6 +21,10 @@ CORE_TABLES = {
     "hypotheses": "analysis/hypotheses.csv",
     "ranking_stability": "analysis/ranking_stability.csv",
     "benchmark_summary": "analysis/benchmark_summary.csv",
+    "review_queue": "review/review_queue.csv",
+    "shortlist": "review/shortlist.csv",
+    "feedback": "review/feedback_log.csv",
+    "annotations": "review/annotations.csv",
 }
 
 
@@ -31,6 +35,9 @@ def build_project_inventory(project_dir: Path) -> dict[str, object]:
     summary_df = safe_read_csv(project_dir / "analysis" / "summary.csv")
     priority_df = safe_read_csv(project_dir / "analysis" / "variant_priority_table.csv")
     panel_df = safe_read_csv(project_dir / "analysis" / "optimized_mutation_panel.csv")
+    review_queue_df = safe_read_csv(project_dir / "review" / "review_queue.csv")
+    shortlist_df = safe_read_csv(project_dir / "review" / "shortlist.csv")
+    feedback_df = safe_read_csv(project_dir / "review" / "feedback_log.csv")
     case_root = project_dir / "case_studies"
 
     tables = {
@@ -48,7 +55,7 @@ def build_project_inventory(project_dir: Path) -> dict[str, object]:
         "project_dir": str(project_dir.resolve()),
         "snapshot": snapshot,
         "report_summary": report_summary,
-        "coverage": _build_coverage(summary_df, priority_df, panel_df),
+        "coverage": _build_coverage(summary_df, priority_df, panel_df, review_queue_df, shortlist_df, feedback_df),
         "tables": tables,
         "plots": plots,
         "case_studies": cases,
@@ -74,7 +81,14 @@ def load_project_report(project_dir: Path) -> str:
     return safe_read_text(project_dir / "analysis" / "report.md")
 
 
-def _build_coverage(summary_df: pd.DataFrame, priority_df: pd.DataFrame, panel_df: pd.DataFrame) -> dict[str, int]:
+def _build_coverage(
+    summary_df: pd.DataFrame,
+    priority_df: pd.DataFrame,
+    panel_df: pd.DataFrame,
+    review_queue_df: pd.DataFrame,
+    shortlist_df: pd.DataFrame,
+    feedback_df: pd.DataFrame,
+) -> dict[str, int]:
     num_variants = int(summary_df["variant_id"].nunique()) if not summary_df.empty and "variant_id" in summary_df.columns else 0
     num_alleles = int(summary_df["allele_name"].nunique()) if not summary_df.empty and "allele_name" in summary_df.columns else 0
     prediction_coverage = (
@@ -94,6 +108,9 @@ def _build_coverage(summary_df: pd.DataFrame, priority_df: pd.DataFrame, panel_d
         "structural_coverage": structural_coverage,
         "prioritization_rows": int(len(priority_df)),
         "panel_rows": int(len(panel_df)),
+        "review_queue_rows": int(len(review_queue_df)),
+        "shortlist_rows": int(len(shortlist_df)),
+        "feedback_rows": int(len(feedback_df)),
     }
 
 
@@ -103,6 +120,8 @@ def _available_modules(tables: dict[str, dict[str, object]], plots: list[str], c
         modules.append("prioritization")
     if tables["panel"]["exists"]:
         modules.append("panel_design")
+    if tables["review_queue"]["exists"] or tables["feedback"]["exists"]:
+        modules.append("pilot_review")
     if tables["cross_allele_summary"]["exists"] or tables["allele_tolerance"]["exists"]:
         modules.append("cross_allele")
     if tables["hypotheses"]["exists"]:

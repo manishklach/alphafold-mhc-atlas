@@ -58,6 +58,7 @@ Implemented:
 
 Conservative limits:
 
+- not an AlphaFold 3-specific pipeline contract
 - no built-in remote inference submission
 - no scheduler or job orchestration layer
 
@@ -117,6 +118,42 @@ Implemented:
 - allele position and substitution fingerprints
 
 Conservative limits:
+
+## 15. Pilot Workflows and Reviewability
+
+Implemented:
+
+- file-backed review queues
+- shortlist and rejection artifacts
+- structured feedback capture and summaries
+- local annotations and markdown notes
+- checklist templates and checklist-run exports
+- collaborator handoff bundles
+- local session and action logging
+- descriptive review analytics
+
+Conservative limits:
+
+- no cloud collaboration backend
+- no hidden database state
+- reviewer input is not treated as scientific validation
+
+## 16. Weekly Decision Review Workflows
+
+Implemented:
+
+- multi-project workspace configs and inventory exports
+- project history snapshots and change summaries
+- weekly review packets for projects and workspaces
+- scientist, comp-lead, and manager role views
+- next-action and open-question tables
+- meeting-ready decision packets
+
+Conservative limits:
+
+- no cloud PM or enterprise workflow stack
+- role views are summaries, not different scientific truths
+- meeting packets are not validation artifacts
 
 - no opaque learned composite score
 - no ranking presented as biological truth

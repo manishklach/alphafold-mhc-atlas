@@ -1,0 +1,3 @@
+allele_name,mean_abs_delta_total_contacts_vs_wt,mean_delta_mean_min_distance_vs_wt,fraction_contact_loss_mutants
+HLA-A*02:01,2.0,0.3,0.5
+HLA-B*07:02,4.0,0.9,1.0

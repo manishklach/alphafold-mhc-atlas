@@ -1,0 +1,2 @@
+entity_type,entity_id,action_type,priority_level,rationale,supporting_artifacts,owner_role_suggestion,status
+variant,demoB_pos2_A,review_in_meeting,high,Shortlisted item should be reviewed in the next decision meeting.,review/shortlist.csv,manager,open

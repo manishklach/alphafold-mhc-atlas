@@ -1,0 +1,103 @@
+{
+  "variant_id": "demoB_pos2_A",
+  "priority_rows": [
+    {
+      "variant_id": "demoB_pos2_A",
+      "allele_name": "HLA-B*07:02",
+      "mutant_peptide": "GALGFVFTL",
+      "mutated_position": 2,
+      "wt_residue": "I",
+      "mut_residue": "A",
+      "ranking_mode": "disruptive_mutations",
+      "priority_rank": 1,
+      "priority_score": 2.5,
+      "evidence_components_serialized": "delta_total_contacts_vs_wt=-6.000;delta_mean_min_distance_vs_wt=1.400",
+      "evidence_coverage_score": 0.9,
+      "structural_support_status": "available",
+      "uncertainty_flag": "low",
+      "prioritization_notes": "Strong contact loss in B*07:02 toy row."
+    }
+  ],
+  "evidence_rows": [
+    {
+      "variant_id": "demoB_pos2_A",
+      "ranking_mode": "disruptive_mutations",
+      "evidence_name": "delta_total_contacts_vs_wt",
+      "evidence_value": -6.0,
+      "evidence_direction": "higher_is_more_disruptive",
+      "evidence_weight": -1.0,
+      "evidence_status": "ok",
+      "notes": "Large WT-relative contact loss."
+    },
+    {
+      "variant_id": "demoB_pos2_A",
+      "ranking_mode": "disruptive_mutations",
+      "evidence_name": "delta_mean_min_distance_vs_wt",
+      "evidence_value": 1.4,
+      "evidence_direction": "higher_is_more_disruptive",
+      "evidence_weight": 0.75,
+      "evidence_status": "ok",
+      "notes": "Distance increase in toy row."
+    }
+  ],
+  "uncertainty_rows": [
+    {
+      "variant_id": "demoB_pos2_A",
+      "ranking_mode": "disruptive_mutations",
+      "evidence_coverage_score": 0.9,
+      "num_supporting_features": 2,
+      "num_missing_features": 0,
+      "structural_data_present": true,
+      "wt_reference_present": true,
+      "chain_mapping_confident": true,
+      "prediction_complete": true,
+      "uncertainty_level": "low",
+      "uncertainty_reasons_serialized": NaN
+    }
+  ],
+  "summary_rows": [
+    {
+      "variant_id": "demoB_pos2_A",
+      "allele_name": "HLA-B*07:02",
+      "wildtype_peptide": "GILGFVFTL",
+      "mutant_peptide": "GALGFVFTL",
+      "mutated_position": 2,
+      "wt_residue": "I",
+      "mut_residue": "A",
+      "prediction_present": true,
+      "total_peptide_mhc_contacts": 12,
+      "delta_total_contacts_vs_wt": -6,
+      "delta_mean_min_distance_vs_wt": 1.4,
+      "structure_path": "ranked_0.pdb"
+    }
+  ],
+  "panel_rows": [
+    {
+      "panel_id": "top_disruptive_panel",
+      "ranking_goal": "disruptive_mutations",
+      "variant_id": "demoB_pos2_A",
+      "allele_name": "HLA-B*07:02",
+      "mutant_peptide": "GALGFVFTL",
+      "mutated_position": 2,
+      "substitution": "A",
+      "selection_reason": "Selected as top disruptive toy row.",
+      "supporting_metrics_serialized": "delta_total_contacts_vs_wt=-6;delta_mean_min_distance_vs_wt=1.4",
+      "redundancy_penalty": 0.0,
+      "evidence_coverage_score": 0.9,
+      "uncertainty_level": "low",
+      "mean_priority_score": 2.5
+    }
+  ],
+  "cross_allele_rows": [],
+  "review_rows": [],
+  "shortlist_rows": [],
+  "feedback_rows": [],
+  "annotation_rows": [],
+  "ranking_modes": [
+    "disruptive_mutations"
+  ],
+  "notes": [
+    "Evidence bundle is file-backed and reflects existing analysis outputs only.",
+    "Priority scores remain drillable to component evidence rows."
+  ]
+}

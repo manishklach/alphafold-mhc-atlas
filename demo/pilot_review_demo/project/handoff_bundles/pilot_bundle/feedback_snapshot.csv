@@ -1,0 +1,2 @@
+entity_type,entity_id,reviewer_name,reviewer_role,sentiment,usefulness_rating,clarity_rating,confidence_in_output,concern_type,free_text_comment,requested_followup,status,feedback_id,timestamp
+variant,demoA_pos2_A,pilot_user,collaborator,mixed,3,3,moderate,biological_caveat,Interesting but caveat-heavy,Discuss shortlist rationale,open,fb_2b305e0836,2026-03-15T05:57:21.383129+00:00
