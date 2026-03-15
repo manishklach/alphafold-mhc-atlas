@@ -11,7 +11,7 @@
     <rect x="670" y="96" width="170" height="110" rx="20" fill="#fffaf2" stroke="#d4c4aa"/>
     <text x="716" y="142">Role</text><text x="710" y="168">Views</text>
     <rect x="880" y="96" width="170" height="110" rx="20" fill="#fffaf2" stroke="#d4c4aa"/>
-    <text x="907" y="142">Shortlist</text><text x="915" y="168">& Actions</text>
+    <text x="907" y="142">Shortlist</text><text x="900" y="168">and Actions</text>
     <rect x="1090" y="96" width="220" height="110" rx="20" fill="#1d7b71" stroke="#145c55"/>
     <text x="1149" y="142" fill="#fff">Decision</text><text x="1160" y="168" fill="#fff">Packet</text>
   </g>
