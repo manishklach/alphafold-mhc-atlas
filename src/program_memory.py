@@ -7,7 +7,12 @@ import pandas as pd
 
 from .data_access import safe_read_csv, safe_read_text
 from .decision_history import build_decision_history
+from .multicycle_history import summarize_multicycle_history
+from .outcomes import summarize_outcomes
 from .recurring_patterns import build_recurring_patterns
+from .rationale_tracking import build_rationale_tracking
+from .template_effectiveness import summarize_template_effectiveness
+from .workflow_metrics import summarize_workflow_metrics
 from .workspace import WorkspaceConfig, load_workspace_config
 from .workspace_index import build_workspace_inventory
 
@@ -21,10 +26,18 @@ def build_program_memory(workspace: WorkspaceConfig | str | Path) -> dict[str, P
     inventory = build_workspace_inventory(config)
     decision_outputs = build_decision_history(config)
     pattern_outputs = build_recurring_patterns(config)
+    multicycle_outputs = summarize_multicycle_history(config)
+    rationale_outputs = build_rationale_tracking(config)
+    outcome_outputs = summarize_outcomes(config)
+    metric_outputs = summarize_workflow_metrics(config)
+    template_outputs = summarize_template_effectiveness(config)
 
     lineage_df = safe_read_csv(decision_outputs["decision_lineage.csv"])
     unresolved_df = safe_read_csv(decision_outputs["unresolved_questions.csv"])
     recurring_patterns_df = safe_read_csv(pattern_outputs["recurring_patterns.csv"])
+    multicycle_df = safe_read_csv(multicycle_outputs["multicycle_decision_summary.csv"])
+    outcome_df = safe_read_csv(outcome_outputs["outcomes_log.csv"])
+    template_df = safe_read_csv(template_outputs["template_effectiveness_summary.csv"])
 
     recurring_actions_df = _build_workspace_recurring_actions(config)
     attention_queue_df = _build_attention_queue(config, unresolved_df)
@@ -37,6 +50,8 @@ def build_program_memory(workspace: WorkspaceConfig | str | Path) -> dict[str, P
         f"- Decision lineage rows: {len(lineage_df)}",
         f"- Unresolved questions: {len(unresolved_df)}",
         f"- Recurring pattern rows: {len(recurring_patterns_df)}",
+        f"- Multi-cycle tracked items: {len(multicycle_df)}",
+        f"- Outcome records: {len(outcome_df)}",
         "",
         "## Top Recurring Themes",
         "",
@@ -52,6 +67,14 @@ def build_program_memory(workspace: WorkspaceConfig | str | Path) -> dict[str, P
     else:
         for row in attention_queue_df.head(10).to_dict(orient="records"):
             summary_lines.append(f"- `{row['project_id']}`: {row['reason']}")
+    summary_lines.extend(["", "## Workflow Learning Signals", ""])
+    if template_df.empty:
+        summary_lines.append("- No template-effectiveness summary was available yet.")
+    else:
+        for row in template_df.head(5).to_dict(orient="records"):
+            summary_lines.append(
+                f"- `{row['template_name']}`: average unresolved carry-forward {row['avg_unresolved_carryforward']:.2f} across {int(row['num_cycles_used'])} cycle(s)."
+            )
 
     summary_path = memory_dir / "workspace_memory_summary.md"
     summary_path.write_text("\n".join(summary_lines), encoding="utf-8")
@@ -66,6 +89,11 @@ def build_program_memory(workspace: WorkspaceConfig | str | Path) -> dict[str, P
         "summary": inventory["summary"],
         "decision_outputs": {key: str(value) for key, value in decision_outputs.items()},
         "pattern_outputs": {key: str(value) for key, value in pattern_outputs.items()},
+        "multicycle_outputs": {key: str(value) for key, value in multicycle_outputs.items()},
+        "rationale_outputs": {key: str(value) for key, value in rationale_outputs.items()},
+        "outcome_outputs": {key: str(value) for key, value in outcome_outputs.items()},
+        "metric_outputs": {key: str(value) for key, value in metric_outputs.items()},
+        "template_outputs": {key: str(value) for key, value in template_outputs.items()},
         "workspace_memory_summary": str(summary_path),
     }
     memory_json_path = memory_dir / "program_memory.json"
@@ -79,6 +107,11 @@ def build_program_memory(workspace: WorkspaceConfig | str | Path) -> dict[str, P
         "workspace_attention_queue.csv": attention_queue_path,
         **decision_outputs,
         **pattern_outputs,
+        **multicycle_outputs,
+        **rationale_outputs,
+        **outcome_outputs,
+        **metric_outputs,
+        **template_outputs,
     }
 
 

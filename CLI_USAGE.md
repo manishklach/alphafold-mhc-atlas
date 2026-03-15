@@ -1,8 +1,8 @@
 # CLI Usage
 
-## Phase 11 additions
+## Phase 12 additions
 
-Program-memory and reusable workflow commands:
+Program-memory, outcome-integration, and reusable workflow commands:
 
 ```bash
 mhc-atlas workflow-template list
@@ -10,6 +10,12 @@ mhc-atlas workflow-template show --name weekly_mutation_review
 mhc-atlas history summarize --workspace workspaces/demo_workspace.yaml
 mhc-atlas review-cycle compare --workspace workspaces/demo_workspace.yaml --current week_2 --previous week_1
 mhc-atlas decision-history build --workspace workspaces/demo_workspace.yaml
+mhc-atlas outcomes import --workspace workspaces/demo_workspace.yaml --file data/outcome_templates.csv
+mhc-atlas outcomes summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas multicycle summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas rationale summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas workflow-metrics summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas template-effectiveness summarize --workspace workspaces/demo_workspace.yaml
 ```
 
 ## First evaluator workflow
@@ -61,3 +67,9 @@ mhc-atlas role-view export --project demo/pilot_review_demo/project --role manag
 mhc-atlas changes summarize --project demo/pilot_review_demo/project
 mhc-atlas next-actions build --project demo/pilot_review_demo/project
 ```
+
+## Conservative outcome-integration notes
+
+- Outcome imports are contextual evidence, not relabeling of model truth.
+- Template-effectiveness summaries are operational associations, not causal proof.
+- Multi-cycle churn and closure metrics should be read as workflow signals, not biological validation.

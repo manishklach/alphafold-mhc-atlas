@@ -1,15 +1,18 @@
 # Pilot Workflow
 
-## Phase 11 extension
+## Phase 12 extension
 
-The pilot workflow now supports reusable workflow templates and program memory across recurring review cycles.
+The pilot workflow now supports reusable workflow templates, program memory, optional downstream outcomes, and conservative workflow-learning summaries across recurring review cycles.
 
 That means a team can:
 
 - reuse the same weekly review pattern across projects
 - compare current and previous review cycles
+- compare multiple review cycles, not just current versus previous
 - see what was carried forward, resolved, or dropped
 - surface recurring open questions and recurring review issues across a workspace
+- attach downstream outcome context without relabeling the model as right or wrong
+- inspect whether a workflow template is associated with lower unresolved carry-forward or lower churn
 
 ## Core workflow
 
@@ -20,6 +23,8 @@ That means a team can:
 5. Review open questions and next actions
 6. Generate a weekly review packet
 7. Export a manager-facing decision packet if needed
+8. Import downstream outcomes if follow-up happened
+9. Inspect multi-cycle history, rationale carry-forward, and workflow-effectiveness summaries
 
 ## Why this workflow exists
 
@@ -43,4 +48,6 @@ with a more reproducible, evidence-linked decision process.
 mhc-atlas app --workspace demo/golden_weekly_review_demo/workspace.yaml
 mhc-atlas review-packet generate --workspace demo/golden_weekly_review_demo/workspace.yaml --packet-id golden_demo
 mhc-atlas decision-packet generate --workspace demo/golden_weekly_review_demo/workspace.yaml --packet-id golden_manager_demo
+mhc-atlas outcomes summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas template-effectiveness summarize --workspace workspaces/demo_workspace.yaml
 ```

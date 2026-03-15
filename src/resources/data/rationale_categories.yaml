@@ -1,0 +1,23 @@
+categories:
+  stronger_evidence:
+    keywords: ["stronger evidence", "more support", "supported"]
+  insufficient_evidence:
+    keywords: ["insufficient", "uncertain", "weak support", "missing support"]
+  scenario_shift:
+    keywords: ["scenario", "scope shift", "review focus"]
+  cross_allele_difference:
+    keywords: ["cross-allele", "allele difference", "divergence"]
+  robustness_concern:
+    keywords: ["robustness", "unstable", "sensitivity"]
+  manager_priority:
+    keywords: ["manager", "escalation", "priority"]
+  panel_diversity_need:
+    keywords: ["diversity", "coverage", "panel"]
+  external_feedback:
+    keywords: ["feedback", "external", "reviewer"]
+  outcome_followup:
+    keywords: ["follow-up", "tested", "outcome"]
+  unresolved_question:
+    keywords: ["unresolved", "open question"]
+  other:
+    keywords: []

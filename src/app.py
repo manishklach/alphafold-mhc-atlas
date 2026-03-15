@@ -20,12 +20,15 @@ from src.decision_history import build_decision_history
 from src.feedback import add_feedback, summarize_feedback
 from src.feedback_schema import FeedbackEntry
 from src.handoff_bundle import create_handoff_bundle
+from src.multicycle_history import summarize_multicycle_history
 from src.next_actions import build_next_actions
 from src.open_questions import build_open_questions
+from src.outcomes import summarize_outcomes
 from src.pilot_workflow import build_review_analytics, initialize_pilot_workflow
 from src.program_memory import build_program_memory
 from src.project_history import build_project_history
 from src.project_index import build_project_inventory, load_project_report, load_project_tables, write_project_inventory
+from src.rationale_tracking import build_rationale_tracking
 from src.review_packet import generate_workspace_review_packet
 from src.review_queue import create_review_queue_from_scenario, update_review_item
 from src.review_cycles import compare_review_cycles, summarize_review_cycles
@@ -43,7 +46,9 @@ from src.scenario_state import ScenarioState, load_scenario_state, save_scenario
 from src.scope_text import brief_scope_markdown, expanded_scope_markdown
 from src.session_logging import log_session_action, start_session
 from src.shortlist import refresh_shortlists
+from src.template_effectiveness import summarize_template_effectiveness
 from src.version import __version__
+from src.workflow_metrics import summarize_workflow_metrics
 from src.workspace import load_workspace_config
 from src.workspace_index import build_workspace_inventory, write_workspace_inventory
 from src.workflow_templates import load_workflow_templates
@@ -733,6 +738,11 @@ def render_workspace_app(st, workspace_config) -> None:
             "Project Portfolio",
             "Program Memory",
             "Decision Lineage",
+            "Multi-Cycle History",
+            "Outcomes",
+            "Rationale Lineage",
+            "Template Effectiveness",
+            "Workflow Metrics",
             "Review Cycles",
             "Recurring Questions",
             "Workflow Templates",
@@ -784,6 +794,42 @@ def render_workspace_app(st, workspace_config) -> None:
         st.text(safe_read_text(outputs["workspace_memory_summary.md"]))
         st.subheader("Attention Queue")
         st.dataframe(preview_table(safe_read_csv(outputs["workspace_attention_queue.csv"]), 200), use_container_width=True)
+    elif page == "Multi-Cycle History":
+        outputs = summarize_multicycle_history(workspace_config)
+        st.subheader("Multi-Cycle Decision Summary")
+        st.dataframe(preview_table(safe_read_csv(outputs["multicycle_decision_summary.csv"]), 200), use_container_width=True)
+        st.subheader("Stable Shortlist Items")
+        st.dataframe(preview_table(safe_read_csv(outputs["stable_shortlist_items.csv"]), 200), use_container_width=True)
+        st.subheader("Repeatedly Unresolved Items")
+        st.dataframe(preview_table(safe_read_csv(outputs["repeatedly_unresolved_items.csv"]), 200), use_container_width=True)
+        st.text(safe_read_text(outputs["multicycle_change_digest.md"]))
+    elif page == "Outcomes":
+        outputs = summarize_outcomes(workspace_config)
+        st.subheader("Outcome Summary")
+        st.dataframe(preview_table(safe_read_csv(outputs["outcomes_summary.csv"]), 200), use_container_width=True)
+        st.subheader("Outcome-Aware Decision Summary")
+        st.dataframe(preview_table(safe_read_csv(outputs["outcome_aware_decision_summary.csv"]), 200), use_container_width=True)
+        st.text(safe_read_text(outputs["outcome_digest.md"]))
+    elif page == "Rationale Lineage":
+        outputs = build_rationale_tracking(workspace_config)
+        st.subheader("Rationale Lineage")
+        st.dataframe(preview_table(safe_read_csv(outputs["rationale_lineage.csv"]), 200), use_container_width=True)
+        st.subheader("Rationale Changes")
+        st.dataframe(preview_table(safe_read_csv(outputs["rationale_change_log.csv"]), 200), use_container_width=True)
+    elif page == "Template Effectiveness":
+        outputs = summarize_template_effectiveness(workspace_config)
+        st.subheader("Template Effectiveness")
+        st.dataframe(preview_table(safe_read_csv(outputs["template_effectiveness_summary.csv"]), 200), use_container_width=True)
+        st.subheader("Effectiveness by Cycle")
+        st.dataframe(preview_table(safe_read_csv(outputs["template_effectiveness_by_cycle.csv"]), 200), use_container_width=True)
+        st.text(safe_read_text(outputs["workflow_effectiveness_digest.md"]))
+    elif page == "Workflow Metrics":
+        outputs = summarize_workflow_metrics(workspace_config)
+        st.subheader("Workflow Metrics")
+        st.dataframe(preview_table(safe_read_csv(outputs["workflow_metrics.csv"]), 200), use_container_width=True)
+        st.subheader("Cycle Operational Metrics")
+        st.dataframe(preview_table(safe_read_csv(outputs["cycle_operational_metrics.csv"]), 200), use_container_width=True)
+        st.text(safe_read_text(outputs["closure_summary.md"]))
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)
         st.subheader("Decision Lineage")

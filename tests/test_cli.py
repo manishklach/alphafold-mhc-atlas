@@ -85,3 +85,51 @@ def test_cli_workspace_and_packets(capsys) -> None:
     assert cli.main(["decision-packet", "generate", "--workspace", "workspaces/demo_workspace.yaml", "--packet-id", "cli_decision"]) == 0
     decision_path = Path(capsys.readouterr().out.strip())
     assert decision_path.exists()
+
+
+def test_cli_phase12_workspace_commands(tmp_path: Path, capsys) -> None:
+    source = Path("demo/cross_allele_demo/project")
+    project = tmp_path / "project"
+    shutil.copytree(source, project)
+    workspace = tmp_path / "workspace.yaml"
+    workspace.write_text(
+        "\n".join(
+            [
+                "workspace:",
+                "  workspace_id: ws_1",
+                "  name: Test Workspace",
+                "  description: Test",
+                f"  output_dir: \"{(tmp_path / 'workspace_outputs').as_posix()}\"",
+                "  projects:",
+                "    - id: proj_a",
+                f"      path: \"{project.as_posix()}\"",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    outcome_file = tmp_path / "outcomes.csv"
+    outcome_file.write_text(
+        "\n".join(
+            [
+                "outcome_id,entity_type,entity_id,project_id,workspace_id,cycle_id,outcome_class,outcome_source,outcome_timestamp,outcome_notes,linked_artifacts,reviewer_or_owner,confidence_in_outcome_context,not_model_truth_flag",
+                "o1,shortlist_item,demoA_pos2_A,proj_a,ws_1,week_2,tested_followup,internal_review,2026-01-15T00:00:00+00:00,Example only,review/shortlist.csv,scientist,moderate,true",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["outcomes", "import", "--workspace", str(workspace), "--file", str(outcome_file)]) == 0
+    import_path = Path(capsys.readouterr().out.strip())
+    assert import_path.exists()
+    assert cli.main(["multicycle", "summarize", "--workspace", str(workspace)]) == 0
+    multicycle_payload = json.loads(capsys.readouterr().out)
+    assert "multicycle_decision_summary.csv" in multicycle_payload
+    assert cli.main(["rationale", "summarize", "--workspace", str(workspace)]) == 0
+    rationale_payload = json.loads(capsys.readouterr().out)
+    assert "rationale_lineage.csv" in rationale_payload
+    assert cli.main(["workflow-metrics", "summarize", "--workspace", str(workspace)]) == 0
+    metrics_payload = json.loads(capsys.readouterr().out)
+    assert "workflow_metrics.csv" in metrics_payload
+    assert cli.main(["template-effectiveness", "summarize", "--workspace", str(workspace)]) == 0
+    effectiveness_payload = json.loads(capsys.readouterr().out)
+    assert "template_effectiveness_summary.csv" in effectiveness_payload

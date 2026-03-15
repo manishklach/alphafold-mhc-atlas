@@ -1,0 +1,25 @@
+allowed_outcome_classes:
+  - tested_followup
+  - deprioritized
+  - pending_followup
+  - inconclusive
+  - externally_reviewed
+  - wet_lab_supported
+  - wet_lab_not_supported
+  - needs_more_context
+  - decision_reversed
+  - archived_without_followup
+
+allowed_confidence_in_outcome_context:
+  - low
+  - moderate
+  - high
+
+required_columns:
+  - outcome_id
+  - entity_type
+  - entity_id
+  - outcome_class
+  - outcome_source
+  - outcome_timestamp
+  - not_model_truth_flag

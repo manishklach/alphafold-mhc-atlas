@@ -66,6 +66,7 @@ It started as an input-preparation scaffold and now supports:
 - pilot-user review workflows with queues, shortlists, feedback capture, checklists, handoff bundles, and session logging
 - multi-project workspace inventories, weekly review packets, role-oriented exports, project history, open questions, and decision packets
 - program memory, decision lineage, recurring-question summaries, reusable workflow templates, and review-cycle comparisons across workspaces
+- multi-cycle decision summaries, optional downstream outcome tracking, rationale carry-forward, and conservative workflow-effectiveness summaries
 
 The project is intentionally conservative. It does not claim binding affinity prediction, immunogenicity prediction, or experimental validation. Structural summaries are presented as transparent derived features from predicted models.
 
@@ -169,6 +170,57 @@ The new memory layer is for questions like:
 
 This is still file-backed and conservative. Memory summaries are derived from existing review artifacts, not from hidden state or implied scientific validation.
 
+## Phase 12: Outcomes And Conservative Workflow Learning
+
+Phase 12 extends program memory into a closed-loop review-learning layer without turning the repo into a predictor-training system.
+
+What it adds:
+
+- multi-cycle comparison across 3 or more review cycles
+- optional downstream or experimental follow-up outcome logging
+- rationale carry-forward summaries for promotions, drops, and unresolved items
+- workflow-template effectiveness summaries based on operational metrics
+- conservative learning digests that stay descriptive and evidence-linked
+
+What it does not do:
+
+- it does not retrain or auto-adjust rankings from outcomes
+- it does not relabel outcomes as model truth
+- it does not claim causal proof from template-effectiveness metrics
+- it does not turn closure metrics into scientific validation
+
+Useful Phase 12 commands:
+
+```bash
+mhc-atlas outcomes import --workspace workspaces/demo_workspace.yaml --file data/outcome_templates.csv
+mhc-atlas outcomes summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas multicycle summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas rationale summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas workflow-metrics summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas template-effectiveness summarize --workspace workspaces/demo_workspace.yaml
+```
+
+Example outcome row:
+
+```csv
+outcome_id,entity_type,entity_id,project_id,workspace_id,cycle_id,outcome_class,outcome_source,outcome_timestamp,outcome_notes,linked_artifacts,reviewer_or_owner,confidence_in_outcome_context,not_model_truth_flag
+demo_outcome_001,variant,demoA_pos2_A,proj_a,pilot_workspace_01,week_2,tested_followup,internal_review,2026-01-15T00:00:00+00:00,Follow-up initiated,review/shortlist.csv,scientist,moderate,true
+```
+
+Example rationale lineage row:
+
+```csv
+entity_type,entity_id,project_id,workspace_id,cycle_id,prior_cycle_id,decision_status,rationale_text,rationale_category,carry_forward_reason,changed_from_prior_flag,notes
+shortlist_item,demoA_pos2_A,proj_a,pilot_workspace_01,week_2,week_1,shortlisted,stronger evidence after review,stronger_evidence,review in meeting,true,Decision status carried forward with updated or repeated rationale.
+```
+
+Example template-effectiveness summary row:
+
+```csv
+template_name,num_cycles_used,num_projects_used,avg_unresolved_carryforward,avg_churn_score,avg_open_questions_resolved,avg_next_action_closure_rate,effectiveness_notes,data_quality_notes
+weekly_mutation_review,3,3,0.42,0.18,0.33,0.51,Associational operational summary only; lower unresolved carry-forward does not prove better biology.,Partial timestamps, sparse outcomes, and missing review artifacts are handled conservatively.
+```
+
 ## Workflow Templates
 
 Workflow templates are reusable operating patterns for recurring team review.
@@ -190,6 +242,8 @@ mhc-atlas workflow-template show --name weekly_mutation_review
 mhc-atlas history summarize --workspace workspaces/demo_workspace.yaml
 mhc-atlas review-cycle compare --workspace workspaces/demo_workspace.yaml --current week_2 --previous week_1
 mhc-atlas decision-history build --workspace workspaces/demo_workspace.yaml
+mhc-atlas multicycle summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas template-effectiveness summarize --workspace workspaces/demo_workspace.yaml
 ```
 
 ## What This Repo Does Not Do
@@ -368,6 +422,15 @@ mhc-atlas workspace inventory --workspace workspaces/demo_workspace.yaml
 mhc-atlas review-packet generate --workspace workspaces/demo_workspace.yaml
 mhc-atlas decision-packet generate --workspace workspaces/demo_workspace.yaml
 mhc-atlas app --workspace workspaces/demo_workspace.yaml
+```
+
+Closed-loop review workflow example:
+
+```bash
+mhc-atlas outcomes import --workspace workspaces/demo_workspace.yaml --file data/outcome_templates.csv
+mhc-atlas multicycle summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas rationale summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas template-effectiveness summarize --workspace workspaces/demo_workspace.yaml
 ```
 
 Golden demo workflow example:
@@ -559,6 +622,20 @@ Phase-8 packaging and delivery assets:
 - `.devcontainer/devcontainer.json`
 - `scripts/check_environment.py`
 - `src/cli.py`
+
+Phase-12 review-learning assets:
+
+- `data/outcome_schema.yaml`
+- `data/outcome_templates.csv`
+- `data/rationale_categories.yaml`
+- `analysis/` and `program_memory/` summaries for:
+  - `multicycle_decision_summary.csv`
+  - `decision_churn.csv`
+  - `outcomes_log.csv`
+  - `outcomes_summary.csv`
+  - `rationale_lineage.csv`
+  - `template_effectiveness_summary.csv`
+  - `workflow_metrics.csv`
 
 Phase-5 reporting outputs still remain:
 
@@ -825,6 +902,13 @@ Phase 9 should focus on:
 - stricter packaging checks and CI
 - richer installer validation for cross-platform collaborator setups
 - stronger demo/report screenshots and evaluator-oriented walkthrough assets
+
+Phase 13 should focus on:
+
+- explicit review-round outcome windows across longer programs
+- richer reviewer rationale quality checks and merge comparisons
+- more disciplined outcome-source provenance and external follow-up linkage
+- better cross-workspace reuse of workflow patterns without hiding evidence granularity
 
 ## Testing
 

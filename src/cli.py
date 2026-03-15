@@ -17,11 +17,14 @@ from .feedback import add_feedback
 from .feedback_schema import FeedbackEntry
 from .handoff_bundle import create_handoff_bundle
 from .main import main as pipeline_main
+from .multicycle_history import summarize_multicycle_history
 from .next_actions import build_next_actions
+from .outcomes import import_outcomes, summarize_outcomes
 from .pilot_workflow import build_review_analytics, initialize_pilot_workflow
 from .program_memory import build_program_memory
 from .project_history import build_project_history
 from .project_index import build_project_inventory, load_project_tables, write_project_inventory
+from .rationale_tracking import build_rationale_tracking
 from .review_packet import generate_project_review_packet, generate_workspace_review_packet
 from .review_queue import create_review_queue_from_scenario
 from .review_cycles import compare_review_cycles, summarize_review_cycles
@@ -31,7 +34,9 @@ from .role_views import export_role_views
 from .scenario_analysis import build_evidence_exports, compare_scenarios, export_scenario_comparison, export_scenario_result, run_scenario_analysis
 from .scenario_state import ScenarioState, load_scenario_state, save_scenario_state
 from .shortlist import refresh_shortlists
+from .template_effectiveness import summarize_template_effectiveness
 from .version import PACKAGE_NAME, __version__
+from .workflow_metrics import summarize_workflow_metrics
 from .workspace import load_workspace_config
 from .workspace_index import build_workspace_inventory, write_workspace_inventory
 from .app import load_scenario_templates
@@ -194,6 +199,34 @@ def build_parser() -> argparse.ArgumentParser:
     decision_history_sub = decision_history.add_subparsers(dest="decision_history_command", required=True)
     decision_history_build = decision_history_sub.add_parser("build", help="Build workspace decision lineage outputs.")
     decision_history_build.add_argument("--workspace", required=True)
+
+    outcomes_parser = subparsers.add_parser("outcomes", help="Outcome integration commands.")
+    outcomes_sub = outcomes_parser.add_subparsers(dest="outcomes_command", required=True)
+    outcomes_import = outcomes_sub.add_parser("import", help="Import downstream outcomes into workspace memory.")
+    outcomes_import.add_argument("--workspace", required=True)
+    outcomes_import.add_argument("--file", required=True)
+    outcomes_summary = outcomes_sub.add_parser("summarize", help="Summarize imported downstream outcomes.")
+    outcomes_summary.add_argument("--workspace", required=True)
+
+    multicycle_parser = subparsers.add_parser("multicycle", help="Multi-cycle decision history commands.")
+    multicycle_sub = multicycle_parser.add_subparsers(dest="multicycle_command", required=True)
+    multicycle_summary = multicycle_sub.add_parser("summarize", help="Build multi-cycle decision summaries.")
+    multicycle_summary.add_argument("--workspace", required=True)
+
+    template_effectiveness = subparsers.add_parser("template-effectiveness", help="Workflow-template effectiveness commands.")
+    template_effectiveness_sub = template_effectiveness.add_subparsers(dest="template_effectiveness_command", required=True)
+    template_effectiveness_summary = template_effectiveness_sub.add_parser("summarize", help="Summarize operational workflow-template associations.")
+    template_effectiveness_summary.add_argument("--workspace", required=True)
+
+    rationale = subparsers.add_parser("rationale", help="Rationale carry-forward commands.")
+    rationale_sub = rationale.add_subparsers(dest="rationale_command", required=True)
+    rationale_summary = rationale_sub.add_parser("summarize", help="Build rationale lineage and rationale-change summaries.")
+    rationale_summary.add_argument("--workspace", required=True)
+
+    workflow_metrics = subparsers.add_parser("workflow-metrics", help="Operational workflow metrics commands.")
+    workflow_metrics_sub = workflow_metrics.add_subparsers(dest="workflow_metrics_command", required=True)
+    workflow_metrics_summary = workflow_metrics_sub.add_parser("summarize", help="Build workflow-operational metrics conservatively.")
+    workflow_metrics_summary.add_argument("--workspace", required=True)
 
     subparsers.add_parser("version", help="Print package version.")
     return parser
@@ -406,6 +439,29 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "decision-history" and args.decision_history_command == "build":
         outputs = build_decision_history(args.workspace)
+        print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
+        return 0
+    if args.command == "outcomes":
+        if args.outcomes_command == "import":
+            print(import_outcomes(args.workspace, args.file))
+            return 0
+        outputs = summarize_outcomes(args.workspace)
+        print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
+        return 0
+    if args.command == "multicycle" and args.multicycle_command == "summarize":
+        outputs = summarize_multicycle_history(args.workspace)
+        print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
+        return 0
+    if args.command == "template-effectiveness" and args.template_effectiveness_command == "summarize":
+        outputs = summarize_template_effectiveness(args.workspace)
+        print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
+        return 0
+    if args.command == "rationale" and args.rationale_command == "summarize":
+        outputs = build_rationale_tracking(args.workspace)
+        print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
+        return 0
+    if args.command == "workflow-metrics" and args.workflow_metrics_command == "summarize":
+        outputs = summarize_workflow_metrics(args.workspace)
         print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
         return 0
     if args.command == "version":

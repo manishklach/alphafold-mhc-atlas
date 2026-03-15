@@ -1,0 +1,2 @@
+outcome_id,entity_type,entity_id,project_id,workspace_id,cycle_id,outcome_class,outcome_source,outcome_timestamp,outcome_notes,linked_artifacts,reviewer_or_owner,confidence_in_outcome_context,not_model_truth_flag
+demo_outcome_001,variant,demoA_pos2_A,proj_a,pilot_workspace_01,week_2,tested_followup,internal_review,2026-01-15T00:00:00+00:00,Example only,review/shortlist.csv,scientist,moderate,true
