@@ -1,0 +1,87 @@
+templates:
+  - name: weekly_mutation_review
+    description: Weekly structure-guided mutation review focused on shortlist, open questions, and next actions.
+    recommended_scenarios:
+      - disruptive_shortlist
+      - conservative_only
+    recommended_packet_types:
+      - review
+      - decision
+    recommended_role_views:
+      - scientist
+      - comp_lead
+      - manager
+    checklist_focus:
+      - evidence_reviewed
+      - uncertainty_reviewed
+      - shortlist_rationale_documented
+    expected_outputs:
+      - review_packet
+      - decision_packet
+      - next_action_table
+      - open_questions
+    cadence_label: weekly
+    packet_template: weekly_review_standard
+
+  - name: cross_allele_prioritization_review
+    description: Cross-allele review pattern for discriminatory variants and divergence-focused panel design.
+    recommended_scenarios:
+      - allele_discrimination
+      - exploratory_scenario
+    recommended_packet_types:
+      - review
+    recommended_role_views:
+      - scientist
+      - comp_lead
+    checklist_focus:
+      - structural_support_reviewed
+      - missing_data_assessed
+      - biological_caveats_acknowledged
+    expected_outputs:
+      - review_packet
+      - allele_discrimination_scores
+      - optimized_mutation_panel
+    cadence_label: biweekly
+    packet_template: weekly_review_standard
+
+  - name: manager_escalation_packet
+    description: Concise manager-facing escalation path for shortlist, unresolved questions, and next actions.
+    recommended_scenarios:
+      - disruptive_shortlist
+    recommended_packet_types:
+      - decision
+    recommended_role_views:
+      - manager
+    checklist_focus:
+      - shortlist_rationale_documented
+      - biological_caveats_acknowledged
+      - export_bundle_validated
+    expected_outputs:
+      - decision_packet
+      - executive_summary
+      - next_actions
+      - open_questions
+    cadence_label: weekly
+    packet_template: manager_escalation
+
+  - name: shortlist_refinement_review
+    description: Reusable shortlist refinement workflow for teams comparing carry-forward items and unresolved evidence gaps.
+    recommended_scenarios:
+      - tolerated_shortlist
+      - conservative_only
+    recommended_packet_types:
+      - review
+    recommended_role_views:
+      - scientist
+      - manager
+    checklist_focus:
+      - uncertainty_reviewed
+      - missing_data_assessed
+      - shortlist_rationale_documented
+    expected_outputs:
+      - review_queue
+      - shortlist
+      - review_packet
+      - handoff_bundle
+    cadence_label: sprint
+    packet_template: weekly_review_standard

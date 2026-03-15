@@ -33,6 +33,9 @@ def test_cli_list_demos_and_walkthrough(capsys) -> None:
     assert cli.main(["list-demos"]) == 0
     listed = capsys.readouterr().out
     assert "golden_weekly_review_demo" in listed
+    assert cli.main(["workflow-template", "list"]) == 0
+    templates = capsys.readouterr().out
+    assert "weekly_mutation_review" in templates
     assert cli.main(["demo-walkthrough", "golden_weekly_review_demo"]) == 0
     walkthrough = capsys.readouterr().out
     assert "Golden Weekly Review Demo" in walkthrough

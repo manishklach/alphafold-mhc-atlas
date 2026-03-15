@@ -16,17 +16,21 @@ from src.evidence_view import build_variant_evidence_bundle, export_variant_evid
 from src.annotations import add_annotation
 from src.checklists import load_checklist_templates, run_checklist
 from src.decision_packet import generate_workspace_decision_packet
+from src.decision_history import build_decision_history
 from src.feedback import add_feedback, summarize_feedback
 from src.feedback_schema import FeedbackEntry
 from src.handoff_bundle import create_handoff_bundle
 from src.next_actions import build_next_actions
 from src.open_questions import build_open_questions
 from src.pilot_workflow import build_review_analytics, initialize_pilot_workflow
+from src.program_memory import build_program_memory
 from src.project_history import build_project_history
 from src.project_index import build_project_inventory, load_project_report, load_project_tables, write_project_inventory
 from src.review_packet import generate_workspace_review_packet
 from src.review_queue import create_review_queue_from_scenario, update_review_item
+from src.review_cycles import compare_review_cycles, summarize_review_cycles
 from src.resource_paths import REPO_ROOT, repo_or_resource_path
+from src.recurring_patterns import build_recurring_patterns
 from src.role_views import export_role_views
 from src.scenario_analysis import (
     build_evidence_exports,
@@ -42,6 +46,7 @@ from src.shortlist import refresh_shortlists
 from src.version import __version__
 from src.workspace import load_workspace_config
 from src.workspace_index import build_workspace_inventory, write_workspace_inventory
+from src.workflow_templates import load_workflow_templates
 
 OUTPUTS_ROOT = REPO_ROOT / "outputs"
 
@@ -726,6 +731,11 @@ def render_workspace_app(st, workspace_config) -> None:
         [
             "Workspace Overview",
             "Project Portfolio",
+            "Program Memory",
+            "Decision Lineage",
+            "Review Cycles",
+            "Recurring Questions",
+            "Workflow Templates",
             "Changes Since Last Review",
             "Weekly Review Packet",
             "Role Views",
@@ -769,6 +779,48 @@ def render_workspace_app(st, workspace_config) -> None:
             )
         )
         st.markdown(brief_scope_markdown())
+    elif page == "Program Memory":
+        outputs = build_program_memory(workspace_config)
+        st.text(safe_read_text(outputs["workspace_memory_summary.md"]))
+        st.subheader("Attention Queue")
+        st.dataframe(preview_table(safe_read_csv(outputs["workspace_attention_queue.csv"]), 200), use_container_width=True)
+    elif page == "Decision Lineage":
+        outputs = build_decision_history(workspace_config)
+        st.subheader("Decision Lineage")
+        st.dataframe(preview_table(safe_read_csv(outputs["decision_lineage.csv"]), 200), use_container_width=True)
+        st.subheader("Carry-Forward Items")
+        st.dataframe(preview_table(safe_read_csv(outputs["carried_forward_items.csv"]), 200), use_container_width=True)
+    elif page == "Review Cycles":
+        outputs = summarize_review_cycles(workspace_config)
+        cycle_df = safe_read_csv(outputs["cycle_summary.csv"])
+        st.subheader("Cycle Summary")
+        st.dataframe(preview_table(cycle_df, 200), use_container_width=True)
+        if not cycle_df.empty and len(cycle_df) >= 2:
+            cycle_names = cycle_df["cycle_id"].astype(str).tolist()
+            current_cycle = st.selectbox("Current cycle", cycle_names, index=len(cycle_names) - 1)
+            previous_options = [name for name in cycle_names if name != current_cycle]
+            previous_cycle = st.selectbox("Previous cycle", previous_options, index=max(len(previous_options) - 1, 0))
+            if st.button("Compare review cycles"):
+                compare_outputs = compare_review_cycles(workspace_config, current_cycle, previous_cycle)
+                st.dataframe(preview_table(safe_read_csv(compare_outputs["cycle_to_cycle_comparison.csv"]), 200), use_container_width=True)
+                st.text(safe_read_text(compare_outputs["cycle_change_log.md"]))
+        else:
+            st.info("Generate at least two workspace review packets to compare cycles.")
+    elif page == "Recurring Questions":
+        outputs = build_recurring_patterns(workspace_config)
+        st.subheader("Recurring Questions")
+        st.dataframe(preview_table(safe_read_csv(outputs["recurring_questions.csv"]), 200), use_container_width=True)
+        st.subheader("Recurring Patterns")
+        st.dataframe(preview_table(safe_read_csv(outputs["recurring_patterns.csv"]), 200), use_container_width=True)
+        st.text(safe_read_text(outputs["pattern_digest.md"]))
+    elif page == "Workflow Templates":
+        templates = load_workflow_templates(repo_or_resource_path("data", "workflow_templates.yaml"))
+        selected = st.selectbox("Template", [template.name for template in templates] if templates else [""])
+        template_map = {template.name: template for template in templates}
+        if selected and selected in template_map:
+            st.json(template_map[selected].to_dict())
+        else:
+            st.info("No workflow templates were available.")
     elif page == "Project Portfolio":
         st.dataframe(projects_df, use_container_width=True)
     elif page == "Changes Since Last Review" and selected_project_path is not None:

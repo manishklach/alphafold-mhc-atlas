@@ -7,14 +7,18 @@ import shutil
 import pandas as pd
 
 from .data_access import safe_read_csv, safe_read_text
+from .packet_templates import resolve_packet_template
 from .review_packet import generate_project_review_packet, generate_workspace_review_packet
 from .scope_text import brief_scope_markdown
+from .workflow_templates import get_workflow_template
 from .workspace import WorkspaceConfig, load_workspace_config
 
 
-def generate_project_decision_packet(project_dir: Path, packet_id: str | None = None) -> Path:
+def generate_project_decision_packet(project_dir: Path, packet_id: str | None = None, workflow_template_name: str | None = None) -> Path:
     packet_id = packet_id or f"decision_{datetime.now(timezone.utc).strftime('%Y%m%d')}"
-    review_packet_dir = generate_project_review_packet(project_dir)
+    workflow_template = get_workflow_template(workflow_template_name) if workflow_template_name else None
+    packet_template = resolve_packet_template("decision", workflow_template)
+    review_packet_dir = generate_project_review_packet(project_dir, workflow_template_name=workflow_template_name)
     packet_dir = project_dir / "decision_packets" / packet_id
     packet_dir.mkdir(parents=True, exist_ok=True)
     tables_manifest_rows = []
@@ -35,7 +39,7 @@ def generate_project_decision_packet(project_dir: Path, packet_id: str | None = 
                 "",
                 "Meeting-ready summary for internal decision review.",
                 "",
-                "## Executive Meeting Focus",
+                f"## Executive Meeting Focus ({packet_template.name})",
                 "",
                 safe_read_text(review_packet_dir / "change_summary.md") or "No change summary available.",
                 "",
@@ -77,10 +81,16 @@ def generate_project_decision_packet(project_dir: Path, packet_id: str | None = 
     return packet_dir
 
 
-def generate_workspace_decision_packet(workspace: WorkspaceConfig | str | Path, packet_id: str | None = None) -> Path:
+def generate_workspace_decision_packet(
+    workspace: WorkspaceConfig | str | Path,
+    packet_id: str | None = None,
+    workflow_template_name: str | None = None,
+) -> Path:
     config = load_workspace_config(workspace) if not isinstance(workspace, WorkspaceConfig) else workspace
     packet_id = packet_id or f"decision_{datetime.now(timezone.utc).strftime('%Y%m%d')}"
-    review_packet_dir = generate_workspace_review_packet(config)
+    workflow_template = get_workflow_template(workflow_template_name) if workflow_template_name else None
+    packet_template = resolve_packet_template("decision", workflow_template)
+    review_packet_dir = generate_workspace_review_packet(config, workflow_template_name=workflow_template_name)
     packet_dir = config.output_dir / "decision_packets" / packet_id
     packet_dir.mkdir(parents=True, exist_ok=True)
     (packet_dir / "meeting_brief.md").write_text(
@@ -90,7 +100,7 @@ def generate_workspace_decision_packet(workspace: WorkspaceConfig | str | Path, 
                 "",
                 "Meeting-ready summary for recurring cross-project review.",
                 "",
-                "## Executive Meeting Focus",
+                f"## Executive Meeting Focus ({packet_template.name})",
                 "",
                 safe_read_text(review_packet_dir / "review_packet.md"),
                 "",

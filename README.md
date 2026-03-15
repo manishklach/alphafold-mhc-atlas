@@ -65,6 +65,7 @@ It started as an input-preparation scaffold and now supports:
 - installable packaging, unified CLI entrypoints, Docker/devcontainer support, and demo-ready onboarding docs
 - pilot-user review workflows with queues, shortlists, feedback capture, checklists, handoff bundles, and session logging
 - multi-project workspace inventories, weekly review packets, role-oriented exports, project history, open questions, and decision packets
+- program memory, decision lineage, recurring-question summaries, reusable workflow templates, and review-cycle comparisons across workspaces
 
 The project is intentionally conservative. It does not claim binding affinity prediction, immunogenicity prediction, or experimental validation. Structural summaries are presented as transparent derived features from predicted models.
 
@@ -122,6 +123,7 @@ This repo replaces that with a local, evidence-linked review workflow:
 - Demo guide: [DEMOS.md](DEMOS.md)
 - Pilot workflow guide: [PILOT_WORKFLOW.md](PILOT_WORKFLOW.md)
 - CLI guide: [CLI_USAGE.md](CLI_USAGE.md)
+- Prioritization weight guide: [docs/WEIGHT_TUNING.md](docs/WEIGHT_TUNING.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Release notes: [RELEASE_NOTES_v0.10.0.md](RELEASE_NOTES_v0.10.0.md)
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -150,6 +152,45 @@ Given one or more class-I HLA alleles and one or more reference peptides, the pi
 18. run pilot-style review workflows with shortlists, annotations, feedback logs, checklists, handoff bundles, and local session traces
 19. define workspaces across multiple projects and generate recurring weekly review packets
 20. export scientist, computational lead, and manager views plus meeting-ready decision packets
+21. build decision lineage, carry-forward items, and unresolved-question memory across review cycles
+22. reuse named workflow templates across projects and workspaces
+23. compare review cycles and surface recurring questions, recurring issues, and attention queues
+
+## Program Memory
+
+Phase 11 extends the repo from project review into reusable institutional memory.
+
+The new memory layer is for questions like:
+
+- what did we keep carrying forward?
+- what dropped out of review?
+- which questions remain unresolved across cycles?
+- which workflow pattern should this team reuse next week?
+
+This is still file-backed and conservative. Memory summaries are derived from existing review artifacts, not from hidden state or implied scientific validation.
+
+## Workflow Templates
+
+Workflow templates are reusable operating patterns for recurring team review.
+
+They define:
+
+- recommended scenarios
+- recommended packet types
+- recommended role views
+- checklist emphasis
+- expected outputs
+- cadence labels
+
+Example commands:
+
+```bash
+mhc-atlas workflow-template list
+mhc-atlas workflow-template show --name weekly_mutation_review
+mhc-atlas history summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas review-cycle compare --workspace workspaces/demo_workspace.yaml --current week_2 --previous week_1
+mhc-atlas decision-history build --workspace workspaces/demo_workspace.yaml
+```
 
 ## What This Repo Does Not Do
 

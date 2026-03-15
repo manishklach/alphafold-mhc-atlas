@@ -9,6 +9,7 @@ from .annotations import add_annotation
 from .app import launch_app
 from .checklists import run_checklist
 from .config import load_config
+from .decision_history import build_decision_history
 from .decision_packet import generate_project_decision_packet, generate_workspace_decision_packet
 from .demo_bundle import build_demo_bundle_manifest, validate_demo
 from .demo_loader import describe_demo, list_all_demos, list_demo_projects, load_demo_readme, load_demo_walkthrough, resolve_demo_project, resolve_demo_workspace
@@ -18,11 +19,14 @@ from .handoff_bundle import create_handoff_bundle
 from .main import main as pipeline_main
 from .next_actions import build_next_actions
 from .pilot_workflow import build_review_analytics, initialize_pilot_workflow
+from .program_memory import build_program_memory
 from .project_history import build_project_history
 from .project_index import build_project_inventory, load_project_tables, write_project_inventory
 from .review_packet import generate_project_review_packet, generate_workspace_review_packet
 from .review_queue import create_review_queue_from_scenario
+from .review_cycles import compare_review_cycles, summarize_review_cycles
 from .resource_paths import REPO_ROOT, repo_or_resource_path
+from .recurring_patterns import build_recurring_patterns
 from .role_views import export_role_views
 from .scenario_analysis import build_evidence_exports, compare_scenarios, export_scenario_comparison, export_scenario_result, run_scenario_analysis
 from .scenario_state import ScenarioState, load_scenario_state, save_scenario_state
@@ -31,6 +35,7 @@ from .version import PACKAGE_NAME, __version__
 from .workspace import load_workspace_config
 from .workspace_index import build_workspace_inventory, write_workspace_inventory
 from .app import load_scenario_templates
+from .workflow_templates import get_workflow_template, list_workflow_templates
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -141,6 +146,7 @@ def build_parser() -> argparse.ArgumentParser:
     review_packet_generate.add_argument("--project")
     review_packet_generate.add_argument("--workspace")
     review_packet_generate.add_argument("--packet-id")
+    review_packet_generate.add_argument("--workflow-template")
 
     decision_packet = subparsers.add_parser("decision-packet", help="Generate decision meeting packets.")
     decision_packet_sub = decision_packet.add_subparsers(dest="decision_packet_command", required=True)
@@ -148,6 +154,7 @@ def build_parser() -> argparse.ArgumentParser:
     decision_packet_generate.add_argument("--project")
     decision_packet_generate.add_argument("--workspace")
     decision_packet_generate.add_argument("--packet-id")
+    decision_packet_generate.add_argument("--workflow-template")
 
     role_view = subparsers.add_parser("role-view", help="Role-oriented export commands.")
     role_view_sub = role_view.add_subparsers(dest="role_view_command", required=True)
@@ -164,6 +171,29 @@ def build_parser() -> argparse.ArgumentParser:
     next_actions_sub = next_actions.add_subparsers(dest="next_actions_command", required=True)
     next_actions_build = next_actions_sub.add_parser("build", help="Build next actions for a project.")
     next_actions_build.add_argument("--project", required=True)
+
+    workflow_template_parser = subparsers.add_parser("workflow-template", help="Reusable workflow template commands.")
+    workflow_template_sub = workflow_template_parser.add_subparsers(dest="workflow_template_command", required=True)
+    workflow_template_sub.add_parser("list", help="List workflow templates.")
+    workflow_template_show = workflow_template_sub.add_parser("show", help="Show one workflow template.")
+    workflow_template_show.add_argument("--name", required=True)
+
+    history = subparsers.add_parser("history", help="Workspace program-memory commands.")
+    history_sub = history.add_subparsers(dest="history_command", required=True)
+    history_summary = history_sub.add_parser("summarize", help="Build workspace memory summaries.")
+    history_summary.add_argument("--workspace", required=True)
+
+    review_cycle = subparsers.add_parser("review-cycle", help="Review cycle comparison commands.")
+    review_cycle_sub = review_cycle.add_subparsers(dest="review_cycle_command", required=True)
+    review_cycle_compare = review_cycle_sub.add_parser("compare", help="Compare two named workspace review cycles.")
+    review_cycle_compare.add_argument("--workspace", required=True)
+    review_cycle_compare.add_argument("--current", required=True)
+    review_cycle_compare.add_argument("--previous", required=True)
+
+    decision_history = subparsers.add_parser("decision-history", help="Decision lineage commands.")
+    decision_history_sub = decision_history.add_subparsers(dest="decision_history_command", required=True)
+    decision_history_build = decision_history_sub.add_parser("build", help="Build workspace decision lineage outputs.")
+    decision_history_build.add_argument("--workspace", required=True)
 
     subparsers.add_parser("version", help="Print package version.")
     return parser
@@ -312,18 +342,42 @@ def main(argv: list[str] | None = None) -> int:
             return 0
     if args.command == "review-packet" and args.review_packet_command == "generate":
         if args.workspace:
-            print(generate_workspace_review_packet(args.workspace, packet_id=args.packet_id))
+            print(
+                generate_workspace_review_packet(
+                    args.workspace,
+                    packet_id=args.packet_id,
+                    workflow_template_name=args.workflow_template,
+                )
+            )
             return 0
         if args.project:
-            print(generate_project_review_packet(_resolve_path(args.project), packet_id=args.packet_id))
+            print(
+                generate_project_review_packet(
+                    _resolve_path(args.project),
+                    packet_id=args.packet_id,
+                    workflow_template_name=args.workflow_template,
+                )
+            )
             return 0
         raise SystemExit("review-packet generate requires --project or --workspace")
     if args.command == "decision-packet" and args.decision_packet_command == "generate":
         if args.workspace:
-            print(generate_workspace_decision_packet(args.workspace, packet_id=args.packet_id))
+            print(
+                generate_workspace_decision_packet(
+                    args.workspace,
+                    packet_id=args.packet_id,
+                    workflow_template_name=args.workflow_template,
+                )
+            )
             return 0
         if args.project:
-            print(generate_project_decision_packet(_resolve_path(args.project), packet_id=args.packet_id))
+            print(
+                generate_project_decision_packet(
+                    _resolve_path(args.project),
+                    packet_id=args.packet_id,
+                    workflow_template_name=args.workflow_template,
+                )
+            )
             return 0
         raise SystemExit("decision-packet generate requires --project or --workspace")
     if args.command == "role-view" and args.role_view_command == "export":
@@ -335,6 +389,24 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "next-actions" and args.next_actions_command == "build":
         print(build_next_actions(_resolve_path(args.project)))
+        return 0
+    if args.command == "workflow-template":
+        if args.workflow_template_command == "list":
+            print("\n".join(list_workflow_templates()))
+            return 0
+        print(json.dumps(get_workflow_template(args.name).to_dict(), indent=2))
+        return 0
+    if args.command == "history" and args.history_command == "summarize":
+        outputs = build_program_memory(args.workspace)
+        print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
+        return 0
+    if args.command == "review-cycle" and args.review_cycle_command == "compare":
+        outputs = compare_review_cycles(args.workspace, args.current, args.previous)
+        print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
+        return 0
+    if args.command == "decision-history" and args.decision_history_command == "build":
+        outputs = build_decision_history(args.workspace)
+        print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
         return 0
     if args.command == "version":
         print(__version__)

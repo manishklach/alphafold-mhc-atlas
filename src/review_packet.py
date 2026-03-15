@@ -11,20 +11,24 @@ from .action_planning import build_action_plan
 from .data_access import safe_read_text
 from .next_actions import build_next_actions
 from .open_questions import build_open_questions
+from .packet_templates import resolve_packet_template
 from .project_history import build_project_history
 from .role_views import export_role_views
 from .scope_text import brief_scope_markdown, expanded_scope_markdown
+from .workflow_templates import get_workflow_template
 from .workspace import WorkspaceConfig, load_workspace_config
 from .workspace_index import build_workspace_inventory, write_workspace_inventory
 
 
-def generate_project_review_packet(project_dir: Path, packet_id: str | None = None) -> Path:
+def generate_project_review_packet(project_dir: Path, packet_id: str | None = None, workflow_template_name: str | None = None) -> Path:
     packet_id = packet_id or _default_packet_id("project")
     history_path = build_project_history(project_dir)
     next_actions_path = build_next_actions(project_dir)
     open_questions_path = build_open_questions(project_dir)
     action_plan_path = build_action_plan(project_dir)
     role_paths = export_role_views(project_dir)
+    workflow_template = get_workflow_template(workflow_template_name) if workflow_template_name else None
+    packet_template = resolve_packet_template("review", workflow_template)
 
     packet_dir = project_dir / "review_packets" / packet_id
     tables_dir = packet_dir / "review_packet_tables"
@@ -55,10 +59,16 @@ def generate_project_review_packet(project_dir: Path, packet_id: str | None = No
         "packet_id": packet_id,
         "project_name": project_dir.name,
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "workflow_template": workflow_template.name if workflow_template else None,
+        "packet_template": packet_template.name,
         "change_summary_path": str(history_path.parent / "change_summary.md"),
         "next_actions_path": str(next_actions_path),
         "open_questions_path": str(open_questions_path),
         "role_views": {name: str(path) for name, path in role_paths.items()},
+        "num_projects": 1,
+        "num_shortlist_items": len(shortlist_df),
+        "num_open_questions": len(_safe_table(project_dir / "analysis" / "open_questions.csv")),
+        "num_next_actions": len(_safe_table(project_dir / "analysis" / "next_action_table.csv")),
     }
     lines = [
         f"# Weekly Review Packet: {project_dir.name}",
@@ -73,7 +83,7 @@ def generate_project_review_packet(project_dir: Path, packet_id: str | None = No
         f"- Panel candidates available: {len(panel_df)}",
         f"- Shortlist items available: {len(shortlist_df)}",
         "",
-        "## Recommended Review Order",
+        f"## Recommended Review Order ({packet_template.name})",
         "",
         "1. Review what changed since the last meeting.",
         "2. Inspect the current shortlist and panel candidates.",
@@ -114,7 +124,11 @@ def generate_project_review_packet(project_dir: Path, packet_id: str | None = No
     return packet_dir
 
 
-def generate_workspace_review_packet(workspace: WorkspaceConfig | str | Path, packet_id: str | None = None) -> Path:
+def generate_workspace_review_packet(
+    workspace: WorkspaceConfig | str | Path,
+    packet_id: str | None = None,
+    workflow_template_name: str | None = None,
+) -> Path:
     config = load_workspace_config(workspace) if not isinstance(workspace, WorkspaceConfig) else workspace
     packet_id = packet_id or _default_packet_id("workspace")
     config.output_dir.mkdir(parents=True, exist_ok=True)
@@ -124,11 +138,17 @@ def generate_workspace_review_packet(workspace: WorkspaceConfig | str | Path, pa
     packet_dir.mkdir(parents=True, exist_ok=True)
     tables_dir = packet_dir / "review_packet_tables"
     tables_dir.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(inventory["projects"]).to_csv(tables_dir / "workspace_projects.csv", index=False)
-    pd.DataFrame(inventory["summary"]).to_csv(tables_dir / "workspace_summary.csv", index=False)
+    project_df = pd.DataFrame(inventory["projects"])
+    summary_df = pd.DataFrame(inventory["summary"])
+    project_df.to_csv(tables_dir / "workspace_projects.csv", index=False)
+    summary_df.to_csv(tables_dir / "workspace_summary.csv", index=False)
     (packet_dir / "change_summary.md").write_text(_workspace_change_summary(config), encoding="utf-8")
     (packet_dir / "open_questions.md").write_text(_workspace_open_questions(config), encoding="utf-8")
     (packet_dir / "next_actions.md").write_text(_workspace_next_actions(config), encoding="utf-8")
+    open_question_count = _count_workspace_sections(packet_dir / "open_questions.md")
+    next_action_count = _count_workspace_sections(packet_dir / "next_actions.md")
+    workflow_template = get_workflow_template(workflow_template_name) if workflow_template_name else None
+    packet_template = resolve_packet_template("review", workflow_template)
     (packet_dir / "review_packet.md").write_text(
         "\n".join(
             [
@@ -145,7 +165,7 @@ def generate_workspace_review_packet(workspace: WorkspaceConfig | str | Path, pa
                 "",
                 "1. Review portfolio coverage and project readiness.",
                 "2. Inspect changes since last review for each project.",
-                "3. Open role views and next actions before generating a manager packet.",
+                f"3. Use packet template `{packet_template.name}` and open role views before generating a manager packet.",
                 "",
                 "## Workspace Summary",
                 "",
@@ -166,7 +186,19 @@ def generate_workspace_review_packet(workspace: WorkspaceConfig | str | Path, pa
         ),
         encoding="utf-8",
     )
-    (packet_dir / "review_packet_summary.json").write_text(json.dumps(inventory["summary"], indent=2), encoding="utf-8")
+    summary_payload = {
+        "packet_id": packet_id,
+        "workspace_id": config.workspace_id,
+        "workspace_name": config.name,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "workflow_template": workflow_template_name,
+        "packet_template": packet_template.name,
+        "num_projects": len(config.projects),
+        "num_open_questions": open_question_count,
+        "num_next_actions": next_action_count,
+        "summary": inventory["summary"],
+    }
+    (packet_dir / "review_packet_summary.json").write_text(json.dumps(summary_payload, indent=2), encoding="utf-8")
     pd.DataFrame(
         [
             {"bundled_path": str(tables_dir / "workspace_projects.csv"), "description": "Workspace project inventory"},
@@ -232,3 +264,8 @@ def _safe_table(path: Path) -> pd.DataFrame:
     if not path.exists():
         return pd.DataFrame()
     return pd.read_csv(path)
+
+
+def _count_workspace_sections(path: Path) -> int:
+    text = safe_read_text(path)
+    return sum(1 for line in text.splitlines() if line.startswith("## "))

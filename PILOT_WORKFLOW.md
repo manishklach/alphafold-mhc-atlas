@@ -1,5 +1,16 @@
 # Pilot Workflow
 
+## Phase 11 extension
+
+The pilot workflow now supports reusable workflow templates and program memory across recurring review cycles.
+
+That means a team can:
+
+- reuse the same weekly review pattern across projects
+- compare current and previous review cycles
+- see what was carried forward, resolved, or dropped
+- surface recurring open questions and recurring review issues across a workspace
+
 ## Core workflow
 
 1. Load a project or workspace

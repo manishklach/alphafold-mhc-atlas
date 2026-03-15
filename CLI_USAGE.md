@@ -1,5 +1,17 @@
 # CLI Usage
 
+## Phase 11 additions
+
+Program-memory and reusable workflow commands:
+
+```bash
+mhc-atlas workflow-template list
+mhc-atlas workflow-template show --name weekly_mutation_review
+mhc-atlas history summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas review-cycle compare --workspace workspaces/demo_workspace.yaml --current week_2 --previous week_1
+mhc-atlas decision-history build --workspace workspaces/demo_workspace.yaml
+```
+
 ## First evaluator workflow
 
 ```bash
