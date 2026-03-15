@@ -1,0 +1,9 @@
+{
+  "project_name": "small_project",
+  "num_alleles": 1,
+  "num_variants": 3,
+  "prediction_coverage": 2,
+  "structural_coverage": 2,
+  "priority_row_count": 2,
+  "panel_row_count": 1
+}

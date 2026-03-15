@@ -1,0 +1,85 @@
+templates:
+  - scenario_id: disruptive_shortlist
+    label: Most disruptive mutants
+    ranking_mode: disruptive_mutations
+    alleles: []
+    peptides: []
+    mutation_positions: []
+    substitutions: []
+    evidence_coverage_threshold: 0.5
+    allowed_uncertainty: [low, moderate]
+    require_structural_support: false
+    anchor_only: false
+    case_study_id: null
+    panel_size: 10
+    notes: "Broad disruptive shortlist with moderate evidence allowed."
+  - scenario_id: tolerated_shortlist
+    label: Most tolerated mutants
+    ranking_mode: tolerated_mutations
+    alleles: []
+    peptides: []
+    mutation_positions: []
+    substitutions: []
+    evidence_coverage_threshold: 0.5
+    allowed_uncertainty: [low, moderate]
+    require_structural_support: false
+    anchor_only: false
+    case_study_id: null
+    panel_size: 10
+    notes: "Explores changes that preserve structural features relative to WT."
+  - scenario_id: anchor_focus
+    label: Anchor-focused disruptive panel
+    ranking_mode: anchor_sensitive_mutations
+    alleles: []
+    peptides: []
+    mutation_positions: [2, 9]
+    substitutions: []
+    evidence_coverage_threshold: 0.6
+    allowed_uncertainty: [low, moderate]
+    require_structural_support: true
+    anchor_only: true
+    case_study_id: null
+    panel_size: 8
+    notes: "Focuses on mutations at configured anchor positions with structural support."
+  - scenario_id: conservative_only
+    label: Low-uncertainty high-support shortlist
+    ranking_mode: disruptive_mutations
+    alleles: []
+    peptides: []
+    mutation_positions: []
+    substitutions: []
+    evidence_coverage_threshold: 0.8
+    allowed_uncertainty: [low]
+    require_structural_support: true
+    anchor_only: false
+    case_study_id: null
+    panel_size: 6
+    notes: "Restricts to stronger-evidence rows for conservative follow-up."
+  - scenario_id: allele_discrimination
+    label: Best allele-discriminating panel
+    ranking_mode: allele_discriminating_mutations
+    alleles: []
+    peptides: []
+    mutation_positions: []
+    substitutions: []
+    evidence_coverage_threshold: 0.5
+    allowed_uncertainty: [low, moderate]
+    require_structural_support: false
+    anchor_only: false
+    case_study_id: null
+    panel_size: 8
+    notes: "Prioritizes variants with larger cross-allele divergence."
+  - scenario_id: aromatic_exploration
+    label: Aromatic substitution exploration
+    ranking_mode: exploratory_followup_candidates
+    alleles: []
+    peptides: []
+    mutation_positions: []
+    substitutions: [F, Y, W]
+    evidence_coverage_threshold: 0.4
+    allowed_uncertainty: [low, moderate, high]
+    require_structural_support: false
+    anchor_only: false
+    case_study_id: null
+    panel_size: 12
+    notes: "Expands exploratory follow-up around aromatic substitutions."

@@ -1,0 +1,7 @@
+{
+  "project_name": "small_project",
+  "num_alleles": 1,
+  "num_variants": 3,
+  "num_predictions_with_structures": 2,
+  "num_variants_with_structural_metrics": 2
+}

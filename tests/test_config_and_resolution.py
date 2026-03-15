@@ -229,6 +229,89 @@ def test_load_config_supports_multi_allele_schema(tmp_path) -> None:
     assert config.peptides.mode == "shared_panel"
 
 
+def test_load_config_supports_phase6_sections(tmp_path) -> None:
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        textwrap.dedent(
+            f"""
+            output_dir: outputs/run
+            mhc:
+              allele_name: HLA-A*02:01
+              class_type: I
+              heavy_chain_sequence: {HEAVY}
+              beta2m_sequence: {BETA2M}
+            peptide:
+              wildtype_sequence: GILGFVFTL
+              mutation_positions: [2, 9]
+              allowed_substitutions: [A, F]
+            prioritization:
+              enabled: true
+              default_top_k: 7
+            uncertainty:
+              enabled: true
+            robustness:
+              enabled: true
+              contact_distance_thresholds: [4.0, 4.5]
+            benchmarking:
+              enabled: true
+              expected_anchor_positions: [2, 9]
+            panel_design:
+              enabled: true
+              max_panel_size: 8
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    config = load_config(config_path)
+    assert config.prioritization.default_top_k == 7
+    assert config.robustness.contact_distance_thresholds == [4.0, 4.5]
+    assert config.panel_design.max_panel_size == 8
+
+
+def test_load_config_supports_phase7_sections(tmp_path) -> None:
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        textwrap.dedent(
+            f"""
+            output_dir: outputs/run
+            mhc:
+              allele_name: HLA-A*02:01
+              class_type: I
+              heavy_chain_sequence: {HEAVY}
+              beta2m_sequence: {BETA2M}
+            peptide:
+              wildtype_sequence: GILGFVFTL
+              mutation_positions: [2, 9]
+              allowed_substitutions: [A, F]
+            interactive_app:
+              enabled: true
+              framework: streamlit
+              enable_demo_mode: true
+              enable_scenario_saving: true
+              max_rows_preview: 150
+            scenario_analysis:
+              enabled: true
+              default_evidence_coverage_threshold: 0.6
+              default_uncertainty_levels_allowed: [low, moderate]
+            demo_mode:
+              enabled: true
+              default_demo_project: small_project
+            scenario_templates:
+              enabled: true
+              template_file: ../data/scenario_templates.yaml
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    config = load_config(config_path)
+    assert config.interactive_app.framework == "streamlit"
+    assert config.interactive_app.max_rows_preview == 150
+    assert config.scenario_analysis.default_evidence_coverage_threshold == 0.6
+    assert config.demo_mode.default_demo_project == "small_project"
+
+
 def test_variant_ids_are_deterministic_across_alleles() -> None:
     variants_a = generate_single_mutants("HLA-A*02:01", "GILGFVFTL", [2], ["A"])
     variants_b = generate_single_mutants("HLA-B*07:02", "GILGFVFTL", [2], ["A"])

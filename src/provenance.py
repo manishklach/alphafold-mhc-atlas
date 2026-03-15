@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-PIPELINE_VERSION = "phase5"
+PIPELINE_VERSION = "phase6"
 
 
 def build_provenance(config_path: Path, requirements_path: Path) -> dict[str, str]:

@@ -133,6 +133,101 @@ class PublicationBundleConfig:
 
 
 @dataclass(frozen=True)
+class RankingFeatureConfig:
+    name: str
+    weight: float
+
+
+@dataclass(frozen=True)
+class RankingModeConfig:
+    enabled: bool
+    normalize_features: bool
+    require_structural_support: bool
+    features: list[RankingFeatureConfig]
+
+
+@dataclass(frozen=True)
+class PrioritizationConfig:
+    enabled: bool
+    default_top_k: int
+    ranking_modes: dict[str, RankingModeConfig]
+
+
+@dataclass(frozen=True)
+class UncertaintyConfig:
+    enabled: bool
+    penalize_missing_features: bool
+    penalize_unconfident_chain_mapping: bool
+
+
+@dataclass(frozen=True)
+class RobustnessConfig:
+    enabled: bool
+    contact_distance_thresholds: list[float]
+    weight_perturbation_fraction: float
+    missing_feature_drop_tests: bool
+    replicate_consistency: bool
+    compare_top_k: list[int]
+
+
+@dataclass(frozen=True)
+class BenchmarkingConfig:
+    enabled: bool
+    reference_structure_map: Path | None
+    known_disruptive_variants_file: Path | None
+    expected_anchor_positions: list[int]
+
+
+@dataclass(frozen=True)
+class DiversityConstraintsConfig:
+    max_variants_per_position: int
+    max_variants_per_allele: int
+    max_variants_per_substitution: int
+
+
+@dataclass(frozen=True)
+class PanelDesignConfig:
+    enabled: bool
+    max_panel_size: int
+    ranking_goal: str
+    require_min_evidence_coverage: float
+    penalize_high_uncertainty: bool
+    diversity_constraints: DiversityConstraintsConfig
+    redundancy_features: list[str]
+
+
+@dataclass(frozen=True)
+class InteractiveAppConfig:
+    enabled: bool
+    framework: str
+    default_project: Path | None
+    enable_demo_mode: bool
+    enable_scenario_saving: bool
+    max_rows_preview: int
+
+
+@dataclass(frozen=True)
+class ScenarioAnalysisConfig:
+    enabled: bool
+    default_evidence_coverage_threshold: float
+    default_uncertainty_levels_allowed: list[str]
+    allow_custom_filters: bool
+    allow_side_by_side_comparison: bool
+
+
+@dataclass(frozen=True)
+class DemoModeConfig:
+    enabled: bool
+    default_demo_project: str | None
+
+
+@dataclass(frozen=True)
+class ScenarioTemplatesConfig:
+    enabled: bool
+    template_file: Path | None
+
+
+@dataclass(frozen=True)
 class CaseStudySpec:
     case_id: str
     description: str
@@ -161,6 +256,15 @@ class ProjectConfig:
     hypothesis_generation: HypothesisGenerationConfig
     pocket_regions: PocketRegionsConfig
     publication_bundle: PublicationBundleConfig
+    prioritization: PrioritizationConfig
+    uncertainty: UncertaintyConfig
+    robustness: RobustnessConfig
+    benchmarking: BenchmarkingConfig
+    panel_design: PanelDesignConfig
+    interactive_app: InteractiveAppConfig
+    scenario_analysis: ScenarioAnalysisConfig
+    demo_mode: DemoModeConfig
+    scenario_templates: ScenarioTemplatesConfig
     case_studies_enabled: bool
     case_studies: list[CaseStudySpec]
     source_config_path: Path
@@ -218,6 +322,15 @@ def _normalize_config_shape(data: dict[str, Any]) -> dict[str, Any]:
             "hypothesis_generation": data.get("hypothesis_generation", {}),
             "pocket_regions": data.get("pocket_regions", {}),
             "publication_bundle": data.get("publication_bundle", {}),
+            "prioritization": data.get("prioritization", {}),
+            "uncertainty": data.get("uncertainty", {}),
+            "robustness": data.get("robustness", {}),
+            "benchmarking": data.get("benchmarking", {}),
+            "panel_design": data.get("panel_design", {}),
+            "interactive_app": data.get("interactive_app", {}),
+            "scenario_analysis": data.get("scenario_analysis", {}),
+            "demo_mode": data.get("demo_mode", {}),
+            "scenario_templates": data.get("scenario_templates", {}),
             "case_studies": data.get("case_studies", []),
         }
 
@@ -256,6 +369,15 @@ def _normalize_config_shape(data: dict[str, Any]) -> dict[str, Any]:
         "hypothesis_generation": {},
         "pocket_regions": {},
         "publication_bundle": {},
+        "prioritization": {},
+        "uncertainty": {},
+        "robustness": {},
+        "benchmarking": {},
+        "panel_design": {},
+        "interactive_app": {},
+        "scenario_analysis": {},
+        "demo_mode": {},
+        "scenario_templates": {},
         "case_studies": [],
     }
 
@@ -280,6 +402,15 @@ def _build_project_config(config_path: Path, data: dict[str, Any]) -> ProjectCon
     hypothesis_raw = _require_mapping(data, "hypothesis_generation", optional=True) or {}
     pocket_regions_raw = _require_mapping(data, "pocket_regions", optional=True) or {}
     publication_bundle_raw = _require_mapping(data, "publication_bundle", optional=True) or {}
+    prioritization_raw = _require_mapping(data, "prioritization", optional=True) or {}
+    uncertainty_raw = _require_mapping(data, "uncertainty", optional=True) or {}
+    robustness_raw = _require_mapping(data, "robustness", optional=True) or {}
+    benchmarking_raw = _require_mapping(data, "benchmarking", optional=True) or {}
+    panel_design_raw = _require_mapping(data, "panel_design", optional=True) or {}
+    interactive_app_raw = _require_mapping(data, "interactive_app", optional=True) or {}
+    scenario_analysis_raw = _require_mapping(data, "scenario_analysis", optional=True) or {}
+    demo_mode_raw = _require_mapping(data, "demo_mode", optional=True) or {}
+    scenario_templates_raw = _require_mapping(data, "scenario_templates", optional=True) or {}
     case_studies_value = data.get("case_studies", [])
 
     alleles = [_build_allele_spec(config_path.parent, entry, index) for index, entry in enumerate(alleles_raw)]
@@ -402,6 +533,98 @@ def _build_project_config(config_path: Path, data: dict[str, Any]) -> ProjectCon
         copy_figures=bool(publication_bundle_raw.get("copy_figures", True)),
         copy_tables=bool(publication_bundle_raw.get("copy_tables", True)),
     )
+    prioritization = PrioritizationConfig(
+        enabled=bool(prioritization_raw.get("enabled", True)),
+        default_top_k=int(prioritization_raw.get("default_top_k", 10)),
+        ranking_modes=_build_ranking_modes(prioritization_raw.get("ranking_modes", {})),
+    )
+    uncertainty = UncertaintyConfig(
+        enabled=bool(uncertainty_raw.get("enabled", True)),
+        penalize_missing_features=bool(uncertainty_raw.get("penalize_missing_features", True)),
+        penalize_unconfident_chain_mapping=bool(
+            uncertainty_raw.get("penalize_unconfident_chain_mapping", True)
+        ),
+    )
+    robustness = RobustnessConfig(
+        enabled=bool(robustness_raw.get("enabled", True)),
+        contact_distance_thresholds=_normalize_optional_float_list(
+            robustness_raw.get("contact_distance_thresholds", [4.0, 4.5, 5.0]),
+            "robustness.contact_distance_thresholds",
+        ),
+        weight_perturbation_fraction=float(robustness_raw.get("weight_perturbation_fraction", 0.2)),
+        missing_feature_drop_tests=bool(robustness_raw.get("missing_feature_drop_tests", True)),
+        replicate_consistency=bool(robustness_raw.get("replicate_consistency", True)),
+        compare_top_k=_normalize_positive_integer_list(
+            robustness_raw.get("compare_top_k", [5, 10]),
+            "robustness.compare_top_k",
+        ),
+    )
+    benchmarking = BenchmarkingConfig(
+        enabled=bool(benchmarking_raw.get("enabled", True)),
+        reference_structure_map=_resolve_optional_path(config_path.parent, benchmarking_raw.get("reference_structure_map")),
+        known_disruptive_variants_file=_resolve_optional_path(
+            config_path.parent,
+            benchmarking_raw.get("known_disruptive_variants_file"),
+        ),
+        expected_anchor_positions=_normalize_optional_positions(
+            benchmarking_raw.get("expected_anchor_positions", structure_analysis.anchor_positions),
+            "benchmarking.expected_anchor_positions",
+        ),
+    )
+    panel_design = PanelDesignConfig(
+        enabled=bool(panel_design_raw.get("enabled", True)),
+        max_panel_size=int(panel_design_raw.get("max_panel_size", 12)),
+        ranking_goal=str(panel_design_raw.get("ranking_goal") or "balanced_exploration_panel").strip(),
+        require_min_evidence_coverage=float(panel_design_raw.get("require_min_evidence_coverage", 0.5)),
+        penalize_high_uncertainty=bool(panel_design_raw.get("penalize_high_uncertainty", True)),
+        diversity_constraints=DiversityConstraintsConfig(
+            max_variants_per_position=int(
+                panel_design_raw.get("diversity_constraints", {}).get("max_variants_per_position", 3)
+            ),
+            max_variants_per_allele=int(
+                panel_design_raw.get("diversity_constraints", {}).get("max_variants_per_allele", 4)
+            ),
+            max_variants_per_substitution=int(
+                panel_design_raw.get("diversity_constraints", {}).get("max_variants_per_substitution", 3)
+            ),
+        ),
+        redundancy_features=_normalize_string_list(
+            panel_design_raw.get("redundancy_features", ["allele_name", "mutated_position", "mut_residue"]),
+            "panel_design.redundancy_features",
+        ),
+    )
+    interactive_app = InteractiveAppConfig(
+        enabled=bool(interactive_app_raw.get("enabled", True)),
+        framework=str(interactive_app_raw.get("framework") or "streamlit").strip().lower(),
+        default_project=_resolve_optional_path(config_path.parent, interactive_app_raw.get("default_project")),
+        enable_demo_mode=bool(interactive_app_raw.get("enable_demo_mode", True)),
+        enable_scenario_saving=bool(interactive_app_raw.get("enable_scenario_saving", True)),
+        max_rows_preview=int(interactive_app_raw.get("max_rows_preview", 200)),
+    )
+    scenario_analysis = ScenarioAnalysisConfig(
+        enabled=bool(scenario_analysis_raw.get("enabled", True)),
+        default_evidence_coverage_threshold=float(
+            scenario_analysis_raw.get("default_evidence_coverage_threshold", 0.5)
+        ),
+        default_uncertainty_levels_allowed=_normalize_string_list(
+            scenario_analysis_raw.get("default_uncertainty_levels_allowed", ["low", "moderate"]),
+            "scenario_analysis.default_uncertainty_levels_allowed",
+        ),
+        allow_custom_filters=bool(scenario_analysis_raw.get("allow_custom_filters", True)),
+        allow_side_by_side_comparison=bool(scenario_analysis_raw.get("allow_side_by_side_comparison", True)),
+    )
+    demo_mode = DemoModeConfig(
+        enabled=bool(demo_mode_raw.get("enabled", True)),
+        default_demo_project=(
+            str(demo_mode_raw.get("default_demo_project")).strip()
+            if demo_mode_raw.get("default_demo_project") not in {None, ""}
+            else None
+        ),
+    )
+    scenario_templates = ScenarioTemplatesConfig(
+        enabled=bool(scenario_templates_raw.get("enabled", True)),
+        template_file=_resolve_optional_path(config_path.parent, scenario_templates_raw.get("template_file")),
+    )
     case_studies_enabled, case_studies = _build_case_studies(case_studies_value, reporting.include_case_studies)
 
     _validate_project_config(
@@ -418,6 +641,15 @@ def _build_project_config(config_path: Path, data: dict[str, Any]) -> ProjectCon
         hypothesis_generation,
         pocket_regions,
         publication_bundle,
+        prioritization,
+        uncertainty,
+        robustness,
+        benchmarking,
+        panel_design,
+        interactive_app,
+        scenario_analysis,
+        demo_mode,
+        scenario_templates,
         case_studies,
     )
 
@@ -438,6 +670,15 @@ def _build_project_config(config_path: Path, data: dict[str, Any]) -> ProjectCon
         hypothesis_generation=hypothesis_generation,
         pocket_regions=pocket_regions,
         publication_bundle=publication_bundle,
+        prioritization=prioritization,
+        uncertainty=uncertainty,
+        robustness=robustness,
+        benchmarking=benchmarking,
+        panel_design=panel_design,
+        interactive_app=interactive_app,
+        scenario_analysis=scenario_analysis,
+        demo_mode=demo_mode,
+        scenario_templates=scenario_templates,
         case_studies_enabled=case_studies_enabled,
         case_studies=case_studies,
         source_config_path=config_path,
@@ -611,6 +852,113 @@ def _normalize_string_list(values: Any, field_name: str) -> list[str]:
     return normalized
 
 
+def _normalize_optional_float_list(values: Any, field_name: str) -> list[float]:
+    if not isinstance(values, list) or not values:
+        raise ValueError(f"{field_name} must be a non-empty list.")
+    normalized = [float(value) for value in values]
+    if any(value <= 0 for value in normalized):
+        raise ValueError(f"{field_name} must contain only positive values.")
+    return normalized
+
+
+def _normalize_positive_integer_list(values: Any, field_name: str) -> list[int]:
+    if not isinstance(values, list) or not values:
+        raise ValueError(f"{field_name} must be a non-empty list.")
+    normalized = [int(value) for value in values]
+    if any(value < 1 for value in normalized):
+        raise ValueError(f"{field_name} must contain only positive integers.")
+    return normalized
+
+
+def _build_ranking_modes(values: Any) -> dict[str, RankingModeConfig]:
+    defaults: dict[str, dict[str, Any]] = {
+        "disruptive_mutations": {
+            "enabled": True,
+            "normalize_features": True,
+            "require_structural_support": False,
+            "features": [
+                {"name": "delta_total_contacts_vs_wt", "weight": -1.0},
+                {"name": "delta_mean_min_distance_vs_wt", "weight": 0.75},
+                {"name": "delta_confidence_vs_wt", "weight": -0.5},
+                {"name": "anchor_disruption_flag", "weight": 1.0},
+            ],
+        },
+        "tolerated_mutations": {
+            "enabled": True,
+            "normalize_features": True,
+            "require_structural_support": False,
+            "features": [
+                {"name": "delta_total_contacts_vs_wt", "weight": 1.0},
+                {"name": "delta_mean_min_distance_vs_wt", "weight": -0.75},
+                {"name": "delta_confidence_vs_wt", "weight": 0.5},
+            ],
+        },
+        "allele_discriminating_mutations": {
+            "enabled": True,
+            "normalize_features": True,
+            "require_structural_support": False,
+            "features": [
+                {"name": "cross_allele_contact_divergence", "weight": 1.0},
+                {"name": "cross_allele_rank_divergence", "weight": 0.75},
+            ],
+        },
+        "anchor_sensitive_mutations": {
+            "enabled": True,
+            "normalize_features": True,
+            "require_structural_support": False,
+            "features": [
+                {"name": "anchor_disruption_flag", "weight": 1.0},
+                {"name": "delta_contacts_at_anchor_positions_vs_wt", "weight": -1.0},
+                {"name": "delta_total_contacts_vs_wt", "weight": -0.5},
+            ],
+        },
+        "exploratory_followup_candidates": {
+            "enabled": True,
+            "normalize_features": True,
+            "require_structural_support": False,
+            "features": [
+                {"name": "absolute_contact_change", "weight": 1.0},
+                {"name": "cross_allele_contact_divergence", "weight": 0.75},
+                {"name": "evidence_coverage_proxy", "weight": 0.5},
+            ],
+        },
+    }
+    raw_modes = values if isinstance(values, dict) else {}
+    built: dict[str, RankingModeConfig] = {}
+    for mode_name, default in defaults.items():
+        mode_raw = raw_modes.get(mode_name, {})
+        if mode_raw is None:
+            mode_raw = {}
+        if not isinstance(mode_raw, dict):
+            raise ValueError(f"prioritization.ranking_modes.{mode_name} must be an object.")
+        feature_values = mode_raw.get("features", default["features"])
+        if not isinstance(feature_values, list) or not feature_values:
+            raise ValueError(f"prioritization.ranking_modes.{mode_name}.features must be a non-empty list.")
+        features = []
+        for index, feature in enumerate(feature_values):
+            if not isinstance(feature, dict):
+                raise ValueError(
+                    f"prioritization.ranking_modes.{mode_name}.features[{index}] must be an object."
+                )
+            features.append(
+                RankingFeatureConfig(
+                    name=str(feature.get("name") or "").strip(),
+                    weight=float(feature.get("weight", 0.0)),
+                )
+            )
+        if any(not feature.name for feature in features):
+            raise ValueError(f"prioritization.ranking_modes.{mode_name}.features must include non-empty names.")
+        built[mode_name] = RankingModeConfig(
+            enabled=bool(mode_raw.get("enabled", default["enabled"])),
+            normalize_features=bool(mode_raw.get("normalize_features", default["normalize_features"])),
+            require_structural_support=bool(
+                mode_raw.get("require_structural_support", default["require_structural_support"])
+            ),
+            features=features,
+        )
+    return built
+
+
 def _normalize_optional_string_list(
     values: Any,
     field_name: str,
@@ -642,6 +990,15 @@ def _validate_project_config(
     hypothesis_generation: HypothesisGenerationConfig,
     pocket_regions: PocketRegionsConfig,
     publication_bundle: PublicationBundleConfig,
+    prioritization: PrioritizationConfig,
+    uncertainty: UncertaintyConfig,
+    robustness: RobustnessConfig,
+    benchmarking: BenchmarkingConfig,
+    panel_design: PanelDesignConfig,
+    interactive_app: InteractiveAppConfig,
+    scenario_analysis: ScenarioAnalysisConfig,
+    demo_mode: DemoModeConfig,
+    scenario_templates: ScenarioTemplatesConfig,
     case_studies: list[CaseStudySpec],
 ) -> None:
     if not project_name:
@@ -699,6 +1056,28 @@ def _validate_project_config(
         raise ValueError("hypothesis_generation.min_supporting_alleles must be >= 1.")
     if pocket_regions.require_region_mapping_for_comparison and not pocket_regions.mapping_file:
         raise ValueError("pocket_regions.mapping_file is required when require_region_mapping_for_comparison is true.")
+    if prioritization.default_top_k < 1:
+        raise ValueError("prioritization.default_top_k must be >= 1.")
+    if robustness.weight_perturbation_fraction < 0:
+        raise ValueError("robustness.weight_perturbation_fraction must be >= 0.")
+    if panel_design.max_panel_size < 1:
+        raise ValueError("panel_design.max_panel_size must be >= 1.")
+    if not (0.0 <= panel_design.require_min_evidence_coverage <= 1.0):
+        raise ValueError("panel_design.require_min_evidence_coverage must be between 0 and 1.")
+    if panel_design.diversity_constraints.max_variants_per_position < 1:
+        raise ValueError("panel_design.diversity_constraints.max_variants_per_position must be >= 1.")
+    if panel_design.diversity_constraints.max_variants_per_allele < 1:
+        raise ValueError("panel_design.diversity_constraints.max_variants_per_allele must be >= 1.")
+    if panel_design.diversity_constraints.max_variants_per_substitution < 1:
+        raise ValueError("panel_design.diversity_constraints.max_variants_per_substitution must be >= 1.")
+    if interactive_app.framework not in {"streamlit"}:
+        raise ValueError("interactive_app.framework must currently be 'streamlit'.")
+    if interactive_app.max_rows_preview < 1:
+        raise ValueError("interactive_app.max_rows_preview must be >= 1.")
+    if not (0.0 <= scenario_analysis.default_evidence_coverage_threshold <= 1.0):
+        raise ValueError("scenario_analysis.default_evidence_coverage_threshold must be between 0 and 1.")
+    if not scenario_analysis.default_uncertainty_levels_allowed:
+        raise ValueError("scenario_analysis.default_uncertainty_levels_allowed must not be empty.")
     for index, case_study in enumerate(case_studies):
         if not case_study.case_id:
             raise ValueError(f"case_studies[{index}].case_id must not be empty.")

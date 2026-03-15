@@ -1,0 +1,4 @@
+variant_id,ranking_mode,evidence_name,evidence_value,evidence_direction,evidence_weight,evidence_status,notes
+demoA_pos2_A,disruptive_mutations,delta_total_contacts_vs_wt,-3,higher_is_more_disruptive,-1,ok,WT-relative contact loss.
+demoA_pos2_A,disruptive_mutations,delta_mean_min_distance_vs_wt,0.8,higher_is_more_disruptive,0.75,ok,Greater separation from heavy chain.
+demoA_pos9_F,tolerated_mutations,delta_total_contacts_vs_wt,1,higher_is_more_tolerated,1,ok,Net contact gain.

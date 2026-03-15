@@ -15,6 +15,10 @@ def run_case_studies(
     fingerprint_df: pd.DataFrame,
     structural_contacts_df: pd.DataFrame,
     cross_allele_summary_df: pd.DataFrame,
+    priority_df: pd.DataFrame | None = None,
+    priority_evidence_df: pd.DataFrame | None = None,
+    panel_df: pd.DataFrame | None = None,
+    robustness_df: pd.DataFrame | None = None,
 ) -> list[dict[str, object]]:
     results: list[dict[str, object]] = []
     for case_study in case_studies:
@@ -24,11 +28,25 @@ def run_case_studies(
         filtered_fingerprint = _filter_df(fingerprint_df, case_study)
         filtered_contacts = _filter_df(structural_contacts_df, case_study)
         filtered_cross_allele = _filter_df(cross_allele_summary_df, case_study, allow_missing_columns=True)
+        filtered_priority = _filter_df(priority_df if priority_df is not None else pd.DataFrame(), case_study)
+        filtered_panel = _filter_df(panel_df if panel_df is not None else pd.DataFrame(), case_study)
+        filtered_robustness = _filter_rank_stability(
+            robustness_df if robustness_df is not None else pd.DataFrame(),
+            filtered_priority,
+        )
+        filtered_priority_evidence = _filter_priority_evidence(
+            priority_evidence_df if priority_evidence_df is not None else pd.DataFrame(),
+            filtered_priority,
+        )
 
         filtered_variants.to_csv(case_dir / "filtered_variants.csv", index=False)
         filtered_fingerprint.to_csv(case_dir / "filtered_fingerprint.csv", index=False)
         filtered_contacts.to_csv(case_dir / "filtered_contacts.csv", index=False)
         filtered_cross_allele.to_csv(case_dir / "filtered_cross_allele_summary.csv", index=False)
+        filtered_priority.to_csv(case_dir / "ranked_variants.csv", index=False)
+        filtered_priority_evidence.to_csv(case_dir / "priority_evidence.csv", index=False)
+        filtered_panel.to_csv(case_dir / "optimized_panel.csv", index=False)
+        filtered_robustness.to_csv(case_dir / "robustness_summary.csv", index=False)
 
         summary = {
             "case_id": case_study.case_id,
@@ -36,11 +54,14 @@ def run_case_studies(
             "num_variants": len(filtered_variants),
             "num_fingerprint_rows": len(filtered_fingerprint),
             "num_contact_rows": len(filtered_contacts),
+            "num_ranked_rows": len(filtered_priority),
+            "num_panel_rows": len(filtered_panel),
             "status": "ok" if not filtered_variants.empty else "sparse",
-            "notes": "Case-study outputs filter existing analysis tables and do not rerun structural inference.",
+            "notes": "Case-study outputs filter existing analysis tables and do not rerun structural inference or ranking.",
         }
         (case_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
         (case_dir / "summary.md").write_text(_build_summary_md(summary), encoding="utf-8")
+        (case_dir / "panel_report.md").write_text(_build_panel_report(summary, filtered_panel), encoding="utf-8")
         pd.DataFrame(
             [
                 {
@@ -52,6 +73,16 @@ def run_case_studies(
                     "table_id": "filtered_fingerprint",
                     "path": str(case_dir / "filtered_fingerprint.csv"),
                     "description": "Filtered variant-level tolerance fingerprint rows.",
+                },
+                {
+                    "table_id": "ranked_variants",
+                    "path": str(case_dir / "ranked_variants.csv"),
+                    "description": "Case-study filtered prioritization rows.",
+                },
+                {
+                    "table_id": "optimized_panel",
+                    "path": str(case_dir / "optimized_panel.csv"),
+                    "description": "Case-study filtered compact panel selections.",
                 },
             ]
         ).to_csv(case_dir / "tables_manifest.csv", index=False)
@@ -102,6 +133,39 @@ def _build_summary_md(summary: dict[str, object]) -> str:
             f"- Filtered variants: {summary['num_variants']}",
             f"- Filtered fingerprint rows: {summary['num_fingerprint_rows']}",
             f"- Filtered contact rows: {summary['num_contact_rows']}",
+            f"- Ranked rows: {summary['num_ranked_rows']}",
+            f"- Panel rows: {summary['num_panel_rows']}",
             f"- Notes: {summary['notes']}",
         ]
     )
+
+
+def _build_panel_report(summary: dict[str, object], panel_df: pd.DataFrame) -> str:
+    lines = [
+        f"# Panel Report: {summary['case_id']}",
+        "",
+        f"- Status: {summary['status']}",
+        f"- Selected rows: {summary['num_panel_rows']}",
+        "",
+    ]
+    if panel_df.empty:
+        lines.append("No case-study-specific panel rows were available.")
+    else:
+        for row in panel_df.head(10).to_dict(orient="records"):
+            lines.append(
+                f"- `{row.get('panel_id', 'panel')}` includes `{row.get('variant_id', 'NA')}` "
+                f"because {row.get('selection_reason', 'no explicit reason was recorded')}."
+            )
+    return "\n".join(lines)
+
+
+def _filter_priority_evidence(evidence_df: pd.DataFrame, priority_df: pd.DataFrame) -> pd.DataFrame:
+    if evidence_df.empty or priority_df.empty or "variant_id" not in evidence_df.columns:
+        return evidence_df.copy()
+    return evidence_df[evidence_df["variant_id"].isin(priority_df["variant_id"])]
+
+
+def _filter_rank_stability(robustness_df: pd.DataFrame, priority_df: pd.DataFrame) -> pd.DataFrame:
+    if robustness_df.empty or priority_df.empty or "variant_id" not in robustness_df.columns:
+        return robustness_df.copy()
+    return robustness_df[robustness_df["variant_id"].isin(priority_df["variant_id"])]

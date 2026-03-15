@@ -16,6 +16,8 @@ def build_report_summary(
     cross_allele_summary_df: pd.DataFrame,
     hypotheses_df: pd.DataFrame,
     case_study_results: list[dict[str, object]],
+    priority_df: pd.DataFrame | None = None,
+    panel_df: pd.DataFrame | None = None,
 ) -> dict[str, object]:
     prediction_count = int(summary_df["structure_path"].notna().sum()) if "structure_path" in summary_df.columns else 0
     structural_count = (
@@ -36,6 +38,8 @@ def build_report_summary(
         "cross_allele_summary_rows": int(len(cross_allele_summary_df)),
         "hypothesis_count": int(len(hypotheses_df)),
         "case_study_count": int(len(case_study_results)),
+        "priority_row_count": int(len(priority_df)) if priority_df is not None else 0,
+        "panel_row_count": int(len(panel_df)) if panel_df is not None else 0,
     }
 
 
@@ -45,6 +49,8 @@ def build_markdown_report(
     cross_allele_summary_df: pd.DataFrame,
     hypotheses_df: pd.DataFrame,
     caveats: list[str],
+    priority_df: pd.DataFrame | None = None,
+    panel_df: pd.DataFrame | None = None,
 ) -> str:
     lines = [
         "# Peptide-MHC Comparative Structural Report",
@@ -75,6 +81,28 @@ def build_markdown_report(
             lines.append(
                 f"- `{case['case_id']}`: {case['description']} ({case['num_variants']} filtered variants, status={case['status']})."
             )
+    lines.extend(["", "## Prioritized Findings", ""])
+    if priority_df is None or priority_df.empty:
+        lines.append("No prioritization rows were available for this run.")
+    else:
+        for mode_name in ["disruptive_mutations", "tolerated_mutations", "allele_discriminating_mutations"]:
+            subset = priority_df[priority_df["ranking_mode"] == mode_name].head(3)
+            if subset.empty:
+                continue
+            lines.append(f"### {mode_name}")
+            for row in subset.to_dict(orient="records"):
+                lines.append(
+                    f"- `{row['variant_id']}` rank {row['priority_rank']} score {row['priority_score']}. "
+                    f"Coverage {row.get('evidence_coverage_score', 'NA')}, uncertainty {row.get('uncertainty_flag', 'NA')}."
+                )
+    lines.extend(["", "## Panel Design", ""])
+    if panel_df is None or panel_df.empty:
+        lines.append("No compact mutation panels were selected for this run.")
+    else:
+        for row in panel_df.head(5).to_dict(orient="records"):
+            lines.append(
+                f"- `{row['panel_id']}` includes `{row['variant_id']}` ({row['selection_reason']})."
+            )
     lines.extend(["", "## Exploratory Hypotheses", ""])
     if hypotheses_df.empty:
         lines.append("No exploratory hypotheses met the configured support thresholds.")
@@ -97,6 +125,9 @@ def build_figure_manifest(
         ("fig_similarity", plot_dir / "allele_similarity_heatmap.png", "Allele similarity heatmap", "Cross-allele combined similarity over tolerance and pocket features.", "cross_allele_analysis"),
         ("fig_pocket_overlap", plot_dir / "pocket_overlap_heatmap.png", "Pocket overlap heatmap", "Jaccard overlap of raw contacting-residue sets across alleles.", "pocket_signature_analysis"),
         ("fig_position_sensitivity", plot_dir / "position_sensitivity_by_allele.png", "Allele position sensitivity", "Mean position-level disruption by allele.", "cross_allele_analysis"),
+        ("fig_top_disruptive", plot_dir / "top_disruptive_variants.png", "Top disruptive variants", "Priority scores for disruptive mutation follow-up.", "within_allele_analysis"),
+        ("fig_priority_vs_coverage", plot_dir / "priority_score_vs_coverage.png", "Priority score vs evidence coverage", "Decision-support view of score against support completeness.", "study_overview"),
+        ("fig_panel_composition", plot_dir / "panel_composition.png", "Panel composition", "Selected panel composition across alleles, positions, and substitutions.", "study_overview"),
     ]
     rows = [_manifest_row(figure_id, path, title, description, section) for figure_id, path, title, description, section in figure_specs]
     return pd.DataFrame(rows[:core_figure_limit])
@@ -112,6 +143,8 @@ def build_table_manifest(
         ("table_shared_contact_features", analysis_dir / "table_shared_contact_features.csv", "Shared contact features", "Shared contacting residues or regions across alleles.", "cross_allele_analysis"),
         ("table_allele_distinguishing_features", analysis_dir / "table_allele_distinguishing_features.csv", "Allele-distinguishing features", "Allele-specific contact or tolerance features.", "cross_allele_analysis"),
         ("table_hypothesis_summary", analysis_dir / "table_hypothesis_summary.csv", "Hypothesis summary", "Exploratory hypotheses and their supporting evidence.", "hypothesis_generation"),
+        ("table_priority_summary", analysis_dir / "table_priority_summary.csv", "Priority summary", "Top-ranked variants for each prioritization mode.", "within_allele_analysis"),
+        ("table_panel_summary", analysis_dir / "table_panel_summary.csv", "Panel summary", "Compact panel selections and coverage summaries.", "study_overview"),
     ]
     rows = [_manifest_row(table_id, path, title, description, section) for table_id, path, title, description, section in table_specs]
     return pd.DataFrame(rows[:core_table_limit])
@@ -148,6 +181,10 @@ def build_analysis_snapshot(
     provenance: dict[str, str],
     case_study_results: list[dict[str, object]],
     hypotheses_df: pd.DataFrame,
+    priority_df: pd.DataFrame | None = None,
+    panel_df: pd.DataFrame | None = None,
+    robustness_summary_df: pd.DataFrame | None = None,
+    benchmark_summary_df: pd.DataFrame | None = None,
 ) -> dict[str, object]:
     return {
         "project_name": project_name,
@@ -162,6 +199,10 @@ def build_analysis_snapshot(
         "generated_tables": table_manifest_df.to_dict(orient="records"),
         "case_studies": case_study_results,
         "hypothesis_count": int(len(hypotheses_df)),
+        "priority_row_count": int(len(priority_df)) if priority_df is not None else 0,
+        "panel_row_count": int(len(panel_df)) if panel_df is not None else 0,
+        "robustness_runs": int(len(robustness_summary_df)) if robustness_summary_df is not None else 0,
+        "benchmark_rows": int(len(benchmark_summary_df)) if benchmark_summary_df is not None else 0,
     }
 
 
@@ -171,6 +212,8 @@ def build_publication_tables(
     pocket_signature_residues_df: pd.DataFrame,
     hypotheses_df: pd.DataFrame,
     analysis_dir: Path,
+    priority_df: pd.DataFrame | None = None,
+    panel_coverage_df: pd.DataFrame | None = None,
 ) -> dict[str, Path]:
     outputs: dict[str, Path] = {}
 
@@ -217,6 +260,10 @@ def build_publication_tables(
 
     outputs["table_hypothesis_summary.csv"] = analysis_dir / "table_hypothesis_summary.csv"
     hypotheses_df.to_csv(outputs["table_hypothesis_summary.csv"], index=False)
+    outputs["table_priority_summary.csv"] = analysis_dir / "table_priority_summary.csv"
+    (priority_df if priority_df is not None else pd.DataFrame()).to_csv(outputs["table_priority_summary.csv"], index=False)
+    outputs["table_panel_summary.csv"] = analysis_dir / "table_panel_summary.csv"
+    (panel_coverage_df if panel_coverage_df is not None else pd.DataFrame()).to_csv(outputs["table_panel_summary.csv"], index=False)
     return outputs
 
 

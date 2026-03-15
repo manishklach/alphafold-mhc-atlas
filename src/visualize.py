@@ -13,6 +13,9 @@ def create_plots(
     plot_dir: Path,
     peptide_position_df: pd.DataFrame | None = None,
     fingerprint_df: pd.DataFrame | None = None,
+    priority_df: pd.DataFrame | None = None,
+    panel_df: pd.DataFrame | None = None,
+    ranking_stability_df: pd.DataFrame | None = None,
 ) -> list[Path]:
     plot_paths: list[Path] = []
     if summary_df.empty:
@@ -66,6 +69,39 @@ def create_plots(
             fingerprint_heatmap = plot_dir / "fingerprint_feature_values.png"
             _plot_fingerprint_feature_values(fingerprint_df, feature_cols, fingerprint_heatmap)
             plot_paths.append(fingerprint_heatmap)
+
+    if priority_df is not None and not priority_df.empty:
+        disruptive_plot = plot_dir / "top_disruptive_variants.png"
+        _plot_top_priority(priority_df, "disruptive_mutations", disruptive_plot, "Top disruptive variants")
+        if disruptive_plot.exists():
+            plot_paths.append(disruptive_plot)
+
+        tolerated_plot = plot_dir / "top_tolerated_variants.png"
+        _plot_top_priority(priority_df, "tolerated_mutations", tolerated_plot, "Top tolerated variants")
+        if tolerated_plot.exists():
+            plot_paths.append(tolerated_plot)
+
+        score_cov = plot_dir / "priority_score_vs_coverage.png"
+        _plot_priority_vs_coverage(priority_df, score_cov)
+        if score_cov.exists():
+            plot_paths.append(score_cov)
+
+        discrimination_plot = plot_dir / "allele_discrimination_scores.png"
+        _plot_top_priority(priority_df, "allele_discriminating_mutations", discrimination_plot, "Allele discrimination scores")
+        if discrimination_plot.exists():
+            plot_paths.append(discrimination_plot)
+
+    if ranking_stability_df is not None and not ranking_stability_df.empty:
+        stability_plot = plot_dir / "ranking_stability.png"
+        _plot_ranking_stability(ranking_stability_df, stability_plot)
+        if stability_plot.exists():
+            plot_paths.append(stability_plot)
+
+    if panel_df is not None and not panel_df.empty:
+        panel_plot = plot_dir / "panel_composition.png"
+        _plot_panel_composition(panel_df, panel_plot)
+        if panel_plot.exists():
+            plot_paths.append(panel_plot)
 
     coverage_plot = plot_dir / "coverage_overview.png"
     _plot_coverage_overview(summary_df, coverage_plot)
@@ -205,6 +241,70 @@ def _plot_coverage_overview(summary_df: pd.DataFrame, output_path: Path) -> None
     plt.bar(categories, values, color=["#4C78A8", "#72B7B2", "#54A24B"])
     plt.ylabel("Count")
     plt.title("Project coverage overview")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150)
+    plt.close()
+
+
+def _plot_top_priority(priority_df: pd.DataFrame, mode_name: str, output_path: Path, title: str) -> None:
+    subset = priority_df[priority_df["ranking_mode"] == mode_name].head(10).copy()
+    if subset.empty:
+        return
+    plt.figure(figsize=(8, 4.5))
+    labels = subset["variant_id"].astype(str)
+    values = pd.to_numeric(subset["priority_score"], errors="coerce").fillna(0.0)
+    plt.bar(labels, values, color="#0F6D66")
+    plt.xticks(rotation=70, ha="right", fontsize=8)
+    plt.ylabel("Priority score")
+    plt.title(title)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close()
+
+
+def _plot_priority_vs_coverage(priority_df: pd.DataFrame, output_path: Path) -> None:
+    working = priority_df.copy()
+    if working.empty:
+        return
+    x = pd.to_numeric(working["evidence_coverage_score"], errors="coerce").fillna(0.0)
+    y = pd.to_numeric(working["priority_score"], errors="coerce").fillna(0.0)
+    plt.figure(figsize=(6, 5))
+    plt.scatter(x, y, color="#B35F3F", alpha=0.8)
+    plt.xlabel("Evidence coverage score")
+    plt.ylabel("Priority score")
+    plt.title("Priority score vs evidence coverage")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150)
+    plt.close()
+
+
+def _plot_ranking_stability(ranking_stability_df: pd.DataFrame, output_path: Path) -> None:
+    working = ranking_stability_df.copy()
+    if working.empty:
+        return
+    grouped = working.groupby("ranking_mode", dropna=False)["rank_shift"].apply(
+        lambda values: pd.to_numeric(values, errors="coerce").abs().mean()
+    ).reset_index(name="mean_abs_rank_shift")
+    plt.figure(figsize=(7, 4))
+    plt.bar(grouped["ranking_mode"], grouped["mean_abs_rank_shift"], color="#B279A2")
+    plt.xticks(rotation=45, ha="right")
+    plt.ylabel("Mean absolute rank shift")
+    plt.title("Ranking stability")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150)
+    plt.close()
+
+
+def _plot_panel_composition(panel_df: pd.DataFrame, output_path: Path) -> None:
+    working = panel_df.copy()
+    if working.empty:
+        return
+    grouped = working.groupby("allele_name", dropna=False)["variant_id"].nunique().reset_index(name="count")
+    plt.figure(figsize=(6, 4))
+    plt.bar(grouped["allele_name"], grouped["count"], color="#4C78A8")
+    plt.xticks(rotation=45, ha="right")
+    plt.ylabel("Selected variants")
+    plt.title("Panel composition by allele")
     plt.tight_layout()
     plt.savefig(output_path, dpi=150)
     plt.close()

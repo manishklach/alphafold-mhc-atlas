@@ -1,0 +1,2 @@
+benchmark_mode,status,metric_name,metric_value,notes
+internal_consistency_benchmark,ok,variants_with_summary_rows,4,Toy benchmark only.

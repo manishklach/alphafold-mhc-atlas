@@ -1,0 +1,2 @@
+ranking_mode,variant_id,baseline_rank,alternative_run_id,alternative_rank,rank_shift,remained_in_top_k_flags,stability_notes
+disruptive_mutations,demoA_pos2_A,1,weight_plus_20pct,1,0,top_5,Stable in toy reranking.

@@ -11,6 +11,7 @@ from .allele_fingerprint import (
     build_allele_substitution_fingerprint,
     build_allele_tolerance_fingerprint,
 )
+from .benchmarking import run_benchmarking
 from .case_study import run_case_studies
 from .cluster_analysis import run_clustering
 from .config import AlleleSpec, get_peptides_for_allele, load_config
@@ -32,11 +33,14 @@ from .metrics import (
     build_variant_summary,
 )
 from .mutation_generator import build_peptide_id, generate_single_mutants
+from .panel_design import run_panel_design
 from .parse_predictions import parse_prediction_outputs
 from .pocket_region_analysis import build_pocket_region_outputs
 from .pocket_signature import build_pocket_signature_residues, build_pocket_signature_summary
+from .prioritization import run_prioritization
 from .provenance import build_provenance
 from .publication_bundle import write_publication_bundle
+from .ranking_features import build_ranking_feature_table
 from .reporting import (
     build_analysis_snapshot,
     build_figure_manifest,
@@ -46,8 +50,10 @@ from .reporting import (
     build_table_manifest,
     write_report_package,
 )
+from .robustness import run_robustness_analysis
 from .sequence_resolver import resolve_mhc_sequences
 from .structure_utils import load_structure, map_chain_roles
+from .uncertainty import build_priority_uncertainty_table
 from .visualize import create_plots
 
 
@@ -176,6 +182,40 @@ def main() -> None:
         directories["plots"],
     )
 
+    ranking_feature_df = build_ranking_feature_table(
+        summary_output_df,
+        fingerprint_df,
+        allele_position_df,
+        pocket_region_contacts_df,
+        case_studies=config.case_studies,
+    )
+    uncertainty_df, evidence_coverage_df = build_priority_uncertainty_table(
+        ranking_feature_df,
+        config.prioritization.ranking_modes,
+        config.uncertainty,
+    )
+    prioritization_result = run_prioritization(
+        ranking_feature_df,
+        uncertainty_df,
+        config.prioritization,
+    )
+    robustness_result = run_robustness_analysis(
+        ranking_feature_df,
+        uncertainty_df,
+        prioritization_result.variant_priority_df,
+        config.prioritization,
+        config.robustness,
+    )
+    benchmark_summary_df, benchmark_details_df, reference_comparison_df, data_quality_warnings_df = run_benchmarking(
+        summary_output_df,
+        fingerprint_df,
+        config.benchmarking,
+    )
+    panel_design_result = run_panel_design(
+        prioritization_result.variant_priority_df,
+        config.panel_design,
+    )
+
     plot_paths = create_plots(
         summary_df=summary_output_df,
         position_df=position_df,
@@ -183,6 +223,9 @@ def main() -> None:
         plot_dir=directories["plots"],
         peptide_position_df=peptide_position_df,
         fingerprint_df=fingerprint_df,
+        priority_df=prioritization_result.variant_priority_df,
+        panel_df=panel_design_result.optimized_panel_df,
+        ranking_stability_df=robustness_result.ranking_stability_df,
     )
 
     written_outputs = _write_outputs(
@@ -210,6 +253,26 @@ def main() -> None:
         region_overlap_summary_df=region_overlap_summary_df,
         variant_clustering_result=variant_clustering_result,
         cross_allele_result=cross_allele_result,
+        ranking_feature_df=ranking_feature_df,
+        priority_df=prioritization_result.variant_priority_df,
+        priority_evidence_df=prioritization_result.evidence_df,
+        uncertainty_df=uncertainty_df,
+        evidence_coverage_df=evidence_coverage_df,
+        prioritization_top_tables=prioritization_result.top_tables,
+        robustness_summary_df=robustness_result.robustness_summary_df,
+        threshold_sensitivity_df=robustness_result.threshold_sensitivity_df,
+        ranking_stability_df=robustness_result.ranking_stability_df,
+        replicate_consistency_df=robustness_result.replicate_consistency_df,
+        robustness_report_markdown=robustness_result.report_markdown,
+        benchmark_summary_df=benchmark_summary_df,
+        benchmark_details_df=benchmark_details_df,
+        reference_comparison_df=reference_comparison_df,
+        data_quality_warnings_df=data_quality_warnings_df,
+        panel_df=panel_design_result.optimized_panel_df,
+        panel_coverage_df=panel_design_result.panel_coverage_df,
+        discriminatory_panel_df=panel_design_result.discriminatory_panel_df,
+        balanced_panel_df=panel_design_result.balanced_panel_df,
+        panel_report_markdown=panel_design_result.report_markdown,
     )
 
     hypotheses_result = build_hypotheses(
@@ -234,6 +297,8 @@ def main() -> None:
         pocket_signature_residues_df,
         hypotheses_result.hypotheses_df,
         directories["analysis"],
+        priority_df=prioritization_result.variant_priority_df,
+        panel_coverage_df=panel_design_result.panel_coverage_df,
     )
     written_outputs.update(publication_tables)
 
@@ -246,6 +311,10 @@ def main() -> None:
             fingerprint_df,
             structural_contacts_df,
             cross_allele_result.cross_allele_summary,
+            priority_df=prioritization_result.variant_priority_df,
+            priority_evidence_df=prioritization_result.evidence_df,
+            panel_df=panel_design_result.optimized_panel_df,
+            robustness_df=robustness_result.ranking_stability_df,
         )
 
     report_summary = build_report_summary(
@@ -256,6 +325,8 @@ def main() -> None:
         cross_allele_result.cross_allele_summary,
         hypotheses_result.hypotheses_df,
         case_study_results,
+        priority_df=prioritization_result.variant_priority_df,
+        panel_df=panel_design_result.optimized_panel_df,
     )
     figure_manifest_df = build_figure_manifest(directories["plots"], config.reporting.core_figure_limit)
     table_manifest_df = build_table_manifest(directories["analysis"], config.reporting.core_table_limit)
@@ -269,12 +340,18 @@ def main() -> None:
         provenance,
         case_study_results,
         hypotheses_result.hypotheses_df,
+        priority_df=prioritization_result.variant_priority_df,
+        panel_df=panel_design_result.optimized_panel_df,
+        robustness_summary_df=robustness_result.robustness_summary_df,
+        benchmark_summary_df=benchmark_summary_df,
     )
     report_markdown = build_markdown_report(
         report_summary,
         case_study_results,
         cross_allele_result.cross_allele_summary,
         hypotheses_result.hypotheses_df,
+        priority_df=prioritization_result.variant_priority_df,
+        panel_df=panel_design_result.optimized_panel_df,
         caveats=_build_report_caveats(config, summary_output_df, cross_allele_result.ran),
     )
     report_path, report_summary_path = write_report_package(
@@ -293,6 +370,8 @@ def main() -> None:
         pocket_signature_residues_df,
         hypotheses_result.hypotheses_df,
         case_study_results,
+        priority_df=prioritization_result.variant_priority_df,
+        panel_df=panel_design_result.optimized_panel_df,
     )
     if config.publication_bundle.enabled and config.reporting.generate_publication_bundle:
         write_publication_bundle(
@@ -480,6 +559,56 @@ def _write_outputs(**kwargs) -> None:
         directories["analysis"] / "allele_comparison_summary.csv",
         written_paths,
     )
+    _write_df(kwargs["ranking_feature_df"], directories["analysis"] / "ranking_feature_table.csv", written_paths)
+    _write_df(kwargs["priority_df"], directories["analysis"] / "variant_priority_table.csv", written_paths)
+    _write_df(kwargs["priority_evidence_df"], directories["analysis"] / "priority_evidence_table.csv", written_paths)
+    _write_df(kwargs["uncertainty_df"], directories["analysis"] / "priority_uncertainty_table.csv", written_paths)
+    _write_df(kwargs["evidence_coverage_df"], directories["analysis"] / "evidence_coverage_summary.csv", written_paths)
+    _write_df(kwargs["robustness_summary_df"], directories["analysis"] / "robustness_summary.csv", written_paths)
+    _write_df(kwargs["threshold_sensitivity_df"], directories["analysis"] / "threshold_sensitivity.csv", written_paths)
+    _write_df(kwargs["ranking_stability_df"], directories["analysis"] / "ranking_stability.csv", written_paths)
+    _write_df(kwargs["replicate_consistency_df"], directories["analysis"] / "replicate_consistency.csv", written_paths)
+    _write_df(kwargs["benchmark_summary_df"], directories["analysis"] / "benchmark_summary.csv", written_paths)
+    _write_df(kwargs["benchmark_details_df"], directories["analysis"] / "benchmark_details.csv", written_paths)
+    _write_df(kwargs["reference_comparison_df"], directories["analysis"] / "reference_comparison_summary.csv", written_paths)
+    _write_df(kwargs["data_quality_warnings_df"], directories["analysis"] / "data_quality_warnings.csv", written_paths)
+    _write_df(kwargs["panel_df"], directories["analysis"] / "optimized_mutation_panel.csv", written_paths)
+    _write_df(kwargs["panel_coverage_df"], directories["analysis"] / "panel_coverage_summary.csv", written_paths)
+    _write_df(kwargs["discriminatory_panel_df"], directories["analysis"] / "discriminatory_mutation_panel.csv", written_paths)
+    _write_df(kwargs["balanced_panel_df"], directories["analysis"] / "balanced_exploration_panel.csv", written_paths)
+    for filename, df in kwargs["prioritization_top_tables"].items():
+        _write_df(df, directories["analysis"] / filename, written_paths)
+
+    prioritization_dir = directories["analysis_prioritization"]
+    robustness_dir = directories["analysis_robustness"]
+    benchmarking_dir = directories["analysis_benchmarking"]
+    panel_dir = directories["analysis_panel_design"]
+    _write_df(kwargs["priority_df"], prioritization_dir / "variant_priority_table.csv", written_paths)
+    _write_df(kwargs["priority_evidence_df"], prioritization_dir / "priority_evidence_table.csv", written_paths)
+    _write_df(kwargs["uncertainty_df"], prioritization_dir / "priority_uncertainty_table.csv", written_paths)
+    _write_df(kwargs["evidence_coverage_df"], prioritization_dir / "evidence_coverage_summary.csv", written_paths)
+    _write_df(kwargs["ranking_feature_df"], prioritization_dir / "ranking_feature_table.csv", written_paths)
+    for filename, df in kwargs["prioritization_top_tables"].items():
+        _write_df(df, prioritization_dir / filename, written_paths)
+
+    _write_df(kwargs["robustness_summary_df"], robustness_dir / "robustness_summary.csv", written_paths)
+    _write_df(kwargs["threshold_sensitivity_df"], robustness_dir / "threshold_sensitivity.csv", written_paths)
+    _write_df(kwargs["ranking_stability_df"], robustness_dir / "ranking_stability.csv", written_paths)
+    _write_df(kwargs["replicate_consistency_df"], robustness_dir / "replicate_consistency.csv", written_paths)
+    (robustness_dir / "conclusion_stability_report.md").write_text(kwargs["robustness_report_markdown"], encoding="utf-8")
+    written_paths["conclusion_stability_report.md"] = robustness_dir / "conclusion_stability_report.md"
+
+    _write_df(kwargs["benchmark_summary_df"], benchmarking_dir / "benchmark_summary.csv", written_paths)
+    _write_df(kwargs["benchmark_details_df"], benchmarking_dir / "benchmark_details.csv", written_paths)
+    _write_df(kwargs["reference_comparison_df"], benchmarking_dir / "reference_comparison_summary.csv", written_paths)
+    _write_df(kwargs["data_quality_warnings_df"], benchmarking_dir / "data_quality_warnings.csv", written_paths)
+
+    _write_df(kwargs["panel_df"], panel_dir / "optimized_mutation_panel.csv", written_paths)
+    _write_df(kwargs["panel_coverage_df"], panel_dir / "panel_coverage_summary.csv", written_paths)
+    _write_df(kwargs["discriminatory_panel_df"], panel_dir / "discriminatory_mutation_panel.csv", written_paths)
+    _write_df(kwargs["balanced_panel_df"], panel_dir / "balanced_exploration_panel.csv", written_paths)
+    (panel_dir / "panel_design_report.md").write_text(kwargs["panel_report_markdown"], encoding="utf-8")
+    written_paths["panel_design_report.md"] = panel_dir / "panel_design_report.md"
     return written_paths
 
 
@@ -520,12 +649,16 @@ def _build_notebook_exports(
     pocket_signature_residues_df: pd.DataFrame,
     hypotheses_df: pd.DataFrame,
     case_study_results: list[dict[str, object]],
+    priority_df: pd.DataFrame | None = None,
+    panel_df: pd.DataFrame | None = None,
 ) -> dict[str, pd.DataFrame | dict[str, object]]:
     return {
         "notebook_variant_summary.csv": summary_df,
         "notebook_allele_summary.csv": allele_tolerance_df,
         "notebook_pocket_signature.csv": pocket_signature_residues_df,
         "notebook_hypotheses.csv": hypotheses_df,
+        "notebook_priority_summary.csv": priority_df if priority_df is not None else pd.DataFrame(),
+        "notebook_panel_design.csv": panel_df if panel_df is not None else pd.DataFrame(),
         "notebook_case_studies.json": {"case_studies": case_study_results},
     }
 

@@ -1,0 +1,2 @@
+hypothesis_id,category,statement,supporting_metrics,supporting_tables,supporting_figures,confidence_level,caveats,status
+h2,shared_tolerance_pattern,HLA-B*07:02 appears less tolerant to the position-2 A substitution in this toy cross-allele demo.,delta_total_contacts_vs_wt;cross_allele_contact_divergence,cross_allele_summary.csv,,exploratory,Toy data only,descriptive
