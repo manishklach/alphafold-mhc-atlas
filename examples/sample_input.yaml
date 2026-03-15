@@ -1,0 +1,120 @@
+project_name: "mhc_phase5_demo"
+output_dir: "../outputs/mhc_phase5_demo"
+
+alleles:
+  - allele_name: "HLA-A*02:01"
+    class_type: "I"
+    heavy_chain_sequence: "ACDEFGHIKLMNPQRSTVWYACDEFGHIKLMNPQRSTVWY"
+    beta2m_sequence: "MNPQRSTVWYACDEFGHIKL"
+    reference_file: null
+    allow_metadata_only_fallback: false
+  - allele_name: "HLA-B*07:02"
+    class_type: "I"
+    heavy_chain_sequence: "TVWYACDEFGHIKLMNPQRSTVWYACDEFGHIKLMNPQRS"
+    beta2m_sequence: "QRSTVWYACDEFGHIKLMNP"
+    reference_file: null
+    allow_metadata_only_fallback: false
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "GILGFVFTL"
+  mutation_positions: [2, 9]
+  allowed_substitutions: ["A", "V", "L", "I", "F", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/mhc_phase5_demo/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: true
+  mutated_positions_of_interest: []
+  anchor_positions: [2, 9]
+  require_confident_chain_mapping: true
+
+clustering:
+  enabled: true
+  min_variants_required: 5
+  features:
+    - delta_confidence_vs_wt
+    - delta_total_contacts_vs_wt
+    - delta_mean_min_distance_vs_wt
+    - delta_contacts_at_mutated_position_vs_wt
+  standardize: true
+
+cross_allele_analysis:
+  enabled: true
+  require_min_alleles: 2
+  compare_pocket_signatures: true
+  compare_tolerance_fingerprints: true
+  compare_anchor_patterns: true
+  use_combined_similarity: true
+  similarity_metrics:
+    numeric: "euclidean"
+    set_based: "jaccard"
+  standardize_numeric_features: true
+
+pocket_signature:
+  enabled: true
+  min_contact_frequency: 1
+  anchor_positions: [2, 9]
+  compute_anchor_specific_signatures: true
+  require_confident_chain_mapping: true
+
+pocket_regions:
+  enabled: true
+  mapping_file: "../data/pocket_regions.yaml"
+  require_region_mapping_for_comparison: false
+
+multi_allele:
+  shared_mutation_panel: true
+  allele_specific_reference_peptides: false
+
+reporting:
+  enabled: true
+  generate_markdown_report: true
+  generate_publication_bundle: true
+  include_case_studies: true
+  include_hypotheses: true
+  core_figure_limit: 8
+  core_table_limit: 8
+
+hypothesis_generation:
+  enabled: true
+  min_supporting_variants: 3
+  min_supporting_alleles: 2
+  include_low_confidence_hypotheses: true
+  require_structural_support: false
+  categories:
+    - shared_tolerance_pattern
+    - anchor_disruption_pattern
+    - allele_specific_contact_network
+    - pocket_region_sensitivity
+
+publication_bundle:
+  enabled: true
+  include_notebook_exports: true
+  copy_figures: true
+  copy_tables: true
+
+case_studies:
+  enabled: true
+  definitions:
+    - case_id: "anchor_position_comparison"
+      description: "Compare anchor-disruption patterns at positions 2 and 9 across selected alleles."
+      alleles: ["HLA-A*02:01", "HLA-B*07:02"]
+      peptides: ["GILGFVFTL"]
+      mutation_positions: [2, 9]
+      substitutions: ["A", "F", "Y"]

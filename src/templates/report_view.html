@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Report{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>{{ project_name }} report</h1>
+  <p><a href="{{ url_for('project_detail', project_name=project_name) }}">Back to project</a></p>
+</section>
+<section class="panel">
+  <div class="markdown-view">{{ report_text|markdown_like|safe }}</div>
+</section>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Run Result{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Run Result</h1>
+  <p><strong>Command:</strong> <code>{{ command }}</code></p>
+  <p><strong>Return code:</strong> {{ returncode }}</p>
+  {% if project_dir %}
+  <p><a class="button-link" href="{{ url_for('project_detail', project_name=project_dir) }}">Open project dashboard</a></p>
+  {% endif %}
+</section>
+
+<section class="split">
+  <article class="panel">
+    <h2>Stdout</h2>
+    <pre>{{ stdout }}</pre>
+  </article>
+  <article class="panel">
+    <h2>Stderr</h2>
+    <pre>{{ stderr }}</pre>
+  </article>
+</section>
+{% endblock %}

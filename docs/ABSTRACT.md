@@ -1,0 +1,13 @@
+# Abstract
+
+## Short Abstract
+
+We developed a reproducible peptide-MHC comparative structural analysis framework that operates on top of AlphaFold or ColabFold-derived models. The framework supports allele-resolved multichain input generation, systematic peptide mutation panel construction, defensive prediction parsing, peptide-heavy-chain contact extraction, WT-relative structural comparison, allele-level tolerance fingerprinting, cross-allele pocket-signature analysis, and publication-oriented reporting. The design emphasizes transparent structural summaries, explicit coverage reporting, and exploratory hypothesis generation rather than black-box biological prediction.
+
+## Extended Abstract
+
+Comparative peptide-MHC structural studies often face a practical gap between model generation and reproducible downstream analysis. Researchers may be able to generate AlphaFold or ColabFold inputs and predicted complexes, but the subsequent steps such as organizing mutation panels, comparing mutants to wild type, aggregating results across alleles, and preparing report-ready outputs are frequently handled through ad hoc scripts and notebooks. This makes comparative interpretation harder to reproduce and extend.
+
+This repository addresses that gap through a modular peptide-MHC structural perturbation framework. The system supports one or more class-I alleles, one or more reference peptides, and systematic single-substitution panels. It resolves allele inputs into explicit heavy-chain and beta-2 microglobulin sequences, constructs multichain modeling inputs, ingests predicted structures from common AlphaFold or ColabFold output layouts, and extracts simple interpretable structural features such as peptide-heavy-chain contact counts, minimum distances, and WT-relative deltas. These features are aggregated into variant-level tolerance fingerprints, allele-level summaries, cross-allele pocket-signature representations, and user-defined pocket-region analyses where appropriate.
+
+The framework also adds a reporting layer that produces markdown summaries, analysis snapshots, publication-oriented figure and table manifests, notebook-ready exports, and optional case-study subsets. A lightweight HTML dashboard supports local browsing of runs, plots, tables, reports, and upload guidance for new prediction folders. Throughout the pipeline, the outputs are explicitly framed as descriptive and exploratory structural summaries. The system does not claim binding affinity prediction, immunogenicity prediction, or experimental validation. Instead, it is designed as a reproducible comparative analysis foundation for hypothesis generation, structural interpretation, and downstream publication workflows.

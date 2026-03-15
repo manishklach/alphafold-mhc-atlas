@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ table_name }}{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>{{ table_name }}</h1>
+  <p><a href="{{ url_for('project_detail', project_name=project_name) }}">Back to project</a></p>
+  <p><code>{{ table_path }}</code></p>
+</section>
+<section class="panel">
+  {% if headers %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          {% for header in headers %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No table rows were available.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Upload Guide{% endblock %}
+{% block content %}
+<section class="hero compact">
+  <div>
+    <p class="eyebrow">Prediction Ingestion</p>
+    <h1>{{ project_name }} upload guide</h1>
+    <p class="lede">This project expects AlphaFold or ColabFold prediction folders to be copied into the local predictions directory using the generated variant ids.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Where to place prediction folders</h2>
+  <p>Copy prediction outputs into:</p>
+  <pre>{{ prediction_root }}</pre>
+  <p>Expected layout:</p>
+  <pre>predictions/
+  &lt;variant_id&gt;/
+    ranking_debug.json
+    result_*.pkl or result_*.pkl.gz
+    *.npz
+    ranked_*.pdb
+    *.cif or *.mmcif</pre>
+</section>
+
+<section class="panel">
+  <h2>How to refresh analysis after copying outputs</h2>
+  <pre>cd {{ project_name }}
+python -m src.main --config examples/sample_input.yaml</pre>
+  <p>Use the same config that generated this project so the parser scans the matching `predictions/` directory.</p>
+</section>
+
+<section class="panel">
+  <h2>Variant manifest preview</h2>
+  {% if manifest_path %}
+  <p>Manifest file:</p>
+  <pre>{{ manifest_path }}</pre>
+  {% endif %}
+  {% if headers %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          {% for header in headers %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No manifest was found for this project.</p>
+  {% endif %}
+</section>
+{% endblock %}

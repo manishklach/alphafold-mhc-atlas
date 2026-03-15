@@ -1,0 +1,15 @@
+class_I:
+  region_definitions:
+    pocket_like_anchor_region_1:
+      description: "Example user-defined region near one anchor-contact area."
+      residues:
+        - "45"
+        - "63"
+        - "66"
+    pocket_like_anchor_region_2:
+      description: "Example user-defined region near another anchor-contact area."
+      residues:
+        - "9"
+        - "24"
+        - "95"
+        - "116"

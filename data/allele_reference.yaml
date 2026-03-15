@@ -1,0 +1,19 @@
+# Local allele sequence reference schema for phase 2.
+# Populate this file with trusted local sequences if you want
+# name-to-sequence resolution without putting the sequences directly
+# into the run config.
+#
+# Example structure:
+#
+# alleles:
+#   "HLA-A*02:01":
+#     class_type: "I"
+#     heavy_chain_sequence: "PASTE_HEAVY_CHAIN_SEQUENCE_HERE"
+#     beta2m_sequence: "PASTE_BETA2M_SEQUENCE_HERE"
+#
+# Notes:
+# - This repository intentionally does not ship fabricated biological sequences.
+# - Keep sequences uppercase, single-letter amino acid codes only.
+# - For class I inputs, both heavy_chain_sequence and beta2m_sequence are required.
+
+alleles: {}

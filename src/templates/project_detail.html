@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}{{ project_name }}{% endblock %}
+{% block content %}
+<section class="hero compact">
+  <div>
+    <p class="eyebrow">Project</p>
+    <h1>{{ project_name }}</h1>
+    <p class="lede">Browse generated tables, plots, case studies, and report outputs for this run.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="button-link" href="{{ url_for('upload_guide', project_name=project_name) }}">Prediction Upload Guide</a>
+  </div>
+</section>
+
+<section class="stats-grid">
+  <article class="stat-card">
+    <span class="stat-label">Alleles</span>
+    <span class="stat-value">{{ snapshot.get("num_alleles", report_summary.get("num_alleles", fallback_meta.get("num_alleles", "NA"))) }}</span>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Variants</span>
+    <span class="stat-value">{{ snapshot.get("num_variants", report_summary.get("num_variants", fallback_meta.get("num_variants", "NA"))) }}</span>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Prediction Coverage</span>
+    <span class="stat-value">{{ snapshot.get("prediction_coverage", fallback_meta.get("prediction_coverage", "NA")) }}</span>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Hypotheses</span>
+    <span class="stat-value">{{ report_summary.get("hypothesis_count", 0) }}</span>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Analysis Categories</h2>
+  </div>
+  <div class="category-grid">
+    {% for category in categories %}
+    <article class="category-card">
+      <div class="status-row">
+        <span class="status-badge status-{{ category.status }}">{{ category.status|replace('_', ' ')|title }}</span>
+      </div>
+      <h3>{{ category.label }}</h3>
+      <p class="category-note">{{ category.note }}</p>
+      <p>Tables: {{ category.table_count }}</p>
+      <p>Plots: {{ category.plot_count }}</p>
+      {% if category.missing_plot_count %}
+      <p>Expected but missing plots: {{ category.missing_plot_count }}</p>
+      {% endif %}
+      {% if category.key == "case_studies" and category["items"] %}
+      <ul class="mini-list">
+        {% for item in category["items"] %}
+        <li><a href="{{ url_for('case_study_view', project_name=project_name, case_id=item.case_id) }}">{{ item.case_id }}</a></li>
+        {% endfor %}
+      </ul>
+      {% elif category["items"] %}
+      <ul class="mini-list">
+        {% for item in category["items"] %}
+        <li>{{ item.title or item.table_id or item.figure_id }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="split">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Tables</h2>
+    </div>
+    <ul class="artifact-list">
+      {% for table in tables %}
+      <li>
+        <a href="{{ url_for('table_view', project_name=project_name, table_name=table.source_path.split('\\')[-1].split('/')[-1]) }}">{{ table.title or table.table_id }}</a>
+        <span>{{ table.section }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Case Studies</h2>
+    </div>
+    {% if case_studies %}
+    <ul class="artifact-list">
+      {% for case in case_studies %}
+      <li>
+        <a href="{{ url_for('case_study_view', project_name=project_name, case_id=case.case_id) }}">{{ case.case_id }}</a>
+        <span>{{ case.summary.get("status", "NA") }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No case studies found for this project.</p>
+    {% endif %}
+  </article>
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+      <h2>Plots</h2>
+    </div>
+  {% if plots %}
+  <div class="plot-grid">
+    {% for plot in plots %}
+    <figure class="plot-card">
+      <img src="{{ url_for('plot_file', project_name=project_name, plot_name=plot.source_path.split('\\')[-1].split('/')[-1]) }}" alt="{{ plot.title }}">
+      <figcaption>{{ plot.title }}</figcaption>
+    </figure>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No plots found.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Report</h2>
+    <a class="button-link" href="{{ url_for('report_view', project_name=project_name) }}">Open full report</a>
+  </div>
+  <div class="markdown-view">{{ report_text|markdown_like|safe }}</div>
+</section>
+{% endblock %}

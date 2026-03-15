@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Peptide-MHC Atlas | Pitch and Vision</title>
+    <style>
+      :root {
+        --bg: #f5efe4;
+        --paper: rgba(255, 252, 246, 0.94);
+        --ink: #1e1b17;
+        --muted: #665f55;
+        --line: #d8cbb7;
+        --accent: #0d6f69;
+        --accent2: #b35f3f;
+        --shadow: 0 14px 36px rgba(30, 27, 23, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(13, 111, 105, 0.08), transparent 30%),
+          radial-gradient(circle at 80% 0%, rgba(179, 95, 63, 0.08), transparent 24%),
+          var(--bg);
+      }
+
+      .wrap {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .hero {
+        padding: 52px 0 26px;
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--accent2);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(2.4rem, 5vw, 5rem);
+        line-height: 0.95;
+        max-width: 900px;
+      }
+
+      .lede {
+        margin: 0;
+        max-width: 760px;
+        color: var(--muted);
+        font-size: 1.12rem;
+        line-height: 1.65;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 22px;
+        margin-bottom: 24px;
+      }
+
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        font-size: 1.55rem;
+      }
+
+      h3 {
+        margin: 18px 0 10px;
+        font-size: 1.05rem;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      p, li {
+        line-height: 1.7;
+        color: var(--ink);
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .quote {
+        font-size: 1.25rem;
+        line-height: 1.6;
+        color: var(--ink);
+        margin: 0;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: rgba(13, 111, 105, 0.1);
+        color: var(--accent);
+        font-size: 0.9rem;
+      }
+
+      .section-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 18px;
+        margin: 22px 0 32px;
+      }
+
+      .mini {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+
+      .footer {
+        padding: 0 0 40px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">Research Pitch</p>
+        <h1>Peptide-MHC comparative structural analysis without the usual notebook sprawl</h1>
+        <p class="lede">
+          This repository is a reproducible framework for turning peptide-MHC mutation panels and AlphaFold or ColabFold outputs into interpretable WT-relative, cross-allele, and publication-oriented structural summaries.
+        </p>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <h2>Core Pitch</h2>
+          <p class="quote">
+            “This framework takes one or more class-I alleles and peptide mutation panels, prepares allele-aware multichain modeling inputs, parses predicted peptide-MHC complexes, extracts transparent peptide-pocket contact features, compares mutants to WT, aggregates effects across alleles, and exports reports, figures, case studies, and exploratory hypotheses.”
+          </p>
+          <div class="pill-row">
+            <span class="pill">WT-relative analysis</span>
+            <span class="pill">Cross-allele comparison</span>
+            <span class="pill">Pocket signatures</span>
+            <span class="pill">Publication bundle</span>
+          </div>
+        </article>
+        <aside class="panel">
+          <h2>What It Is Not</h2>
+          <ul>
+            <li>Not a binding affinity predictor.</li>
+            <li>Not an immunogenicity predictor.</li>
+            <li>Not proof of biological mechanism.</li>
+            <li>Not a black-box ranking model.</li>
+          </ul>
+          <h3>Positioning</h3>
+          <p>
+            It is a comparative structural analysis framework for hypothesis generation and reproducible reporting.
+          </p>
+        </aside>
+      </section>
+
+      <section class="section-grid">
+        <article class="mini">
+          <h2>Vision</h2>
+          <p>
+            Build a rigorous peptide-MHC comparative analysis foundation that can grow into multi-allele structural tolerance atlases, better residue correspondence layers, richer pocket-region comparisons, and stronger publication workflows.
+          </p>
+        </article>
+        <article class="mini">
+          <h2>Why It Matters</h2>
+          <p>
+            Many projects can generate structures, but far fewer provide a clean path from predicted complexes to reproducible comparative interpretation across mutants and across alleles.
+          </p>
+        </article>
+        <article class="mini">
+          <h2>Who It Serves</h2>
+          <p>
+            Computational immunology, structural bioinformatics, peptide-MHC method development, and labs that need cleaner report-ready structural comparison.
+          </p>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <h2>How It Is Different</h2>
+          <h3>End-to-end rather than fragmentary</h3>
+          <p>
+            It covers sequence resolution, mutation-panel generation, chain-aware modeling inputs, prediction parsing, structural feature extraction, allele aggregation, and reporting in one workflow.
+          </p>
+          <h3>Peptide-MHC specific rather than generic</h3>
+          <p>
+            The architecture is organized around heavy chain, beta-2 microglobulin, peptide, WT-relative perturbations, and cross-allele comparison.
+          </p>
+          <h3>Interpretable rather than opaque</h3>
+          <p>
+            The primary outputs are contact counts, minimum distances, WT-relative deltas, tolerance fingerprints, and pocket-signature summaries.
+          </p>
+          <h3>Conservative rather than hype-driven</h3>
+          <p>
+            The framework repeatedly treats its outputs as descriptive and exploratory, with explicit caveats about coverage, prediction quality, and residue comparability.
+          </p>
+        </article>
+        <article class="panel">
+          <h2>What Researchers Can Ask</h2>
+          <ul>
+            <li>Which peptide positions appear structurally sensitive within an allele panel?</li>
+            <li>Which substitutions repeatedly reduce peptide-heavy-chain contacts relative to WT?</li>
+            <li>Which alleles show similar tolerance fingerprints under the same perturbation panel?</li>
+            <li>Which heavy-chain residues recur across many peptide-contact patterns?</li>
+            <li>Which observations are strong enough to write down as explicit exploratory hypotheses?</li>
+          </ul>
+          <h3>Communication outputs</h3>
+          <ul>
+            <li>Markdown report</li>
+            <li>Analysis snapshot</li>
+            <li>Publication bundle</li>
+            <li>Notebook-ready exports</li>
+            <li>Case-study subsets</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>One-Minute Summary</h2>
+        <p>
+          Most peptide-MHC structural workflows break down after prediction generation. This framework is built to bridge that gap. It organizes mutation panels, prepares real multichain inputs, ingests AlphaFold or ColabFold outputs, extracts interpretable structural features, compares mutants to WT, aggregates effects across alleles, and writes report-ready outputs. The main contribution is not a single score. It is a structured way to convert peptide-MHC prediction panels into reproducible comparative structural evidence.
+        </p>
+      </section>
+
+      <p class="footer">
+        Local file: <code>docs/project_story.html</code>
+      </p>
+    </main>
+  </body>
+</html>

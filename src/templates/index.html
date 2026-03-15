@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Projects{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Local Dashboard</p>
+    <h1>Projects, runs, reports, and analysis outputs</h1>
+    <p class="lede">This UI reads the existing file-based pipeline outputs and can launch the current CLI against a selected config.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Run Pipeline</h2>
+  <form method="post" action="{{ url_for('run_pipeline') }}" class="run-form">
+    <label for="config_path">Config path</label>
+    <input id="config_path" name="config_path" list="config-options" value="examples/sample_input.yaml">
+    <datalist id="config-options">
+      {% for config in configs %}
+      <option value="{{ config.relative_to(config.parents[1]) }}"></option>
+      {% endfor %}
+    </datalist>
+    <button type="submit">Run Analysis</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Detected Projects</h2>
+  {% if projects %}
+  <div class="project-grid">
+    {% for project in projects %}
+    <article class="card">
+      <div class="status-row">
+        <span class="status-badge status-{{ project.status.tone }}">{{ project.status.label }}</span>
+      </div>
+      <h3><a href="{{ url_for('project_detail', project_name=project.name) }}">{{ project.name }}</a></h3>
+      <p>Alleles: {{ project.num_alleles if project.num_alleles else "NA" }}</p>
+      <p>Variants: {{ project.num_variants if project.num_variants else "NA" }}</p>
+      <p>Prediction coverage: {{ project.prediction_coverage or 0 }}</p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No output projects were detected under <code>outputs/</code>.</p>
+  {% endif %}
+</section>
+{% endblock %}

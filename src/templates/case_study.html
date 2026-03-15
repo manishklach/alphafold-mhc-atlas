@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ case_id }}{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Case Study: {{ case_id }}</h1>
+  <p><a href="{{ url_for('project_detail', project_name=project_name) }}">Back to project</a></p>
+  <p>{{ summary.get("description", "") }}</p>
+  <p>Status: {{ summary.get("status", "NA") }}</p>
+</section>
+<section class="panel">
+  <h2>Filtered Tables</h2>
+  <ul class="artifact-list">
+    {% for table in tables %}
+    <li>
+      <a href="{{ url_for('artifact_view', project_name=project_name, path='case_studies/' + case_id + '/' + table) }}">{{ table }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}
