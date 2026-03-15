@@ -1,0 +1,14 @@
+package_demos:
+  - cross_allele_demo
+  - golden_weekly_review_demo
+  - pilot_review_demo
+  - small_project
+
+repo_only_demos:
+  - role_views_demo
+  - weekly_review_demo
+  - workspace_demo
+
+notes:
+  package_demos: "These demos are shipped in src/resources/demo so installed users can run them after pip install."
+  repo_only_demos: "These entries are repo-level documentation or workflow examples and are intentionally not mirrored into packaged resources."

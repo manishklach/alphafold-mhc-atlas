@@ -23,6 +23,8 @@ using trusted public sequences, preferably from IPD-IMGT/HLA.
 
 - `sample_input.yaml`
 - `researcher_project_template.yaml`
+- `researcher_conservative_weights.yaml`
+- `researcher_cross_allele_weights.yaml`
 - `minimal_single_allele_template.yaml`
 - `public_a0101_mage_panel.yaml`
 - `public_a0201_cmv_panel.yaml`
@@ -41,6 +43,8 @@ using trusted public sequences, preferably from IPD-IMGT/HLA.
 
 - first-time evaluator: `sample_input.yaml`
 - first real researcher project: `researcher_project_template.yaml`
+- conservative weighting variant: `researcher_conservative_weights.yaml`
+- cross-allele weighting variant: `researcher_cross_allele_weights.yaml`
 - simpler single-allele template: `minimal_single_allele_template.yaml`
 - public-data-style multi-allele setup: `public_cross_allele_influenza_panel.yaml`
 - reviewer-friendly narrow meeting template: `public_decision_meeting_template.yaml`

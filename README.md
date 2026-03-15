@@ -118,6 +118,7 @@ This repo replaces that with a local, evidence-linked review workflow:
 - First-run guide: [FIRST_RUN.md](FIRST_RUN.md)
 - Researcher first project guide: [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md)
 - New researcher guide: [docs/NEW_RESEARCHER_GUIDE.md](docs/NEW_RESEARCHER_GUIDE.md)
+- Prioritization weight guide: [docs/WEIGHT_TUNING.md](docs/WEIGHT_TUNING.md)
 - Demo guide: [DEMOS.md](DEMOS.md)
 - Pilot workflow guide: [PILOT_WORKFLOW.md](PILOT_WORKFLOW.md)
 - CLI guide: [CLI_USAGE.md](CLI_USAGE.md)

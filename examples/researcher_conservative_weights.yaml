@@ -1,0 +1,91 @@
+# Researcher template emphasizing conservative, stronger-support prioritization.
+
+project_name: "my_peptide_mhc_project_conservative"
+output_dir: "../outputs/my_peptide_mhc_project_conservative"
+
+alleles:
+  - allele_name: "HLA-A*02:01"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "NLVPMVATV"
+  mutation_positions: [2, 9]
+  allowed_substitutions: ["A", "F", "I", "L", "V", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/my_peptide_mhc_project_conservative/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: true
+  mutated_positions_of_interest: []
+  anchor_positions: [2, 9]
+  require_confident_chain_mapping: true
+
+prioritization:
+  enabled: true
+  default_top_k: 10
+  ranking_modes:
+    disruptive_mutations:
+      enabled: true
+      normalize_features: true
+      require_structural_support: true
+      features:
+        - name: "anchor_disruption_flag"
+          weight: 1.25
+        - name: "delta_total_contacts_vs_wt"
+          weight: -0.8
+        - name: "delta_mean_min_distance_vs_wt"
+          weight: 0.5
+        - name: "delta_confidence_vs_wt"
+          weight: -0.25
+    tolerated_mutations:
+      enabled: true
+      normalize_features: true
+      require_structural_support: true
+      features:
+        - name: "delta_total_contacts_vs_wt"
+          weight: 0.8
+        - name: "delta_mean_min_distance_vs_wt"
+          weight: -0.5
+        - name: "delta_confidence_vs_wt"
+          weight: 0.25
+
+uncertainty:
+  enabled: true
+  penalize_missing_features: true
+  penalize_unconfident_chain_mapping: true
+
+robustness:
+  enabled: true
+  contact_distance_thresholds: [4.0, 4.5, 5.0]
+  weight_perturbation_fraction: 0.2
+  missing_feature_drop_tests: true
+  replicate_consistency: true
+  compare_top_k: [5, 10]
+
+interactive_app:
+  enabled: true
+  framework: "streamlit"
+  default_project: null
+  enable_demo_mode: true
+  enable_scenario_saving: true
+  max_rows_preview: 200

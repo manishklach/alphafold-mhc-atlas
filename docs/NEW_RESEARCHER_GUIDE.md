@@ -201,6 +201,8 @@ Also avoid:
 7. discuss with the computational lead or manager/reviewer
 8. export next actions and decision materials
 
+If your team disagrees with prioritization heuristics, use [WEIGHT_TUNING.md](WEIGHT_TUNING.md) and compare alternative configs rather than editing code.
+
 ## Common pitfalls
 
 - missing prediction outputs in `predictions/`
