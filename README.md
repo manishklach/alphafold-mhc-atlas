@@ -117,6 +117,7 @@ This repo replaces that with a local, evidence-linked review workflow:
 - Quickstart: [QUICKSTART.md](QUICKSTART.md)
 - First-run guide: [FIRST_RUN.md](FIRST_RUN.md)
 - Researcher first project guide: [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md)
+- New researcher guide: [docs/NEW_RESEARCHER_GUIDE.md](docs/NEW_RESEARCHER_GUIDE.md)
 - Demo guide: [DEMOS.md](DEMOS.md)
 - Pilot workflow guide: [PILOT_WORKFLOW.md](PILOT_WORKFLOW.md)
 - CLI guide: [CLI_USAGE.md](CLI_USAGE.md)
@@ -296,6 +297,8 @@ Use this repo on your own project in this order:
 6. inspect the project with `mhc-atlas app --project outputs/<project>`
 
 If you want the shortest researcher-specific walkthrough, start with [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md).
+
+For a fuller onboarding path for a new lab member or collaborator, use [docs/NEW_RESEARCHER_GUIDE.md](docs/NEW_RESEARCHER_GUIDE.md).
 
 Recommended first-time workflow:
 

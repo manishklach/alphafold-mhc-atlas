@@ -19,6 +19,10 @@ interpretable decision support for structure-guided experimental prioritization.
 mhc-atlas app --workspace demo/golden_weekly_review_demo/workspace.yaml
 ```
 
+If you want to move from this demo into a real project setup, continue with:
+
+- [../../docs/NEW_RESEARCHER_GUIDE.md](../../docs/NEW_RESEARCHER_GUIDE.md)
+
 ## Fast path
 
 ```bash

@@ -64,6 +64,7 @@ mhc-atlas app --project outputs/my_peptide_mhc_project
 
 Detailed guide:
 - [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md)
+- [docs/NEW_RESEARCHER_GUIDE.md](docs/NEW_RESEARCHER_GUIDE.md)
 
 ## Workspace path
 

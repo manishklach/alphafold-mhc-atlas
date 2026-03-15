@@ -1,5 +1,7 @@
 # Demos
 
+If you are evaluating the repo as a new researcher or collaborator, start with the golden demo and then continue to [docs/NEW_RESEARCHER_GUIDE.md](docs/NEW_RESEARCHER_GUIDE.md) for the real-project path.
+
 ## Start here
 
 Recommended first demo:

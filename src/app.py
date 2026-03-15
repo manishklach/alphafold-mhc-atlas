@@ -365,6 +365,7 @@ def _render_overview(st, inventory: dict[str, object], report_text: str) -> None
                 "- Use this product to review ranked variants, panels, and evidence before a team decision meeting.",
                 "- Recommended flow: `Project Overview` -> `Ranking Explorer` -> `Review Queue` -> `Shortlists` -> `Reports / Exports`.",
                 "- Best first demo: `mhc-atlas app --workspace workspaces/demo_workspace.yaml`.",
+                "- Starting a real study: read `docs/NEW_RESEARCHER_GUIDE.md` and copy `examples/researcher_project_template.yaml`.",
             ]
         )
     )
@@ -751,6 +752,7 @@ def render_workspace_app(st, workspace_config) -> None:
                     "- This workspace view is designed for recurring scientific review meetings.",
                     "- Start with portfolio coverage, then inspect changes since last review.",
                     "- Generate the weekly review packet before opening manager-facing decision materials.",
+                    "- New researchers should run the golden demo first, then use `docs/NEW_RESEARCHER_GUIDE.md` for their own project.",
                 ]
             )
         )

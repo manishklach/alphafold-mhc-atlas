@@ -55,6 +55,7 @@ def test_index_and_project_routes(tmp_path, monkeypatch) -> None:
     assert b"public_cross_allele_influenza_panel.yaml" in index_response.data
     assert b"Start Your Own Project" in index_response.data
     assert b"researcher_project_template.yaml" in index_response.data
+    assert b"NEW_RESEARCHER_GUIDE.md" in index_response.data
 
     project_response = client.get("/project/demo_project")
     assert project_response.status_code == 200
