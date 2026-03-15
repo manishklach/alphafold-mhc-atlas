@@ -23,13 +23,23 @@ using trusted public sequences, preferably from IPD-IMGT/HLA.
 
 - `sample_input.yaml`
 - `minimal_single_allele_template.yaml`
+- `public_a0101_mage_panel.yaml`
 - `public_a0201_cmv_panel.yaml`
-- `public_cross_allele_influenza_panel.yaml`
-- `public_b0702_anchor_review.yaml`
+- `public_a0301_multipeptide_review.yaml`
 - `public_a1101_epstein_barr_panel.yaml`
+- `public_a2402_hiv_panel.yaml`
+- `public_b0801_hiv_panel.yaml`
+- `public_cross_allele_influenza_panel.yaml`
+- `public_cross_allele_cmv_panel.yaml`
+- `public_b0702_anchor_review.yaml`
+- `public_anchor_scan_template.yaml`
+- `public_conservative_review_template.yaml`
+- `public_decision_meeting_template.yaml`
 
 ## Recommended starting points
 
 - first-time evaluator: `sample_input.yaml`
 - simpler single-allele template: `minimal_single_allele_template.yaml`
 - public-data-style multi-allele setup: `public_cross_allele_influenza_panel.yaml`
+- reviewer-friendly narrow meeting template: `public_decision_meeting_template.yaml`
+- conservative shortlist workflow: `public_conservative_review_template.yaml`

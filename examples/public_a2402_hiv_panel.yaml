@@ -1,0 +1,56 @@
+# Public-data-style example using HLA-A*24:02 in an HIV-focused panel workflow.
+# Populate local allele sequences from IPD-IMGT/HLA in ../data/allele_reference.yaml.
+
+project_name: "example_public_a2402_hiv_panel"
+output_dir: "../outputs/example_public_a2402_hiv_panel"
+
+alleles:
+  - allele_name: "HLA-A*24:02"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "RYPLTFGWCF"
+  mutation_positions: [2, 10]
+  allowed_substitutions: ["A", "F", "I", "L", "V", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/example_public_a2402_hiv_panel/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: false
+  mutated_positions_of_interest: [2, 10]
+  anchor_positions: [2, 10]
+  require_confident_chain_mapping: true
+
+prioritization:
+  enabled: true
+  default_top_k: 8
+  ranking_modes:
+    anchor_sensitive_mutations:
+      enabled: true
+      normalize_features: true
+      require_structural_support: false
+      features:
+        - name: "delta_contacts_at_anchor_positions_vs_wt"
+          weight: -1.0
+        - name: "anchor_disruption_flag"
+          weight: 1.0

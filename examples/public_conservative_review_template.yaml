@@ -1,0 +1,71 @@
+# Workflow-oriented conservative review template.
+# Intended for teams that want a smaller, stronger-evidence shortlist for early pilot review.
+
+project_name: "example_public_conservative_review_template"
+output_dir: "../outputs/example_public_conservative_review_template"
+
+alleles:
+  - allele_name: "HLA-A*02:01"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+  - allele_name: "HLA-B*07:02"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "GILGFVFTL"
+  mutation_positions: [2, 9]
+  allowed_substitutions: ["A", "F", "I", "L", "V", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/example_public_conservative_review_template/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: true
+  mutated_positions_of_interest: []
+  anchor_positions: [2, 9]
+  require_confident_chain_mapping: true
+
+scenario_analysis:
+  enabled: true
+  default_evidence_coverage_threshold: 0.8
+  default_uncertainty_levels_allowed: ["low"]
+  allow_custom_filters: true
+  allow_side_by_side_comparison: true
+
+prioritization:
+  enabled: true
+  default_top_k: 6
+  ranking_modes:
+    disruptive_mutations:
+      enabled: true
+      normalize_features: true
+      require_structural_support: true
+      features:
+        - name: "delta_total_contacts_vs_wt"
+          weight: -1.0
+        - name: "delta_mean_min_distance_vs_wt"
+          weight: 0.75
+        - name: "delta_confidence_vs_wt"
+          weight: -0.5

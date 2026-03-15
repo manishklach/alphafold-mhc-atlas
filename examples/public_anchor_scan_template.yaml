@@ -1,0 +1,52 @@
+# Workflow-oriented anchor scan template.
+# Use this when the main question is "what happens if we perturb likely anchor positions?"
+
+project_name: "example_public_anchor_scan_template"
+output_dir: "../outputs/example_public_anchor_scan_template"
+
+alleles:
+  - allele_name: "HLA-A*02:01"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "GILGFVFTL"
+  mutation_positions: [2, 9]
+  allowed_substitutions: ["A", "D", "F", "G", "L", "P", "V", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/example_public_anchor_scan_template/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: false
+  mutated_positions_of_interest: [2, 9]
+  anchor_positions: [2, 9]
+  require_confident_chain_mapping: true
+
+case_studies:
+  enabled: true
+  definitions:
+    - case_id: "anchor_scan"
+      description: "Review anchor-sensitive substitutions across a focused panel."
+      alleles: ["HLA-A*02:01"]
+      peptides: ["GILGFVFTL"]
+      mutation_positions: [2, 9]
+      substitutions: ["A", "D", "F", "G", "L", "P", "V", "Y"]

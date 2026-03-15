@@ -1,0 +1,42 @@
+# Public-data-style example using HLA-B*08:01 in an HIV-focused panel workflow.
+# Populate local allele sequences from IPD-IMGT/HLA in ../data/allele_reference.yaml.
+
+project_name: "example_public_b0801_hiv_panel"
+output_dir: "../outputs/example_public_b0801_hiv_panel"
+
+alleles:
+  - allele_name: "HLA-B*08:01"
+    class_type: "I"
+    heavy_chain_sequence: null
+    beta2m_sequence: null
+    reference_file: "../data/allele_reference.yaml"
+    allow_metadata_only_fallback: true
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "FLKEKGGL"
+  mutation_positions: [2, 8]
+  allowed_substitutions: ["A", "F", "I", "K", "L", "V", "Y"]
+
+prediction_inputs:
+  write_multimer_fasta: true
+  write_chain_manifest: true
+  write_colabfold_csv: true
+
+parsing:
+  prediction_root: "../outputs/example_public_b0801_hiv_panel/predictions"
+
+analysis:
+  baseline_variant_id: "WT"
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  use_all_atom_contacts: true
+  fallback_to_ca_distance: true
+  compute_wt_deltas: true
+  compute_optional_geometry_metrics: false
+  mutated_positions_of_interest: [2, 8]
+  anchor_positions: [2, 8]
+  require_confident_chain_mapping: true
