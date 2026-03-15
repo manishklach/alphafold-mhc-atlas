@@ -11,7 +11,7 @@ from .checklists import run_checklist
 from .config import load_config
 from .decision_packet import generate_project_decision_packet, generate_workspace_decision_packet
 from .demo_bundle import build_demo_bundle_manifest, validate_demo
-from .demo_loader import list_demo_projects, resolve_demo_project
+from .demo_loader import describe_demo, list_all_demos, list_demo_projects, load_demo_readme, load_demo_walkthrough, resolve_demo_project, resolve_demo_workspace
 from .feedback import add_feedback
 from .feedback_schema import FeedbackEntry
 from .handoff_bundle import create_handoff_bundle
@@ -47,7 +47,10 @@ def build_parser() -> argparse.ArgumentParser:
     app_parser.add_argument("--host", default="127.0.0.1")
     app_parser.add_argument("--port", type=int, default=8501)
 
-    subparsers.add_parser("list-demos", help="List curated demo projects.")
+    subparsers.add_parser("list-demos", help="List curated demos, including golden walkthrough demos.")
+
+    walkthrough_parser = subparsers.add_parser("demo-walkthrough", help="Print the README and walkthrough for a demo.")
+    walkthrough_parser.add_argument("demo_name")
 
     inventory_parser = subparsers.add_parser("inventory", help="Print project inventory as JSON.")
     inventory_parser.add_argument("project")
@@ -175,10 +178,30 @@ def main(argv: list[str] | None = None) -> int:
         pipeline_main()
         return 0
     if args.command == "app":
-        launch_app(project=args.project, demo=args.demo, workspace=args.workspace, host=args.host, port=args.port)
+        workspace = args.workspace
+        demo = args.demo
+        if demo and not workspace and not args.project:
+            metadata = describe_demo(demo)
+            if metadata.get("has_workspace") and not metadata.get("has_project"):
+                workspace = str(resolve_demo_workspace(demo))
+                demo = None
+        launch_app(project=args.project, demo=demo, workspace=workspace, host=args.host, port=args.port)
         return 0
     if args.command == "list-demos":
-        print("\n".join(list_demo_projects()))
+        print("\n".join(list_all_demos()))
+        return 0
+    if args.command == "demo-walkthrough":
+        parts = []
+        readme = load_demo_readme(args.demo_name)
+        walkthrough = load_demo_walkthrough(args.demo_name)
+        if readme:
+            parts.extend([readme, ""])
+        if walkthrough:
+            parts.extend(["# Walkthrough", "", walkthrough])
+        elif not readme:
+            workspace_path = resolve_demo_workspace(args.demo_name)
+            parts.append(f"Demo workspace: {workspace_path}")
+        print("\n".join(parts).strip())
         return 0
     if args.command == "inventory":
         project = _resolve_path(args.project)

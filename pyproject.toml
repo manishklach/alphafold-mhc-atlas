@@ -55,6 +55,7 @@ src = [
   "resources/data/*.yaml",
   "resources/workspaces/*.yaml",
   "resources/demo/**/*.md",
+  "resources/demo/**/*.yaml",
   "resources/demo/**/*.csv",
   "resources/demo/**/*.json",
   "resources/demo/**/*.jsonl",

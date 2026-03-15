@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.10.5
+
+- Added a canonical `golden_weekly_review_demo` as the primary evaluator workflow
+- Added stronger first-run, pilot-workflow, and release-facing onboarding docs
+- Improved app orientation for project and workspace mode
+- Polished weekly review packets, decision packets, and role-oriented views for demo clarity
+- Added buyer-safe framing around target users, workflow value, and conservative scope
+
 ## v0.10.0
 
 - Added multi-project workspace configs and inventory exports

@@ -1,11 +1,21 @@
 # CLI Usage
 
+## First evaluator workflow
+
+```bash
+mhc-atlas list-demos
+mhc-atlas demo-walkthrough golden_weekly_review_demo
+mhc-atlas workspace inventory --workspace demo/golden_weekly_review_demo/workspace.yaml
+mhc-atlas app --demo golden_weekly_review_demo
+```
+
 ## Main commands
 
 ```bash
 mhc-atlas run --config examples/sample_input.yaml
 mhc-atlas app --project outputs/mhc_phase6_demo
 mhc-atlas list-demos
+mhc-atlas demo-walkthrough golden_weekly_review_demo
 mhc-atlas inventory outputs/mhc_phase6_demo
 mhc-atlas scenario --project outputs/mhc_phase6_demo --template disruptive_shortlist
 mhc-atlas export --project outputs/mhc_phase6_demo --scenario outputs/mhc_phase6_demo/saved_scenarios/a_disruptive_shortlist.json
@@ -28,6 +38,9 @@ mhc-atlas handoff create --project demo/cross_allele_demo/project --bundle-id pi
 ## Workspace and decision-review commands
 
 ```bash
+mhc-atlas workspace inventory --workspace demo/golden_weekly_review_demo/workspace.yaml
+mhc-atlas review-packet generate --workspace demo/golden_weekly_review_demo/workspace.yaml --packet-id golden_demo
+mhc-atlas decision-packet generate --workspace demo/golden_weekly_review_demo/workspace.yaml --packet-id golden_manager_demo
 mhc-atlas workspace init --config workspaces/demo_workspace.yaml
 mhc-atlas workspace inventory --workspace workspaces/demo_workspace.yaml
 mhc-atlas review-packet generate --workspace workspaces/demo_workspace.yaml

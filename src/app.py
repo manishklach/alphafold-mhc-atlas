@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 
 from src.data_access import preview_table, safe_read_csv, safe_read_json
-from src.demo_loader import DEMO_ROOT, list_demo_projects, load_demo_readme, resolve_demo_project
+from src.demo_loader import DEMO_ROOT, describe_demo, list_demo_projects, load_demo_readme, load_demo_walkthrough, resolve_demo_project, resolve_demo_workspace
 from src.evidence_view import build_variant_evidence_bundle, export_variant_evidence_bundle
 from src.annotations import add_annotation
 from src.checklists import load_checklist_templates, run_checklist
@@ -127,9 +127,15 @@ def launch_app(
 def render_streamlit_app(args: argparse.Namespace) -> None:
     import streamlit as st
 
+    if args.demo and not args.workspace:
+        metadata = describe_demo(args.demo)
+        if metadata.get("has_workspace") and not metadata.get("has_project"):
+            args.workspace = str(resolve_demo_workspace(args.demo))
+            args.demo = None
+
     st.set_page_config(page_title="Peptide-MHC Atlas", layout="wide")
     st.title("Peptide-MHC Atlas Decision Support")
-    st.caption(f"Version {__version__} | Local-first analyst interface")
+    st.caption(f"Version {__version__} | Local-first decision platform for structure-guided experimental prioritization")
 
     templates = load_scenario_templates(repo_or_resource_path("data", "scenario_templates.yaml"))
     source_options = ["Local project", "Demo project", "Workspace"]
@@ -234,8 +240,12 @@ def _select_project_dir(st, source_mode: str, args: argparse.Namespace) -> Path 
         selected_demo = st.sidebar.selectbox("Demo", demos, index=demos.index(default_demo) if default_demo else 0) if demos else None
         if not selected_demo:
             return None
-        if st.sidebar.checkbox("Show demo README", value=False):
+        if st.sidebar.checkbox("Show demo guide", value=False):
             st.sidebar.markdown(load_demo_readme(selected_demo))
+            walkthrough = load_demo_walkthrough(selected_demo)
+            if walkthrough:
+                st.sidebar.markdown("### Walkthrough")
+                st.sidebar.markdown(walkthrough)
         return resolve_demo_project(selected_demo)
 
     projects = sorted(path for path in OUTPUTS_ROOT.iterdir() if path.is_dir()) if OUTPUTS_ROOT.exists() else []
@@ -347,7 +357,38 @@ def _scenario_controls(st_sidebar, title: str, templates: list[ScenarioState], t
 
 def _render_overview(st, inventory: dict[str, object], report_text: str) -> None:
     coverage = inventory["coverage"]
-    st.info("This app operates on existing local outputs. Rankings and panels remain drillable to file-backed evidence.")
+    st.info("This app operates on existing local outputs. Rankings, packets, and next actions remain drillable to file-backed evidence.")
+    st.subheader("Start Here")
+    st.markdown(
+        "\n".join(
+            [
+                "- Use this product to review ranked variants, panels, and evidence before a team decision meeting.",
+                "- Recommended flow: `Project Overview` -> `Ranking Explorer` -> `Review Queue` -> `Shortlists` -> `Reports / Exports`.",
+                "- Best first demo: `mhc-atlas app --workspace workspaces/demo_workspace.yaml`.",
+            ]
+        )
+    )
+    c0, c1 = st.columns(2)
+    c0.markdown(
+        "\n".join(
+            [
+                "### Who This Is For",
+                "- small biotech discovery teams",
+                "- translational immunology and computational biology groups",
+                "- scientist-manager review workflows that need clearer decision memory",
+            ]
+        )
+    )
+    c1.markdown(
+        "\n".join(
+            [
+                "### What Problem It Solves",
+                "- replaces scattered notebooks, screenshots, and ad hoc slide conclusions",
+                "- keeps prioritization and review queues linked to visible evidence",
+                "- makes weekly decision review packets reproducible and caveat-aware",
+            ]
+        )
+    )
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Alleles", coverage["num_alleles"])
     c2.metric("Variants", coverage["num_variants"])
@@ -678,6 +719,7 @@ def render_workspace_app(st, workspace_config) -> None:
     inventory = build_workspace_inventory(workspace_config)
     st.sidebar.markdown("### Workspace")
     st.sidebar.code(str(workspace_config.source_path))
+    st.sidebar.caption("Recommended path: Workspace Overview -> Changes Since Last Review -> Weekly Review Packet -> Role Views -> Next Actions")
     page = st.sidebar.selectbox(
         "Workspace page",
         [
@@ -702,7 +744,28 @@ def render_workspace_app(st, workspace_config) -> None:
     if page == "Workspace Overview":
         st.subheader(workspace_config.name)
         st.write(workspace_config.description)
+        st.markdown(
+            "\n".join(
+                [
+                    "### Start Here",
+                    "- This workspace view is designed for recurring scientific review meetings.",
+                    "- Start with portfolio coverage, then inspect changes since last review.",
+                    "- Generate the weekly review packet before opening manager-facing decision materials.",
+                ]
+            )
+        )
         st.dataframe(pd.DataFrame(inventory["summary"]), use_container_width=True)
+        st.markdown(
+            "\n".join(
+                [
+                    "### What Teams Use This For",
+                    "- structure-guided experimental prioritization",
+                    "- cross-project shortlist review",
+                    "- preserving program memory across weekly decisions",
+                    "- cleaner handoff between scientists, comp leads, and reviewers",
+                ]
+            )
+        )
         st.markdown(brief_scope_markdown())
     elif page == "Project Portfolio":
         st.dataframe(projects_df, use_container_width=True)

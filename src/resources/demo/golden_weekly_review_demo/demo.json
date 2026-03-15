@@ -1,0 +1,8 @@
+{
+  "demo_name": "golden_weekly_review_demo",
+  "label": "Golden Weekly Review Demo",
+  "demo_type": "workspace",
+  "recommended": true,
+  "focus": "Canonical recurring weekly decision-review workflow",
+  "start_command": "mhc-atlas app --workspace demo/golden_weekly_review_demo/workspace.yaml"
+}

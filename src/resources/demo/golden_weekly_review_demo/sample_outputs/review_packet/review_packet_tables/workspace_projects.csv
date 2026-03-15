@@ -1,0 +1,4 @@
+workspace_id,project_id,project_path,project_status,num_alleles,num_variants,prediction_coverage,structure_coverage,prioritization_coverage,review_status,last_updated,notes,tags_serialized
+pilot_workspace_01,pilot_review,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\pilot_review_demo\project,available,2,4,4,4,3,shortlisted,,weekly_review; shortlist; Primary pilot-review workflow demo.,weekly_review;shortlist
+pilot_workspace_01,cross_allele,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\cross_allele_demo\project,available,2,4,4,4,3,not_started,,cross_allele; portfolio; Cross-allele comparison demo.,cross_allele;portfolio
+pilot_workspace_01,small_project,C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas\demo\small_project\project,available,1,3,2,2,2,not_started,,minimal; baseline; Minimal project inventory demo.,minimal;baseline

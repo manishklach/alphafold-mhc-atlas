@@ -1,10 +1,34 @@
-# AlphaFold Peptide-MHC Comparative Analysis Framework
+# Peptide-MHC Atlas Decision Platform
 
-This repository is a local-workspace-friendly Python framework for peptide-MHC perturbation studies built around AlphaFold or ColabFold outputs.
+This repository is not just an AlphaFold analysis repo.
+
+It is a local-first, interpretable decision platform for structure-guided experimental prioritization, with an initial wedge in peptide-MHC perturbation analysis.
 
 It is best described as AlphaFold-family compatible analysis tooling, not as an AlphaFold 3-native pipeline. The current code prepares sequence-resolved inputs and analyzes common AlphaFold or ColabFold-style outputs conservatively, but it does not implement an AF3-specific workflow contract.
 
-It is designed for researchers who want more than raw structure predictions: a reproducible way to generate peptide-MHC mutation panels, compare mutants to WT, aggregate effects across alleles, and produce report-ready structural summaries without collapsing everything into an opaque score.
+It is designed for teams who want more than raw structure predictions: a reproducible way to generate peptide-MHC mutation panels, compare mutants to WT, aggregate effects across alleles, carry shortlists and review history forward across meetings, and make experimental prioritization more evidence-linked and less ad hoc.
+
+## Product Vision
+
+Build an interpretable decision platform for structure-guided experimental prioritization.
+
+Initial wedge:
+- peptide-MHC perturbation analysis
+
+What the current product seed is for:
+- structure-guided experimental prioritization
+- recurring scientific review workflows
+- evidence-linked variant and panel review
+- decision memory across weekly team cycles
+- cleaner handoff between scientist, computational lead, and reviewer
+
+## Public Data Strategy
+
+- IPD-IMGT/HLA for official HLA allele sequences and local reference mappings
+- IEDB exports for public peptide-allele assay and ligand data
+- RCSB PDB for experimentally solved peptide-MHC structures and benchmark/reference structures
+- AlphaFold DB only for monomeric reference/support use cases, not as peptide-MHC complex truth
+- lightweight synthetic demo artifacts built on top of public-derived project outputs for pilot and workflow demos
 
 ## Why This Repo Exists
 
@@ -44,6 +68,34 @@ The project is intentionally conservative. It does not claim binding affinity pr
 
 This is a reproducible peptide-MHC comparative structural analysis framework that turns mutation panels and AlphaFold or ColabFold outputs into interpretable WT-relative, cross-allele, and publication-oriented structural summaries.
 
+## Who This Is For
+
+- small biotech discovery teams
+- translational immunology groups
+- computational biology leads running recurring review cycles
+- scientist-manager workflows that need clearer shortlist memory and next-action planning
+- high-agency labs evaluating mutation panels and structural perturbation evidence
+
+## What Problem It Solves
+
+Without a workflow layer, these projects usually turn into:
+
+- one-off notebooks
+- screenshots and folders of structures
+- scattered slide conclusions
+- unclear shortlist history
+- ad hoc manager summaries that are disconnected from evidence
+
+This repo replaces that with a local, evidence-linked review workflow:
+
+- ranked outputs tied back to source evidence
+- review queues and shortlists
+- role-specific exports
+- weekly review packets
+- decision packets
+- next actions and open questions
+- workspace-level program memory
+
 ## Documentation Map
 
 - Overview and quick start: [README.md](README.md)
@@ -59,9 +111,12 @@ This is a reproducible peptide-MHC comparative structural analysis framework tha
 - HTML pitch and vision page: [docs/project_story.html](docs/project_story.html)
 - Install guide: [INSTALL.md](INSTALL.md)
 - Quickstart: [QUICKSTART.md](QUICKSTART.md)
+- First-run guide: [FIRST_RUN.md](FIRST_RUN.md)
 - Demo guide: [DEMOS.md](DEMOS.md)
+- Pilot workflow guide: [PILOT_WORKFLOW.md](PILOT_WORKFLOW.md)
 - CLI guide: [CLI_USAGE.md](CLI_USAGE.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Release notes: [RELEASE_NOTES_v0.10.0.md](RELEASE_NOTES_v0.10.0.md)
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## What This Repo Does
@@ -159,22 +214,41 @@ alphafold_mhc_atlas/
   outputs/
 ```
 
+## Golden Demo
+
+The canonical first demo is:
+
+```bash
+mhc-atlas app --demo golden_weekly_review_demo
+```
+
+That demo is the cleanest end-to-end story for the product wedge:
+
+1. workspace overview
+2. changes since last review
+3. weekly review packet
+4. role views
+5. shortlist and next actions
+6. decision packet
+
 ## Quick Start
 
 ```bash
 cd C:\Users\ManishKL\Documents\Playground\alphafold_mhc_atlas
 python -m venv .venv
 .\.venv\Scripts\python -m pip install -e .[app,dev]
-mhc-atlas run --config examples/sample_input.yaml
-.\.venv\Scripts\python -m pytest -q
+mhc-atlas list-demos
+mhc-atlas app --workspace demo/golden_weekly_review_demo/workspace.yaml
 ```
 
 Recommended first-time workflow:
 
 ```bash
 mhc-atlas check-environment
-mhc-atlas run --config examples/sample_input.yaml
-mhc-atlas app --demo pilot_review_demo
+mhc-atlas workspace inventory --workspace demo/golden_weekly_review_demo/workspace.yaml
+mhc-atlas review-packet generate --workspace demo/golden_weekly_review_demo/workspace.yaml --packet-id golden_demo
+mhc-atlas decision-packet generate --workspace demo/golden_weekly_review_demo/workspace.yaml --packet-id golden_manager_demo
+mhc-atlas app --demo golden_weekly_review_demo
 ```
 
 Pilot workflow example:
@@ -193,6 +267,15 @@ mhc-atlas workspace inventory --workspace workspaces/demo_workspace.yaml
 mhc-atlas review-packet generate --workspace workspaces/demo_workspace.yaml
 mhc-atlas decision-packet generate --workspace workspaces/demo_workspace.yaml
 mhc-atlas app --workspace workspaces/demo_workspace.yaml
+```
+
+Golden demo workflow example:
+
+```bash
+mhc-atlas workspace inventory --workspace demo/golden_weekly_review_demo/workspace.yaml
+mhc-atlas role-view export --project demo/pilot_review_demo/project --role manager
+mhc-atlas next-actions build --project demo/pilot_review_demo/project
+mhc-atlas demo-walkthrough golden_weekly_review_demo
 ```
 
 Package install examples:

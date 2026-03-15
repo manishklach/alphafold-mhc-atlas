@@ -20,3 +20,4 @@ def test_role_view_exports_include_scope(tmp_path: Path) -> None:
     paths = export_role_views(project)
     assert "Conservative by design" in paths["manager"].read_text(encoding="utf-8")
     assert "exploratory structural analysis" in paths["scientist"].read_text(encoding="utf-8")
+    assert "What Needs Discussion This Week" in paths["manager"].read_text(encoding="utf-8")

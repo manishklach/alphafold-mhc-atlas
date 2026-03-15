@@ -18,6 +18,7 @@ def test_project_review_packet_generation(tmp_path: Path) -> None:
     assert (packet_dir / "review_packet.md").exists()
     assert (packet_dir / "packet_manifest.csv").exists()
     assert "Conservative by design" in (packet_dir / "review_packet.md").read_text(encoding="utf-8")
+    assert "Recommended Review Order" in (packet_dir / "review_packet.md").read_text(encoding="utf-8")
 
 
 def test_workspace_review_and_decision_packet_generation() -> None:

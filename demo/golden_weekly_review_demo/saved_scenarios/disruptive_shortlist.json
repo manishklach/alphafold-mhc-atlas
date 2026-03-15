@@ -1,0 +1,19 @@
+{
+  "scenario_id": "disruptive_shortlist",
+  "label": "Most disruptive mutants",
+  "ranking_mode": "disruptive_mutations",
+  "alleles": [],
+  "peptides": [],
+  "mutation_positions": [],
+  "substitutions": [],
+  "evidence_coverage_threshold": 0.5,
+  "allowed_uncertainty": [
+    "low",
+    "moderate"
+  ],
+  "require_structural_support": false,
+  "anchor_only": false,
+  "case_study_id": null,
+  "panel_size": 10,
+  "notes": "Broad disruptive shortlist with moderate evidence allowed."
+}

@@ -1,0 +1,20 @@
+workspace:
+  workspace_id: "golden_weekly_review_demo"
+  name: "Golden Weekly Review Demo"
+  description: "Canonical demo for the recurring structure-guided weekly review workflow."
+  output_dir: "../../outputs/workspaces/golden_weekly_review_demo"
+  projects:
+    - id: "pilot_review"
+      path: "../pilot_review_demo/project"
+      tags: ["golden_demo", "weekly_review", "shortlist"]
+      notes: "Primary pilot-review project used for the weekly meeting story."
+    - id: "cross_allele"
+      path: "../cross_allele_demo/project"
+      tags: ["golden_demo", "cross_allele", "comparison"]
+      notes: "Secondary project used to show portfolio and cross-allele context."
+  role_views:
+    enabled: true
+  review_packets:
+    enabled: true
+  decision_packets:
+    enabled: true

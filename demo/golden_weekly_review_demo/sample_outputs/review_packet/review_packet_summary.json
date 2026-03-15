@@ -1,0 +1,11 @@
+[
+  {
+    "workspace_id": "pilot_workspace_01",
+    "workspace_name": "Peptide-MHC Pilot Workspace",
+    "num_projects": 3,
+    "num_available_projects": 3,
+    "total_variants": 11,
+    "total_alleles": 5,
+    "projects_with_review": 1
+  }
+]

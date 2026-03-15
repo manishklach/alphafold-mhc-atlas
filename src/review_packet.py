@@ -48,6 +48,9 @@ def generate_project_review_packet(project_dir: Path, packet_id: str | None = No
             shutil.copy2(source, target)
             table_paths.append({"source_path": str(source), "bundled_path": str(target)})
 
+    shortlist_df = _safe_table(project_dir / "review" / "shortlist.csv")
+    priority_df = _safe_table(project_dir / "analysis" / "variant_priority_table.csv")
+    panel_df = _safe_table(project_dir / "analysis" / "optimized_mutation_panel.csv")
     summary = {
         "packet_id": packet_id,
         "project_name": project_dir.name,
@@ -60,22 +63,43 @@ def generate_project_review_packet(project_dir: Path, packet_id: str | None = No
     lines = [
         f"# Weekly Review Packet: {project_dir.name}",
         "",
-        "## Overview",
+        "Decision-support packet for recurring scientific review meetings.",
         "",
-        f"- Packet id: {packet_id}",
-        f"- Generated at: {summary['generated_at']}",
+        "## Meeting Snapshot",
         "",
-        "## What changed since last review",
+        f"- Packet id: `{packet_id}`",
+        f"- Generated at: `{summary['generated_at']}`",
+        f"- Prioritized variants available: {len(priority_df)}",
+        f"- Panel candidates available: {len(panel_df)}",
+        f"- Shortlist items available: {len(shortlist_df)}",
+        "",
+        "## Recommended Review Order",
+        "",
+        "1. Review what changed since the last meeting.",
+        "2. Inspect the current shortlist and panel candidates.",
+        "3. Check open questions and uncertainty before making handoff decisions.",
+        "",
+        "## What Changed Since Last Review",
         "",
         safe_read_text(history_path.parent / "change_summary.md") or "No change summary available.",
         "",
-        "## Open questions",
+        "## Shortlist and Panel Status",
+        "",
+        _project_focus_summary(shortlist_df, priority_df, panel_df),
+        "",
+        "## Open Questions",
         "",
         safe_read_text(project_dir / "analysis" / "open_questions.md") or "No open questions available.",
         "",
-        "## Next actions",
+        "## Next Actions",
         "",
         safe_read_text(action_plan_path) or "No action plan available.",
+        "",
+        "## Role Views Available",
+        "",
+        "- Scientist view for evidence drilldown",
+        "- Computational lead view for prioritization logic and change review",
+        "- Manager view for meeting-ready summary with caveats",
         "",
         brief_scope_markdown(),
         "",
@@ -110,20 +134,32 @@ def generate_workspace_review_packet(workspace: WorkspaceConfig | str | Path, pa
             [
                 f"# Weekly Review Packet: {config.name}",
                 "",
-                f"- Workspace id: {config.workspace_id}",
+                "Decision-support packet for recurring cross-project review meetings.",
+                "",
+                "## Meeting Snapshot",
+                "",
+                f"- Workspace id: `{config.workspace_id}`",
                 f"- Projects included: {len(config.projects)}",
                 "",
-                "## Workspace summary",
+                "## Where To Start",
+                "",
+                "1. Review portfolio coverage and project readiness.",
+                "2. Inspect changes since last review for each project.",
+                "3. Open role views and next actions before generating a manager packet.",
+                "",
+                "## Workspace Summary",
                 "",
                 safe_read_text(packet_dir / "change_summary.md"),
                 "",
-                "## Open questions",
+                "## Open Questions",
                 "",
                 safe_read_text(packet_dir / "open_questions.md"),
                 "",
-                "## Next actions",
+                "## Next Actions",
                 "",
                 safe_read_text(packet_dir / "next_actions.md"),
+                "",
+                "## Scope and Limitations",
                 "",
                 brief_scope_markdown(),
             ]
@@ -173,3 +209,26 @@ def _workspace_next_actions(config: WorkspaceConfig) -> str:
         build_action_plan(project.path)
         lines.extend([f"## {project.project_id}", "", safe_read_text(project.path / "analysis" / "action_plan.md"), ""])
     return "\n".join(lines)
+
+
+def _project_focus_summary(shortlist_df: pd.DataFrame, priority_df: pd.DataFrame, panel_df: pd.DataFrame) -> str:
+    lines = [
+        f"- Shortlist items: {len(shortlist_df)}",
+        f"- Prioritized variants: {len(priority_df)}",
+        f"- Panel candidates: {len(panel_df)}",
+    ]
+    if not shortlist_df.empty and "entity_id" in shortlist_df.columns:
+        top_items = shortlist_df["entity_id"].astype(str).head(3).tolist()
+        lines.append(f"- Current shortlist focus: {', '.join(top_items)}")
+    elif not priority_df.empty and "variant_id" in priority_df.columns:
+        top_items = priority_df["variant_id"].astype(str).head(3).tolist()
+        lines.append(f"- Top ranked variants to inspect: {', '.join(top_items)}")
+    else:
+        lines.append("- No shortlist-ready items were available at packet generation time.")
+    return "\n".join(lines)
+
+
+def _safe_table(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        return pd.DataFrame()
+    return pd.read_csv(path)
