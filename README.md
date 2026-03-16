@@ -182,6 +182,62 @@ What it adds:
 - workflow-template effectiveness summaries based on operational metrics
 - conservative learning digests that stay descriptive and evidence-linked
 
+## Phase 13: Lightweight Operational Planning and Execution Support
+
+Phase 13 moves the repository from decision support to decision-to-action execution support. It remains a lightweight, file-backed process, not a generic ELN or LIMS. 
+
+What it adds:
+
+- execution plans derived directly from shortlists, next actions, and open questions
+- execution bundles to package selected variants and tasks for downstream follow-up
+- ownership and status tracking for follow-up tasks
+- action-to-outcome traceability, connecting execution tasks to downstream outcomes without claiming model truth
+- operational templates and follow-up checklists
+- conservative operational metrics that track task completion rather than biological validation
+
+Useful Phase 13 commands:
+
+```bash
+mhc-atlas execution-plan build --workspace workspaces/demo_workspace.yaml --template shortlist_to_followup_plan
+mhc-atlas execution-bundle create --workspace workspaces/demo_workspace.yaml --plan-id plan_001
+mhc-atlas ownership assign --workspace workspaces/demo_workspace.yaml --task-id task_001 --owner "Scientist A"
+mhc-atlas status update --workspace workspaces/demo_workspace.yaml --task-id task_001 --status in_progress
+mhc-atlas execution-metrics summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas action-trace summarize --workspace workspaces/demo_workspace.yaml
+```
+
+## Phase 14: Retrospective Program Reporting and Pattern Synthesis
+
+Phase 14 turns accumulated review, execution, and outcome traces into conservative retrospective reports and organizational learning artifacts.
+
+What it adds:
+
+- retrospective program reporting across multiple review cycles and projects
+- conservative pattern synthesis from review, execution, and outcome traces
+- role-specific retrospective views (scientist, comp-lead, manager)
+- reusable retrospective templates (monthly, quarterly, workflow-specific)
+- structured meeting and slide outlines grounded in actual outputs
+- deterministic artifact selection for evidence-linked summaries
+
+Useful Phase 14 commands:
+
+```bash
+mhc-atlas retrospective generate --workspace workspaces/demo_workspace.yaml --template quarterly_workspace_retrospective
+mhc-atlas retrospective patterns --workspace workspaces/demo_workspace.yaml
+```
+
+What it does not do:
+- it does not build auto-slide marketing generation or LLM narrative fluff
+- it does not imply retrospective patterns validate biology
+- it does not overstate workflow-effectiveness associations as causal proof
+- it does not turn closures into scientific validation
+
+What it does not do:
+- it does not build generic task-management software
+- it does not replace wet-lab tracking or PM tools
+- it does not automatically update structural rankings based on task completion
+
+
 What it does not do:
 
 - it does not retrain or auto-adjust rankings from outcomes

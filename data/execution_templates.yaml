@@ -1,0 +1,14 @@
+templates:
+  - template_id: shortlist_to_followup_plan
+    label: Shortlist to Follow-Up Plan
+    description: Standard plan for moving shortlisted items into execution.
+    default_task_types: ["review_variant", "schedule_followup_discussion"]
+    default_role_suggestions: {"review_variant": "computational_lead"}
+    default_checklist: shortlist_followup_check
+
+  - template_id: unresolved_question_resolution_plan
+    label: Unresolved Question Resolution Plan
+    description: Plan focused on answering carry-forward open questions.
+    default_task_types: ["gather_more_evidence", "request_domain_input"]
+    default_role_suggestions: {"request_domain_input": "scientist"}
+    default_checklist: evidence_gap_resolution_check

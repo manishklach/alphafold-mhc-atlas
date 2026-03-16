@@ -1,0 +1,12 @@
+windows:
+  - window_id: q1_2026
+    label: Q1 2026 Retrospective
+    cycle_range: ["week_1", "week_12"]
+    date_range: ["2026-01-01", "2026-03-31"]
+    cadence: quarterly
+
+  - window_id: march_2026
+    label: March 2026 Monthly
+    cycle_range: ["week_9", "week_12"]
+    date_range: ["2026-03-01", "2026-03-31"]
+    cadence: monthly

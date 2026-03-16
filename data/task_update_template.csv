@@ -1,0 +1,3 @@
+task_id,status,notes
+task_001,in_progress,
+task_002,blocked,waiting on domain input

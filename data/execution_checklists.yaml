@@ -1,0 +1,15 @@
+templates:
+  - template_id: shortlist_followup_check
+    label: Shortlist Follow-Up Check
+    items:
+      - confirm evidence links
+      - confirm caveat statement included
+      - confirm owner assigned
+      - confirm follow-up outcome capture path exists
+
+  - template_id: evidence_gap_resolution_check
+    label: Evidence Gap Resolution Check
+    items:
+      - confirm unresolved questions captured
+      - confirm requested domain input is clear
+      - confirm due dates reviewed

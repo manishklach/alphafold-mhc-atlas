@@ -1,0 +1,21 @@
+templates:
+  - template_id: monthly_program_retrospective
+    label: Monthly Program Retrospective
+    description: Standard monthly summary across review cycles.
+    sections: ["executive_summary", "review_activity", "execution_flow", "outcome_traces", "caveats"]
+    metrics: ["queued_to_completed_ratio", "avg_unresolved_carryforward", "decision_churn"]
+    role_views: ["manager", "comp_lead"]
+
+  - template_id: quarterly_workspace_retrospective
+    label: Quarterly Workspace Retrospective
+    description: Deep retrospective for long-term program planning.
+    sections: ["executive_summary", "pattern_synthesis", "template_effectiveness", "execution_bottlenecks", "caveats"]
+    metrics: ["total_outcomes_captured", "avg_next_action_closure_rate", "decision_stability"]
+    role_views: ["manager", "scientist", "comp_lead"]
+
+  - template_id: execution_followup_retrospective
+    label: Execution Follow-Up Retrospective
+    description: Focuses on task closure and action-to-outcome pathways.
+    sections: ["execution_flow", "blocked_reasons", "trace_analysis", "caveats"]
+    metrics: ["blocked_task_ratio", "outcome_capture_coverage"]
+    role_views: ["comp_lead", "scientist"]

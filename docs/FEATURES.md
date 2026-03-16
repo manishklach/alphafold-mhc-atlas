@@ -258,7 +258,41 @@ Conservative limits:
 - no large benchmark dataset included
 - no heavy end-to-end inference tests
 
-## 16. Planned Next-Step Areas
+## 17. Execution and Follow-up (Phase 13)
+
+Implemented:
+
+- execution plans derived directly from shortlists, next actions, and open questions
+- execution bundles to package selected variants and tasks for downstream follow-up
+- ownership and status tracking for follow-up tasks
+- action-to-outcome traceability, connecting execution tasks to downstream outcomes
+- operational templates and follow-up checklists
+- conservative operational metrics that track task completion rather than biological validation
+
+Conservative limits:
+
+- not a generic task-management or PM tool
+- no automatic structural ranking updates based on task completion
+- metrics remain descriptive, not predictive
+
+## 18. Retrospective Reporting and Pattern Synthesis (Phase 14)
+
+Implemented:
+
+- retrospective program reporting across multiple review cycles and projects
+- conservative pattern synthesis from review, execution, and outcome traces
+- role-specific retrospective views (scientist, comp-lead, manager)
+- reusable retrospective templates (monthly, quarterly, workflow-specific)
+- structured meeting and slide outlines grounded in actual outputs
+- deterministic artifact selection for evidence-linked summaries
+
+Conservative limits:
+
+- no auto-generation of marketing slides or fluff
+- no causal claims from purely associational pattern synthesis
+- no predictive modeling of program success
+
+## 19. Planned Next-Step Areas
 
 Most likely future directions:
 

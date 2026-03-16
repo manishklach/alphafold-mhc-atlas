@@ -228,6 +228,55 @@ def build_parser() -> argparse.ArgumentParser:
     workflow_metrics_summary = workflow_metrics_sub.add_parser("summarize", help="Build workflow-operational metrics conservatively.")
     workflow_metrics_summary.add_argument("--workspace", required=True)
 
+    exec_plan = subparsers.add_parser("execution-plan", help="Execution plan commands.")
+    exec_plan_sub = exec_plan.add_subparsers(dest="exec_plan_command", required=True)
+    exec_plan_build = exec_plan_sub.add_parser("build", help="Build an execution plan.")
+    exec_plan_build.add_argument("--workspace", required=True)
+    exec_plan_build.add_argument("--template", required=True)
+    exec_plan_build.add_argument("--plan-id")
+
+    exec_bundle = subparsers.add_parser("execution-bundle", help="Execution bundle commands.")
+    exec_bundle_sub = exec_bundle.add_subparsers(dest="exec_bundle_command", required=True)
+    exec_bundle_create = exec_bundle_sub.add_parser("create", help="Create an execution bundle.")
+    exec_bundle_create.add_argument("--workspace", required=True)
+    exec_bundle_create.add_argument("--plan-id", required=True)
+    exec_bundle_create.add_argument("--bundle-id")
+
+    ownership = subparsers.add_parser("ownership", help="Ownership tracking commands.")
+    ownership_sub = ownership.add_subparsers(dest="ownership_command", required=True)
+    ownership_assign = ownership_sub.add_parser("assign", help="Assign ownership to a task.")
+    ownership_assign.add_argument("--workspace", required=True)
+    ownership_assign.add_argument("--task-id", required=True)
+    ownership_assign.add_argument("--owner", required=True)
+    ownership_assign.add_argument("--role", default="unassigned")
+
+    status_cmd = subparsers.add_parser("status", help="Status tracking commands.")
+    status_sub = status_cmd.add_subparsers(dest="status_command", required=True)
+    status_update = status_sub.add_parser("update", help="Update task status.")
+    status_update.add_argument("--workspace", required=True)
+    status_update.add_argument("--task-id", required=True)
+    status_update.add_argument("--status", required=True)
+
+    exec_metrics = subparsers.add_parser("execution-metrics", help="Execution metrics commands.")
+    exec_metrics_sub = exec_metrics.add_subparsers(dest="exec_metrics_command", required=True)
+    exec_metrics_summary = exec_metrics_sub.add_parser("summarize", help="Summarize execution metrics.")
+    exec_metrics_summary.add_argument("--workspace", required=True)
+
+    action_trace = subparsers.add_parser("action-trace", help="Action-to-Outcome trace commands.")
+    action_trace_sub = action_trace.add_subparsers(dest="action_trace_command", required=True)
+    action_trace_summary = action_trace_sub.add_parser("summarize", help="Build action-to-outcome trace.")
+    action_trace_summary.add_argument("--workspace", required=True)
+
+    retrospective = subparsers.add_parser("retrospective", help="Retrospective reporting commands.")
+    retro_sub = retrospective.add_subparsers(dest="retro_command", required=True)
+    retro_generate = retro_sub.add_parser("generate", help="Generate a retrospective report.")
+    retro_generate.add_argument("--workspace", required=True)
+    retro_generate.add_argument("--template", required=True)
+    retro_generate.add_argument("--report-id")
+
+    retro_patterns = retro_sub.add_parser("patterns", help="Synthesize recurring patterns.")
+    retro_patterns.add_argument("--workspace", required=True)
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -463,6 +512,47 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "workflow-metrics" and args.workflow_metrics_command == "summarize":
         outputs = summarize_workflow_metrics(args.workspace)
         print(json.dumps({key: str(value) for key, value in outputs.items()}, indent=2))
+        return 0
+    if args.command == "execution-plan" and args.exec_plan_command == "build":
+        from .execution_plan import build_execution_plan
+        outputs = build_execution_plan(args.workspace, args.template, args.plan_id)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+    if args.command == "execution-bundle" and args.exec_bundle_command == "create":
+        from .execution_bundle import build_execution_bundle
+        path = build_execution_bundle(args.workspace, args.plan_id, args.bundle_id)
+        print(path)
+        return 0
+    if args.command == "ownership" and args.ownership_command == "assign":
+        from .ownership import assign_ownership
+        path = assign_ownership(args.workspace, args.task_id, args.owner, args.role)
+        print(path)
+        return 0
+    if args.command == "status" and args.status_command == "update":
+        from .status_tracking import update_task_status
+        path = update_task_status(args.workspace, args.task_id, args.status)
+        print(path)
+        return 0
+    if args.command == "execution-metrics" and args.exec_metrics_command == "summarize":
+        from .execution_metrics import summarize_execution_metrics
+        outputs = summarize_execution_metrics(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+    if args.command == "action-trace" and args.action_trace_command == "summarize":
+        from .action_outcome_trace import build_action_outcome_trace
+        outputs = build_action_outcome_trace(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+    if args.command == "retrospective" and args.retro_command == "generate":
+        from .retrospective_reporting import build_retrospective_report
+        outputs = build_retrospective_report(args.workspace, args.template, args.report_id)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+    if args.command == "retrospective" and args.retro_command == "patterns":
+        from .pattern_synthesis import synthesize_patterns
+        config = load_workspace_config(args.workspace)
+        outputs = synthesize_patterns(config.output_dir)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
         return 0
     if args.command == "version":
         print(__version__)

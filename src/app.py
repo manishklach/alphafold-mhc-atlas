@@ -743,6 +743,12 @@ def render_workspace_app(st, workspace_config) -> None:
             "Rationale Lineage",
             "Template Effectiveness",
             "Workflow Metrics",
+            "Execution Plans",
+            "Execution Tasks",
+            "Action-to-Outcome Trace",
+            "Execution Metrics",
+            "Retrospective Reports",
+            "Pattern Synthesis Digest",
             "Review Cycles",
             "Recurring Questions",
             "Workflow Templates",
@@ -830,6 +836,119 @@ def render_workspace_app(st, workspace_config) -> None:
         st.subheader("Cycle Operational Metrics")
         st.dataframe(preview_table(safe_read_csv(outputs["cycle_operational_metrics.csv"]), 200), use_container_width=True)
         st.text(safe_read_text(outputs["closure_summary.md"]))
+    elif page == "Execution Plans":
+        st.subheader("Execution Plans")
+        plans_dir = workspace_config.output_dir / "execution_plans"
+        if not plans_dir.exists():
+            st.info("No execution plans exist yet.")
+        else:
+            plans = sorted(path.name for path in plans_dir.iterdir() if path.is_dir())
+            if not plans:
+                st.info("No execution plans found.")
+            else:
+                selected_plan = st.selectbox("Execution Plan", plans)
+                plan_dir = plans_dir / selected_plan
+                st.text(safe_read_text(plan_dir / "execution_plan_summary.md"))
+                st.dataframe(preview_table(safe_read_csv(plan_dir / "execution_plan.csv"), 200), use_container_width=True)
+    elif page == "Execution Tasks":
+        st.subheader("Follow-up Tasks")
+        plans_dir = workspace_config.output_dir / "execution_plans"
+        if not plans_dir.exists():
+            st.info("No execution tasks exist yet.")
+        else:
+            tasks_dfs = []
+            for plan_dir in plans_dir.iterdir():
+                if plan_dir.is_dir() and (plan_dir / "followup_tasks.csv").exists():
+                    tasks_dfs.append(safe_read_csv(plan_dir / "followup_tasks.csv"))
+            if tasks_dfs:
+                all_tasks = pd.concat(tasks_dfs, ignore_index=True)
+                # filters
+                col1, col2, col3 = st.columns(3)
+                owner_filter = col1.selectbox("Filter by Owner", ["All"] + all_tasks["owner"].astype(str).unique().tolist())
+                status_filter = col2.selectbox("Filter by Status", ["All"] + all_tasks["status"].astype(str).unique().tolist())
+                role_filter = col3.selectbox("Filter by Role", ["All"] + all_tasks["owner_role"].astype(str).unique().tolist())
+                
+                filtered = all_tasks.copy()
+                if owner_filter != "All": filtered = filtered[filtered["owner"].astype(str) == owner_filter]
+                if status_filter != "All": filtered = filtered[filtered["status"].astype(str) == status_filter]
+                if role_filter != "All": filtered = filtered[filtered["owner_role"].astype(str) == role_filter]
+                
+                st.dataframe(preview_table(filtered, 500), use_container_width=True)
+            else:
+                st.info("No tasks found in execution plans.")
+    elif page == "Action-to-Outcome Trace":
+        from src.action_outcome_trace import build_action_outcome_trace
+        outputs = build_action_outcome_trace(workspace_config)
+        st.subheader("Action-to-Outcome Trace")
+        st.dataframe(preview_table(safe_read_csv(outputs["action_outcome_trace.csv"]), 200), use_container_width=True)
+        st.subheader("Execution to Outcome Summary")
+        st.dataframe(preview_table(safe_read_csv(outputs["execution_to_outcome_summary.csv"]), 200), use_container_width=True)
+        st.text(safe_read_text(outputs["followup_path_trace.md"]))
+    elif page == "Execution Metrics":
+        from src.execution_metrics import summarize_execution_metrics
+        outputs = summarize_execution_metrics(workspace_config)
+        st.subheader("Execution Metrics")
+        st.dataframe(preview_table(safe_read_csv(outputs["execution_metrics.csv"]), 200), use_container_width=True)
+        st.subheader("Roles & Template usage")
+        st.dataframe(preview_table(safe_read_csv(outputs["execution_metrics_by_template.csv"]), 200), use_container_width=True)
+        st.subheader("Blocked Items")
+        st.dataframe(preview_table(safe_read_csv(outputs["blocked_reasons_summary.csv"]), 200), use_container_width=True)
+        st.text(safe_read_text(outputs["operational_digest.md"]))
+    elif page == "Retrospective Reports":
+        st.subheader("Retrospective Reports")
+        
+        # Generation UI
+        with st.expander("Generate New Retrospective", expanded=False):
+            from src.retrospective_templates import load_retrospective_templates
+            from src.retrospective_reporting import build_retrospective_report
+            
+            templates = load_retrospective_templates()
+            if not templates:
+                st.warning("No retrospective templates found in data/retrospective_templates.yaml")
+            else:
+                template_map = {t.label: t.template_id for t in templates}
+                selected_label = st.selectbox("Retrospective Template", list(template_map.keys()))
+                if st.button("Generate Retrospective Report"):
+                    with st.spinner("Synthesizing patterns and building report..."):
+                        results = build_retrospective_report(workspace_config, template_map[selected_label])
+                        st.success(f"Report generated: {selected_label}")
+                        st.balloons()
+        
+        st.divider()
+        
+        retro_dir = workspace_config.output_dir / "retrospectives"
+        if not retro_dir.exists():
+            st.info("No retrospective reports exist yet.")
+        else:
+            retros = sorted(path.name for path in retro_dir.iterdir() if path.is_dir())
+            if not retros:
+                st.info("No retrospectives found.")
+            else:
+                selected_retro = st.selectbox("Report", retros)
+                report_dir = retro_dir / selected_retro
+                st.text(safe_read_text(report_dir / "retrospective_report.md"))
+                st.subheader("Role Views")
+                cols = st.columns(3)
+                if (report_dir / "retrospective_manager.md").exists():
+                    cols[0].markdown("**Manager View**")
+                    cols[0].text(safe_read_text(report_dir / "retrospective_manager.md"))
+                if (report_dir / "retrospective_comp_lead.md").exists():
+                    cols[1].markdown("**Comp Lead View**")
+                    cols[1].text(safe_read_text(report_dir / "retrospective_comp_lead.md"))
+                if (report_dir / "retrospective_scientist.md").exists():
+                    cols[2].markdown("**Scientist View**")
+                    cols[2].text(safe_read_text(report_dir / "retrospective_scientist.md"))
+                st.subheader("Outlines")
+                st.markdown("**Meeting Outline**")
+                st.text(safe_read_text(report_dir / "meeting_outline.md"))
+                st.markdown("**Slide Outline**")
+                st.text(safe_read_text(report_dir / "slide_outline.md"))
+    elif page == "Pattern Synthesis Digest":
+        from src.pattern_synthesis import synthesize_patterns
+        outputs = synthesize_patterns(workspace_config.output_dir)
+        st.subheader("Pattern Synthesis Digest")
+        st.dataframe(preview_table(safe_read_csv(outputs["pattern_synthesis.csv"]), 200), use_container_width=True)
+        st.text(safe_read_text(outputs["pattern_digest.md"]))
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)
         st.subheader("Decision Lineage")
