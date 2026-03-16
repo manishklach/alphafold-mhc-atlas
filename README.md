@@ -325,6 +325,30 @@ mhc-atlas executive-brief create --workspace workspaces/demo_workspace.yaml --br
 mhc-atlas final-handoff build --workspace workspaces/demo_workspace.yaml --handoff-id lab_handoff_v1
 ```
 
+## Phase 20: Portfolio Prioritization and Decision Capacity Planning
+
+Phase 20 helps teams answer the final operational question: “Given limited follow-up capacity, what should we actually spend time on next?”
+
+What it adds:
+
+- **Portfolio Aggregation**: Aggregates candidate items across all projects and memory traces into a unified portfolio view.
+- **Capacity-Aware Prioritization**: Sorts and assigns candidates into operational buckets (`do_now`, `discuss_soon`, `monitor`, `escalate`) strictly bounded by configurable capacity limits.
+- **Attention & Escalation Queues**: Generates role-specific lists (e.g., Scientist `do_now` queue, Manager `escalate` queue) to direct limited scientific bandwidth to the most robust and consensus-backed items.
+- **Portfolio Mode Comparison**: Allows teams to compare how their priority buckets shift if they adopt a "Robustness First" vs. an "Evidence First" operational mode.
+
+Useful Phase 20 commands:
+
+```bash
+mhc-atlas portfolio aggregate --workspace workspaces/demo_workspace.yaml
+mhc-atlas portfolio prioritize --workspace workspaces/demo_workspace.yaml --mode evidence_first_capacity_mode
+mhc-atlas queue build --workspace workspaces/demo_workspace.yaml
+mhc-atlas portfolio compare --workspace workspaces/demo_workspace.yaml --a evidence_first_capacity_mode --b consensus_first_capacity_mode
+```
+
+What it does not do:
+- it does not build generic PM or resource-planning software.
+- it does not imply that capacity-driven buckets dictate biological truth.
+
 What it does not do:
 - it does not build chat threads, real-time collaboration, or cloud review systems.
 

@@ -793,6 +793,12 @@ def render_workspace_app(st, workspace_config) -> None:
             "Executive Briefs",
             "Final Handoff Automation",
         ],
+        "10. Portfolio Prioritization": [
+            "Portfolio Candidates",
+            "Capacity Planning & Buckets",
+            "Attention Queues",
+            "Portfolio Comparison",
+        ],
         "Admin": [
             "Workflow Templates",
             "Project History",
@@ -838,6 +844,8 @@ def render_workspace_app(st, workspace_config) -> None:
         st.success("### Stage 8: Team Alignment\n**Objective**: Compare independent reviewer judgments. Resolve disputes and identify variants with the highest combined analytical and human confidence.")
     elif page in workflow_stages["9. Executive Handoff"]:
         st.success("### Stage 9: Final Reporting & Handoff\n**Objective**: Generate high-level narratives for leadership. Automate the final handoff bundle for wet-lab execution and experimental validation.")
+    elif page in workflow_stages["10. Portfolio Prioritization"]:
+        st.success("### Stage 10: Portfolio Prioritization\n**Objective**: Allocate limited scientific attention. Rank items across all workspaces into actionable capacity-aware buckets (do_now, monitor, escalate).")
 
     if page == "Workspace Overview":
         st.subheader(workspace_config.name)
@@ -1330,6 +1338,84 @@ def render_workspace_app(st, workspace_config) -> None:
             st.markdown(f"**Included Files:**")
             for k in ["executive_brief.md", "consensus_robust_candidates.csv", "evidence_manifest.csv", "caveats_and_limitations.md"]:
                 st.markdown(f"- `{k}`")
+
+    # 10. Portfolio Prioritization
+    elif page == "Portfolio Candidates":
+        from src.portfolio_aggregation import build_portfolio_aggregation
+        st.subheader("Portfolio Candidates")
+        st.info("Aggregates variants across the workspace into a single list of follow-up candidates.")
+        
+        if st.button("Aggregate Portfolio"):
+            res = build_portfolio_aggregation(workspace_config)
+            st.success("Aggregation complete.")
+            st.markdown(safe_read_text(res["portfolio_candidates_summary.md"]))
+            
+        c_path = workspace_config.output_dir / "portfolio" / "portfolio_candidates.csv"
+        if c_path.exists():
+            st.dataframe(preview_table(safe_read_csv(c_path), 500), use_container_width=True)
+
+    elif page == "Capacity Planning & Buckets":
+        from src.portfolio_prioritization import build_portfolio_prioritization
+        from src.portfolio_modes import load_portfolio_modes
+        st.subheader("Capacity Planning & Buckets")
+        st.info("Assigns candidates into operational buckets (do_now, monitor, escalate) based on team bandwidth.")
+        
+        modes = load_portfolio_modes()
+        if not modes:
+            st.warning("No portfolio modes defined in data/portfolio_modes.yaml")
+        else:
+            mode_map = {m.label: m.mode_id for m in modes}
+            selected_mode = st.selectbox("Prioritization Mode", list(mode_map.keys()))
+            
+            if st.button("Run Prioritization"):
+                res = build_portfolio_prioritization(workspace_config, mode_map[selected_mode])
+                st.success("Prioritization complete.")
+                st.markdown(safe_read_text(res.get("capacity_planning_summary.md")))
+                
+            p_path = workspace_config.output_dir / "portfolio" / "portfolio_prioritization.csv"
+            if p_path.exists():
+                st.dataframe(preview_table(safe_read_csv(p_path), 500), use_container_width=True)
+
+    elif page == "Attention Queues":
+        from src.attention_queue import build_attention_queues
+        st.subheader("Attention Queues")
+        st.info("Role-specific focus lists generated from capacity buckets.")
+        
+        if st.button("Generate Queues"):
+            build_attention_queues(workspace_config)
+            st.success("Queues generated.")
+            
+        out_dir = workspace_config.output_dir / "portfolio"
+        col1, col2, col3 = st.columns(3)
+        if (out_dir / "scientist_attention_queue.csv").exists():
+            col1.markdown("**Scientist Queue (`do_now`)**")
+            col1.dataframe(preview_table(safe_read_csv(out_dir / "scientist_attention_queue.csv"), 100), use_container_width=True)
+        if (out_dir / "manager_attention_queue.csv").exists():
+            col2.markdown("**Manager Queue (`discuss_soon`)**")
+            col2.dataframe(preview_table(safe_read_csv(out_dir / "manager_attention_queue.csv"), 100), use_container_width=True)
+        if (out_dir / "escalation_queue.csv").exists():
+            col3.markdown("**Escalation Queue**")
+            col3.dataframe(preview_table(safe_read_csv(out_dir / "escalation_queue.csv"), 100), use_container_width=True)
+
+    elif page == "Portfolio Comparison":
+        from src.portfolio_compare import compare_portfolio_modes
+        from src.portfolio_modes import load_portfolio_modes
+        st.subheader("Portfolio Mode Comparison")
+        st.info("Evaluate how changing capacity assumptions affects which variants enter the `do_now` bucket.")
+        
+        modes = load_portfolio_modes()
+        if len(modes) >= 2:
+            mode_names = [m.label for m in modes]
+            col1, col2 = st.columns(2)
+            m_a = col1.selectbox("Mode A", mode_names, index=0)
+            m_b = col2.selectbox("Mode B", mode_names, index=1)
+            
+            mode_map = {m.label: m.mode_id for m in modes}
+            if st.button("Compare Modes"):
+                res = compare_portfolio_modes(workspace_config, mode_map[m_a], mode_map[m_b])
+                st.success("Comparison complete.")
+                st.markdown(safe_read_text(res.get("portfolio_comparison_digest.md")))
+                st.dataframe(preview_table(safe_read_csv(res.get("portfolio_mode_comparison.csv")), 500), use_container_width=True)
 
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)

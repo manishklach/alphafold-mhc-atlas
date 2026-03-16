@@ -1,0 +1,18 @@
+modes:
+  - mode_id: evidence_first_capacity_mode
+    label: Evidence First (Capacity Aware)
+    description: Prioritizes analytically robust items for immediate follow-up.
+    capacity_id: standard_team_bandwidth
+    primary_sort: analytical_robustness
+
+  - mode_id: consensus_first_capacity_mode
+    label: Consensus First (Capacity Aware)
+    description: Prioritizes human-aligned items for immediate follow-up.
+    capacity_id: standard_team_bandwidth
+    primary_sort: human_consensus
+
+  - mode_id: low_disagreement_focus_mode
+    label: Low Disagreement Focus
+    description: Avoids stalled items, focusing bandwidth on consensus candidates.
+    capacity_id: constrained_bandwidth
+    primary_sort: human_consensus

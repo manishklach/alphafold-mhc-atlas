@@ -371,6 +371,25 @@ def build_parser() -> argparse.ArgumentParser:
     final_handoff_build.add_argument("--workspace", required=True)
     final_handoff_build.add_argument("--handoff-id")
 
+    portfolio = subparsers.add_parser("portfolio", help="Portfolio prioritization commands.")
+    portfolio_sub = portfolio.add_subparsers(dest="portfolio_command", required=True)
+    portfolio_agg = portfolio_sub.add_parser("aggregate", help="Aggregate portfolio candidates.")
+    portfolio_agg.add_argument("--workspace", required=True)
+    
+    portfolio_prio = portfolio_sub.add_parser("prioritize", help="Run capacity-aware prioritization.")
+    portfolio_prio.add_argument("--workspace", required=True)
+    portfolio_prio.add_argument("--mode", default="evidence_first_capacity_mode")
+    
+    portfolio_comp = portfolio_sub.add_parser("compare", help="Compare portfolio modes.")
+    portfolio_comp.add_argument("--workspace", required=True)
+    portfolio_comp.add_argument("--a", required=True)
+    portfolio_comp.add_argument("--b", required=True)
+    
+    queue = subparsers.add_parser("queue", help="Attention queue commands.")
+    queue_sub = queue.add_subparsers(dest="queue_command", required=True)
+    queue_build = queue_sub.add_parser("build", help="Build attention and escalation queues.")
+    queue_build.add_argument("--workspace", required=True)
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -694,7 +713,6 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "playbook" and args.playbook_command == "run":
         from .scenario_playbooks import run_playbook
-        from .workspace_index import build_workspace_inventory
         config = load_workspace_config(args.workspace)
         inventory = build_workspace_inventory(config)
         # Combine tables from all projects
@@ -705,7 +723,6 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "playbook" and args.playbook_command == "compare":
         from .playbook_compare import compare_playbooks
-        from .workspace_index import build_workspace_inventory
         config = load_workspace_config(args.workspace)
         inventory = build_workspace_inventory(config)
         tables = _combine_project_tables(inventory)
@@ -715,7 +732,6 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "sensitivity" and args.sensitivity_command == "run":
         from .sensitivity_testing import run_sensitivity_suite
-        from .workspace_index import build_workspace_inventory
         config = load_workspace_config(args.workspace)
         inventory = build_workspace_inventory(config)
         tables = _combine_project_tables(inventory)
@@ -726,7 +742,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "robustness" and args.robustness_command == "summarize":
         from .sensitivity_testing import run_sensitivity_suite
         from .decision_robustness import compute_decision_robustness
-        from .workspace_index import build_workspace_inventory
         config = load_workspace_config(args.workspace)
         inventory = build_workspace_inventory(config)
         tables = _combine_project_tables(inventory)
@@ -775,6 +790,30 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "final-handoff" and args.final_handoff_command == "build":
         from .final_handoff import build_final_handoff
         outputs = build_final_handoff(args.workspace, args.handoff_id)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "portfolio" and args.portfolio_command == "aggregate":
+        from .portfolio_aggregation import build_portfolio_aggregation
+        outputs = build_portfolio_aggregation(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "portfolio" and args.portfolio_command == "prioritize":
+        from .portfolio_prioritization import build_portfolio_prioritization
+        outputs = build_portfolio_prioritization(args.workspace, args.mode)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "portfolio" and args.portfolio_command == "compare":
+        from .portfolio_compare import compare_portfolio_modes
+        outputs = compare_portfolio_modes(args.workspace, args.a, args.b)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "queue" and args.queue_command == "build":
+        from .attention_queue import build_attention_queues
+        outputs = build_attention_queues(args.workspace)
         print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
         return 0
 

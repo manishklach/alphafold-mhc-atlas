@@ -1,0 +1,9 @@
+capacity_templates:
+  - capacity_id: standard_team_bandwidth
+    max_do_now: 15
+    max_discuss_soon: 20
+    max_escalate: 10
+  - capacity_id: constrained_bandwidth
+    max_do_now: 5
+    max_discuss_soon: 10
+    max_escalate: 5

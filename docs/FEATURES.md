@@ -370,7 +370,21 @@ Conservative limits:
 - executive summaries are deterministic and template-based, avoiding LLM hallucinations or invented claims
 - handoffs emphasize that candidates remain exploratory structural hypotheses
 
-## 24. Planned Next-Step Areas
+## 24. Portfolio Prioritization and Decision Capacity Planning (Phase 20)
+
+Implemented:
+
+- workspace-wide portfolio aggregation from multicycle history and combined robustness
+- capacity-aware operational bucketing (`do_now`, `discuss_soon`, `monitor`, `escalate`)
+- automated role-specific attention and escalation queues
+- portfolio mode comparisons (e.g., Evidence First vs Consensus First)
+
+Conservative limits:
+
+- strictly operational focus: buckets reflect team bandwidth, not scientific certainty
+- no enterprise resource planning (ERP) or budget forecasting systems
+
+## 25. Planned Next-Step Areas
 
 Most likely future directions:
 
