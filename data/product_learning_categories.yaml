@@ -1,0 +1,15 @@
+categories:
+  - id: onboarding_confusion
+    label: Onboarding Confusion
+  - id: workflow_too_complex
+    label: Workflow Complexity
+  - id: packet_useful
+    label: Useful Packet
+  - id: evidence_clear
+    label: Evidence Clarity
+  - id: role_view_helpful
+    label: Helpful Role View
+  - id: benchmark_overlay_helpful
+    label: Helpful Benchmark Overlay
+  - id: execution_bundle_helpful
+    label: Helpful Execution Bundle

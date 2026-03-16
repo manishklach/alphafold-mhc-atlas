@@ -1,0 +1,23 @@
+event_types:
+  - id: workspace_opened
+    category: navigation
+  - id: review_packet_generated
+    category: workflow_step
+  - id: decision_packet_generated
+    category: workflow_step
+  - id: playbook_used
+    category: analysis
+  - id: sensitivity_run
+    category: analysis
+  - id: reviewer_pack_created
+    category: consensus
+  - id: execution_bundle_created
+    category: execution
+  - id: org_retrospective_generated
+    category: organization
+  - id: setup_pack_created
+    category: onboarding
+  - id: evaluation_pack_created
+    category: onboarding
+  - id: page_viewed
+    category: navigation

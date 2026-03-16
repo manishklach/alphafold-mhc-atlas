@@ -1,0 +1,8 @@
+health_labels:
+  - id: promising_but_friction_heavy
+    min_adoption_breadth: 0.2
+    max_friction_ratio: 0.8
+  - id: repeat_usage_emerging
+    min_repeat_cycles: 2
+  - id: workflow_stickiness_emerging
+    min_sticky_workflow_count: 2

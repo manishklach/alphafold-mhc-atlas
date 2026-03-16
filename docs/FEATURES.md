@@ -397,11 +397,28 @@ Implemented:
 
 Conservative limits:
 
-- dashboards reflect operational flow, not scientific truth
+- dashboard reflects operational flow, not scientific truth
 - no automated executive performance scoring
 - provenance remains drillable to workspace evidence
 
-## 26. Planned Next-Step Areas
+## 26. Pilot Validation and Product Fit (Phase 21)
+
+Implemented:
+
+- local-first pilot usage instrumentation (opt-in usage events)
+- workflow adoption and friction hotspots analysis
+- repeat-usage and return-cycle summaries
+- pilot health status reporting (breadth, depth, engagement)
+- internal product-learning packets for pilot reviews
+
+Conservative limits:
+
+- instrumentation is local and non-invasive; no remote telemetry
+- friction signals are exploratory proxies, not definitive UX truth
+- no surveillance or privacy-invasive tracking
+
+## 27. Planned Next-Step Areas
+
 
 Most likely future directions:
 

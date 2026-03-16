@@ -47,7 +47,9 @@ from src.scope_text import brief_scope_markdown, expanded_scope_markdown
 from src.session_logging import log_session_action, start_session
 from src.shortlist import refresh_shortlists
 from src.template_effectiveness import summarize_template_effectiveness
-from src.version import __version__
+from src.pilot_health import summarize_pilot_health
+from src.pilot_usage import log_pilot_event, summarize_usage
+from src.product_fit import * # (Assuming this might be needed later or exists as stub)
 from src.workflow_metrics import summarize_workflow_metrics
 from src.workspace import load_workspace_config
 from src.workspace_index import build_workspace_inventory, write_workspace_inventory
@@ -807,6 +809,13 @@ def render_workspace_app(st, workspace_config) -> None:
             "Attention Queues",
             "Portfolio Comparison",
         ],
+        "11. Pilot Validation": [
+            "Pilot Usage Summary",
+            "Workflow Adoption",
+            "Friction Hotspots",
+            "Pilot Health",
+            "Product Learning Packet",
+        ],
         "Admin": [
             "Workflow Templates",
             "Project History",
@@ -825,6 +834,9 @@ def render_workspace_app(st, workspace_config) -> None:
     if page.startswith("---"):
         st.info("Select a specific page within the workflow group.")
         return
+
+    # Phase 21: Log usage event for page view
+    log_pilot_event(workspace_config, "page_viewed", surface="app", artifact_id=page)
 
     projects_df = pd.DataFrame(inventory["projects"])
     selected_project_id = st.sidebar.selectbox("Project", projects_df["project_id"].tolist() if not projects_df.empty else [""])
@@ -856,6 +868,8 @@ def render_workspace_app(st, workspace_config) -> None:
         st.success("### Stage 9: Final Reporting & Handoff\n**Objective**: Generate high-level narratives for leadership. Automate the final handoff bundle for wet-lab execution and experimental validation.")
     elif page in workflow_stages["10. Portfolio Prioritization"]:
         st.success("### Stage 10: Portfolio Prioritization\n**Objective**: Allocate limited scientific attention. Rank items across all workspaces into actionable capacity-aware buckets (do_now, monitor, escalate).")
+    elif page in workflow_stages["11. Pilot Validation"]:
+        st.success("### Stage 11: Pilot Validation & Learning\n**Objective**: Learn from real-world pilot usage. Identify workflow friction, adoption hotspots, and product-fit signals to inform broader rollout.")
 
     if page == "Organization Overview":
         from src.org_aggregation import write_org_aggregation
@@ -1495,6 +1509,80 @@ def render_workspace_app(st, workspace_config) -> None:
                 st.success("Comparison complete.")
                 st.markdown(safe_read_text(res.get("portfolio_comparison_digest.md")))
                 st.dataframe(preview_table(safe_read_csv(res.get("portfolio_mode_comparison.csv")), 500), use_container_width=True)
+
+    # 11. Pilot Validation
+    elif page == "Pilot Usage Summary":
+        from src.pilot_usage import summarize_usage
+        st.subheader("Pilot Usage Summary")
+        st.info("High-level breakdown of engagement across the pilot workspace.")
+        
+        if st.button("Summarize Usage"):
+            res = summarize_usage(workspace_config)
+            st.success("Usage summary built.")
+            st.markdown(safe_read_text(res.get("usage_digest.md")))
+            
+        u_path = workspace_config.output_dir / "pilot_learning" / "usage_summary.csv"
+        if u_path.exists():
+            st.dataframe(preview_table(safe_read_csv(u_path), 200), use_container_width=True)
+
+    elif page == "Workflow Adoption":
+        from src.workflow_adoption import summarize_workflow_adoption
+        st.subheader("Workflow Adoption")
+        st.info("Identifying which discovery stages and role workflows are most active.")
+        
+        if st.button("Summarize Adoption"):
+            build_product_learning_packet(workspace_config) # Triggers all
+            st.success("Adoption analysis complete.")
+            
+        a_dir = workspace_config.output_dir / "pilot_learning"
+        if (a_dir / "adoption_digest.md").exists():
+            st.markdown(safe_read_text(a_dir / "adoption_digest.md"))
+            st.dataframe(preview_table(safe_read_csv(a_dir / "workflow_adoption.csv"), 200), use_container_width=True)
+
+    elif page == "Friction Hotspots":
+        from src.usage_friction import summarize_usage_friction
+        st.subheader("Friction Hotspots")
+        st.info("Analyzing navigation patterns to identify where researchers may be getting stuck.")
+        
+        if st.button("Analyze Friction"):
+            summarize_usage_friction(workspace_config)
+            st.success("Friction analysis complete.")
+            
+        f_dir = workspace_config.output_dir / "pilot_learning"
+        if (f_dir / "friction_digest.md").exists():
+            st.markdown(safe_read_text(f_dir / "friction_digest.md"))
+            st.dataframe(preview_table(safe_read_csv(f_dir / "friction_summary.csv"), 200), use_container_width=True)
+
+    elif page == "Pilot Health":
+        from src.pilot_health import summarize_pilot_health
+        st.subheader("Pilot Health")
+        st.info("Overall process health status based on adoption breadth and cycle depth.")
+        
+        if st.button("Build Pilot Health Summary"):
+            summarize_pilot_health(workspace_config)
+            st.success("Health summary built.")
+            
+        h_dir = workspace_config.output_dir / "pilot_learning"
+        if (h_dir / "pilot_health_digest.md").exists():
+            st.markdown(safe_read_text(h_dir / "pilot_health_digest.md"))
+            st.dataframe(preview_table(safe_read_csv(h_dir / "pilot_health_summary.csv"), 200), use_container_width=True)
+
+    elif page == "Product Learning Packet":
+        from src.product_learning_packet import build_product_learning_packet
+        st.subheader("Product Learning Packet")
+        st.info("Consolidates all pilot learning into an internal review bundle.")
+        
+        if st.button("Build Product Learning Packet"):
+            res = build_product_learning_packet(workspace_config)
+            st.success(f"Packet created at: {res['packet_dir']}")
+            st.markdown(safe_read_text(res["product_learning_summary.md"]))
+            
+        p_root = workspace_config.output_dir / "product_learning_packets"
+        if p_root.exists():
+            packets = sorted([d.name for d in p_root.iterdir() if d.is_dir()], reverse=True)
+            if packets:
+                selected_p = st.selectbox("View Past Packets", packets)
+                st.markdown(safe_read_text(p_root / selected_p / "product_learning_summary.md"))
 
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)

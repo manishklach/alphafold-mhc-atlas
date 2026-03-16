@@ -345,9 +345,31 @@ mhc-atlas queue build --workspace workspaces/demo_workspace.yaml
 mhc-atlas portfolio compare --workspace workspaces/demo_workspace.yaml --a evidence_first_capacity_mode --b consensus_first_capacity_mode
 ```
 
+## Phase 21: Pilot Validation and Product Fit Instrumentation
+
+Phase 21 adds a local-first learning layer to the platform, helping teams identify which workflows are sticky, where friction occurs, and overall pilot health—without invasive telemetry.
+
+What it adds:
+
+- **Local Usage Instrumentation**: Opt-in event logging for key discovery steps (e.g., playbook runs, packet generation).
+- **Adoption & Friction Summaries**: Automated identification of workflow hotspots and potential drop-off points.
+- **Repeat Usage Metrics**: Track cycle-over-cycle engagement to measure true process stickiness.
+- **Internal Product-Learning Packets**: Consolidates all usage, adoption, and friction data into a structured bundle for internal review.
+
+Useful Phase 21 commands:
+
+```bash
+mhc-atlas pilot-learning usage --workspace workspaces/demo_workspace.yaml
+mhc-atlas pilot-learning adoption --workspace workspaces/demo_workspace.yaml
+mhc-atlas pilot-learning friction --workspace workspaces/demo_workspace.yaml
+mhc-atlas pilot-learning health --workspace workspaces/demo_workspace.yaml
+mhc-atlas pilot-learning packet --workspace workspaces/demo_workspace.yaml --packet-id pilot_round_1
+```
+
 What it does not do:
-- it does not build generic PM or resource-planning software.
-- it does not imply that capacity-driven buckets dictate biological truth.
+- it does not build remote telemetry or cloud analytics backends.
+- it does not track any behavior unrelated to the explicit discovery workflow.
+- it does not store personal identifiable information.
 
 What it does not do:
 - it does not build chat threads, real-time collaboration, or cloud review systems.

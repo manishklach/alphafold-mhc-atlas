@@ -407,6 +407,25 @@ def build_parser() -> argparse.ArgumentParser:
     org_packet.add_argument("--output", required=True)
     org_packet.add_argument("--packet-id")
 
+    pilot_learning = subparsers.add_parser("pilot-learning", help="Pilot validation and learning commands.")
+    pilot_learning_sub = pilot_learning.add_subparsers(dest="pilot_learning_command", required=True)
+    
+    usage_sum = pilot_learning_sub.add_parser("usage", help="Summarize pilot usage instrumentation.")
+    usage_sum.add_argument("--workspace", required=True)
+    
+    adoption_sum = pilot_learning_sub.add_parser("adoption", help="Summarize workflow adoption.")
+    adoption_sum.add_argument("--workspace", required=True)
+    
+    friction_sum = pilot_learning_sub.add_parser("friction", help="Summarize workflow friction.")
+    friction_sum.add_argument("--workspace", required=True)
+    
+    health_sum = pilot_learning_sub.add_parser("health", help="Summarize overall pilot health.")
+    health_sum.add_argument("--workspace", required=True)
+    
+    learning_packet = pilot_learning_sub.add_parser("packet", help="Create internal product-learning packet.")
+    learning_packet.add_argument("--workspace", required=True)
+    learning_packet.add_argument("--packet-id")
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -546,9 +565,12 @@ def main(argv: list[str] | None = None) -> int:
             print(write_workspace_inventory(config))
             return 0
         if args.workspace_command == "inventory":
-            config = load_workspace_config(args.workspace)
-            inventory = build_workspace_inventory(config)
-            print(json.dumps(inventory, indent=2))
+                    config = load_workspace_config(args.workspace)
+                    inventory = build_workspace_inventory(config)
+                    from .pilot_usage import log_pilot_event
+                    log_pilot_event(config, "workspace_opened", surface="cli", artifact_id="inventory")
+                    print(json.dumps(inventory, indent=2))
+
             if args.write:
                 write_workspace_inventory(config)
             return 0
@@ -855,6 +877,36 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "org" and args.org_command == "packet":
         from .operating_review_packet import build_operating_review_packet
         outputs = build_operating_review_packet(Path(args.workspace_root), Path(args.output), args.packet_id)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "pilot-learning" and args.pilot_learning_command == "usage":
+        from .pilot_usage import summarize_usage
+        outputs = summarize_usage(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "pilot-learning" and args.pilot_learning_command == "adoption":
+        from .workflow_adoption import summarize_workflow_adoption
+        outputs = summarize_workflow_adoption(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "pilot-learning" and args.pilot_learning_command == "friction":
+        from .usage_friction import summarize_usage_friction
+        outputs = summarize_usage_friction(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "pilot-learning" and args.pilot_learning_command == "health":
+        from .pilot_health import summarize_pilot_health
+        outputs = summarize_pilot_health(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "pilot-learning" and args.pilot_learning_command == "packet":
+        from .product_learning_packet import build_product_learning_packet
+        outputs = build_product_learning_packet(args.workspace, args.packet_id)
         print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
         return 0
 
