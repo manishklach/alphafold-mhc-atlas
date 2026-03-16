@@ -11,3 +11,4 @@ dist/
 *.egg-info/
 .coverage
 .mypy_cache/
+e2e_test_workspace/
