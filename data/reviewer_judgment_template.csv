@@ -1,0 +1,3 @@
+entity_type,entity_id,reviewer_name,reviewer_role,judgment_label,reviewer_confidence,rationale_category,rationale_text,playbook_id,benchmark_mode,notes
+variant,demoA_pos2_A,Reviewer A,scientist,prioritize,high,stronger_evidence,Consistent pocket disruption.,conservative_binder,benchmark_blind,
+variant,demoA_pos2_A,Reviewer B,computational_lead,uncertain,moderate,uncertainty_concern,High PAE in flank.,conservative_binder,benchmark_blind,

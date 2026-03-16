@@ -1,0 +1,40 @@
+judgment_labels:
+  - id: prioritize
+    label: Prioritize
+    description: High confidence for follow-up.
+  - id: deprioritize
+    label: Deprioritize
+    description: Low priority based on current evidence.
+  - id: uncertain
+    label: Uncertain
+    description: Requires more data or discussion.
+  - id: revisit_next_cycle
+    label: Revisit Next Cycle
+    description: Not ready for decision yet.
+  - id: escalate_for_discussion
+    label: Escalate for Discussion
+    description: Strong disagreement or complex trade-off.
+  - id: acceptable_with_caveats
+    label: Acceptable with Caveats
+    description: Supportable if specific risks are noted.
+  - id: blocked_by_evidence_gap
+    label: Blocked by Evidence Gap
+    description: Cannot judge without specific missing artifacts.
+
+confidence_levels:
+  - low
+  - moderate
+  - high
+
+rationale_categories:
+  - stronger_evidence
+  - insufficient_evidence
+  - benchmark_alignment
+  - benchmark_conflict
+  - role_priority
+  - uncertainty_concern
+  - structural_support
+  - outcome_context
+  - disagreement_with_playbook
+  - unresolved_question
+  - other

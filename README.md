@@ -286,19 +286,32 @@ mhc-atlas robustness summarize --workspace workspaces/demo_workspace.yaml --play
 mhc-atlas playbook compare --workspace workspaces/demo_workspace.yaml --a conservative_binder --b viral_escape_explorer
 ```
 
-What it does not do:
-- it does not build automated weight optimization or hyperparameter tuning.
-- it does not imply that "Robust" items are biologically validated (robustness is mathematical stability).
-- it does not hide the trade-offs between different analytical frames.
+## Phase 18: Collaborative Consensus and Disagreement Analysis
+
+Phase 18 introduces structured tracking of human judgment, allowing teams to analyze where they agree and where they diverge, and how that maps to the underlying analytical robustness.
+
+What it adds:
+
+- **Reviewer Judgments**: Import and log independent judgments (e.g., Prioritize, Deprioritize) from multiple team members.
+- **Consensus vs. Disagreement Summaries**: Identify items with strong alignment versus disputed items requiring meeting time.
+- **Disagreement Drivers**: Analyze whether divergence correlates with role, playbook choice, or benchmark mode.
+- **Human Robustness**: Measures stability of decisions across people, parallel to Phase 17's analytical robustness.
+- **Combined Robustness**: The ultimate synthesis—mapping items that are both analytically stable and backed by human consensus.
+- **Reviewer & Meeting Packs**: Create independent reviewer templates and structured consensus meeting briefs to drive effective team discussions.
+
+Useful Phase 18 commands:
+
+```bash
+mhc-atlas judgments import --workspace workspaces/demo_workspace.yaml --file path/to/judgments.csv
+mhc-atlas consensus summarize --workspace workspaces/demo_workspace.yaml
+mhc-atlas reviewer-pack create --workspace workspaces/demo_workspace.yaml --pack-id review_round_1
+mhc-atlas consensus-meeting create --workspace workspaces/demo_workspace.yaml --meeting-id final_review
+```
 
 What it does not do:
-- it does not claim predictive accuracy (it is a descriptive comparison tool)
-- it does not automatically sync with live external databases
-- it does not hide structural deltas in favor of benchmark labels
-- it does not build generic task-management software
-- it does not replace wet-lab tracking or PM tools
-- it does not automatically update structural rankings based on task completion
-
+- it does not build chat threads, real-time collaboration, or cloud review systems.
+- it does not turn reviewer judgments into absolute truth labels.
+- it does not build reputation scoring.
 
 What it does not do:
 

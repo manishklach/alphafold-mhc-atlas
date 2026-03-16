@@ -1,0 +1,19 @@
+meeting_sections:
+  - id: executive_summary
+    label: Executive Summary
+    description: High-level alignment overview.
+  - id: consensus_items
+    label: Consensus Selections
+    description: Items where reviewers aligned.
+  - id: disputed_items
+    label: Disputed Items
+    description: Items requiring active discussion.
+  - id: disagreement_drivers
+    label: Disagreement Drivers
+    description: Analysis of why reviewers diverged.
+  - id: combined_robustness
+    label: Robustness vs Consensus
+    description: Mapping analytical stability to human judgment.
+  - id: caveats
+    label: Scientific Caveats
+    description: Standard scientific guardrails.

@@ -783,6 +783,12 @@ def render_workspace_app(st, workspace_config) -> None:
             "Robustness Summary",
             "Playbook Comparison",
         ],
+        "8. Collaborative Consensus": [
+            "Reviewer Judgments",
+            "Consensus Summary",
+            "Human Robustness",
+            "Combined Robustness",
+        ],
         "Admin": [
             "Workflow Templates",
             "Project History",
@@ -824,6 +830,8 @@ def render_workspace_app(st, workspace_config) -> None:
         st.info("### Stage 6: Calibration\nCompare your internal structural hypotheses against external ground-truth datasets.")
     elif page in workflow_stages["7. Playbooks & Robustness"]:
         st.info("### Stage 7: Playbooks & Robustness\nTest how stable your decisions are under different analytical assumptions. Use Playbooks to reuse proven prioritization frames.")
+    elif page in workflow_stages["8. Collaborative Consensus"]:
+        st.info("### Stage 8: Collaborative Consensus\nCompare independent human judgments against analytical evidence. Identify items with strong consensus vs. items requiring active discussion.")
 
     if page == "Workspace Overview":
         st.subheader(workspace_config.name)
@@ -1199,6 +1207,71 @@ def render_workspace_app(st, workspace_config) -> None:
                 st.dataframe(preview_table(res["rank_diff"], 500), use_container_width=True)
             else:
                 st.error("No project data available.")
+
+    # 8. Collaborative Consensus
+    elif page == "Reviewer Judgments":
+        st.subheader("Reviewer Judgments")
+        st.info("Structured independent assessments from team members.")
+        log_path = workspace_config.output_dir / "program_memory" / "reviewer_judgments.csv"
+        if not log_path.exists():
+            st.warning("No reviewer judgments imported yet.")
+        else:
+            st.dataframe(preview_table(safe_read_csv(log_path), 500), use_container_width=True)
+
+    elif page == "Consensus Summary":
+        from src.consensus_analysis import build_consensus_summaries
+        from src.disagreement_drivers import analyze_disagreement_drivers
+        st.subheader("Consensus Summary")
+        
+        if st.button("Summarize Consensus"):
+            outputs = build_consensus_summaries(workspace_config)
+            analyze_disagreement_drivers(workspace_config)
+            st.success("Consensus analysis complete.")
+            
+        summary_path = workspace_config.output_dir / "program_memory" / "consensus_summary.csv"
+        if summary_path.exists():
+            st.dataframe(preview_table(safe_read_csv(summary_path), 500), use_container_width=True)
+            
+            st.subheader("Disputed Items")
+            disputed_path = workspace_config.output_dir / "program_memory" / "disputed_items.csv"
+            if disputed_path.exists():
+                st.dataframe(preview_table(safe_read_csv(disputed_path), 200), use_container_width=True)
+                
+            st.subheader("Disagreement Drivers")
+            drivers_path = workspace_config.output_dir / "program_memory" / "disagreement_drivers.csv"
+            if drivers_path.exists():
+                st.dataframe(preview_table(safe_read_csv(drivers_path), 200), use_container_width=True)
+
+    elif page == "Human Robustness":
+        from src.human_robustness import build_human_robustness_summary
+        st.subheader("Human Robustness")
+        st.info("Measures how stable human judgment is across different reviewers and roles.")
+        
+        if st.button("Build Human Robustness Summary"):
+            build_human_robustness_summary(workspace_config)
+            st.success("Summary built.")
+            
+        robust_path = workspace_config.output_dir / "program_memory" / "human_robustness_summary.csv"
+        if robust_path.exists():
+            st.dataframe(preview_table(safe_read_csv(robust_path), 500), use_container_width=True)
+
+    elif page == "Combined Robustness":
+        from src.combined_robustness import build_combined_robustness
+        st.subheader("Combined Robustness")
+        st.info("Maps analytical evidence stability against reviewer consensus.")
+        
+        if st.button("Compute Combined Robustness"):
+            build_combined_robustness(workspace_config)
+            st.success("Combined analysis complete.")
+            
+        combined_path = workspace_config.output_dir / "program_memory" / "combined_robustness.csv"
+        if combined_path.exists():
+            st.dataframe(preview_table(safe_read_csv(combined_path), 500), use_container_width=True)
+            
+            st.subheader("Decision Attention Queue")
+            queue_path = workspace_config.output_dir / "program_memory" / "decision_attention_queue.csv"
+            if queue_path.exists():
+                st.dataframe(preview_table(safe_read_csv(queue_path), 200), use_container_width=True)
 
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)

@@ -340,7 +340,24 @@ Conservative limits:
 - robustness labels remain descriptive, not predictive
 - no assumption that a stable mathematical ranking is biologically "correct"
 
-## 22. Planned Next-Step Areas
+## 22. Collaborative Consensus and Disagreement Analysis (Phase 18)
+
+Implemented:
+
+- structured independent reviewer judgments
+- consensus vs disagreement identification
+- automated disagreement driver analysis (role, playbook, benchmark)
+- human robustness summaries
+- combined analytical and human robustness queues
+- meeting-ready consensus packs and reviewer templates
+
+Conservative limits:
+
+- human consensus is treated as operational alignment, not biological truth
+- no chat or real-time collaboration platforms
+- no social scoring or reputation mechanics
+
+## 23. Planned Next-Step Areas
 
 Most likely future directions:
 

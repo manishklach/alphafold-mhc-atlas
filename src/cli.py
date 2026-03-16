@@ -336,6 +336,29 @@ def build_parser() -> argparse.ArgumentParser:
     robustness_summarize.add_argument("--workspace", required=True)
     robustness_summarize.add_argument("--playbook", required=True)
 
+    judgments = subparsers.add_parser("judgments", help="Reviewer judgment commands.")
+    judgments_sub = judgments.add_subparsers(dest="judgments_command", required=True)
+    judgments_import = judgments_sub.add_parser("import", help="Import reviewer judgments from CSV.")
+    judgments_import.add_argument("--workspace", required=True)
+    judgments_import.add_argument("--file", required=True)
+
+    consensus = subparsers.add_parser("consensus", help="Consensus and disagreement commands.")
+    consensus_sub = consensus.add_subparsers(dest="consensus_command", required=True)
+    consensus_summarize = consensus_sub.add_parser("summarize", help="Summarize consensus and analyze disagreement.")
+    consensus_summarize.add_argument("--workspace", required=True)
+
+    rev_pack = subparsers.add_parser("reviewer-pack", help="Reviewer pack commands.")
+    rev_pack_sub = rev_pack.add_subparsers(dest="rev_pack_command", required=True)
+    rev_pack_create = rev_pack_sub.add_parser("create", help="Create an independent reviewer pack.")
+    rev_pack_create.add_argument("--workspace", required=True)
+    rev_pack_create.add_argument("--pack-id", required=True)
+
+    con_meeting = subparsers.add_parser("consensus-meeting", help="Consensus meeting commands.")
+    con_meeting_sub = con_meeting.add_subparsers(dest="con_meeting_command", required=True)
+    con_meeting_create = con_meeting_sub.add_parser("create", help="Create a consensus meeting pack.")
+    con_meeting_create.add_argument("--workspace", required=True)
+    con_meeting_create.add_argument("--meeting-id", required=True)
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -697,8 +720,38 @@ def main(argv: list[str] | None = None) -> int:
         tables = _combine_project_tables(inventory)
         # Run sensitivity first to ensure we have data
         res = run_sensitivity_suite(config.output_dir, args.playbook, tables)
-        outputs = compute_decision_robustness(res["results"], res["output_dir"])
+        outputs = compute_decision_robustness(res["results"], config.output_dir / "program_memory")
         print(json.dumps({k: str(v) for k, v in outputs.items() if isinstance(v, (str, Path))}, indent=2))
+        return 0
+
+    if args.command == "judgments" and args.judgments_command == "import":
+        from .reviewer_judgments import import_reviewer_judgments
+        path = import_reviewer_judgments(args.workspace, Path(args.file))
+        print(path)
+        return 0
+
+    if args.command == "consensus" and args.consensus_command == "summarize":
+        from .consensus_analysis import build_consensus_summaries
+        from .disagreement_drivers import analyze_disagreement_drivers
+        from .human_robustness import build_human_robustness_summary
+        from .combined_robustness import build_combined_robustness
+        build_consensus_summaries(args.workspace)
+        analyze_disagreement_drivers(args.workspace)
+        build_human_robustness_summary(args.workspace)
+        outputs = build_combined_robustness(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items() if isinstance(v, (str, Path))}, indent=2))
+        return 0
+
+    if args.command == "reviewer-pack" and args.rev_pack_command == "create":
+        from .reviewer_packs import create_reviewer_pack
+        path = create_reviewer_pack(args.workspace, args.pack_id)
+        print(path)
+        return 0
+
+    if args.command == "consensus-meeting" and args.con_meeting_command == "create":
+        from .consensus_meeting import create_consensus_meeting_pack
+        path = create_consensus_meeting_pack(args.workspace, args.meeting_id)
+        print(path)
         return 0
 
     if args.command == "version":
