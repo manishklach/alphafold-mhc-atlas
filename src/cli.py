@@ -277,6 +277,33 @@ def build_parser() -> argparse.ArgumentParser:
     retro_patterns = retro_sub.add_parser("patterns", help="Synthesize recurring patterns.")
     retro_patterns.add_argument("--workspace", required=True)
 
+    pilot_readiness = subparsers.add_parser("pilot-readiness", help="Pilot deployment readiness commands.")
+    pilot_readiness_sub = pilot_readiness.add_subparsers(dest="pilot_readiness_command", required=True)
+    pilot_readiness_check = pilot_readiness_sub.add_parser("check", help="Check pilot deployment readiness.")
+    pilot_readiness_check.add_argument("--workspace", required=True)
+
+    setup_pack = subparsers.add_parser("setup-pack", help="Setup pack commands.")
+    setup_pack_sub = setup_pack.add_subparsers(dest="setup_pack_command", required=True)
+    setup_pack_create = setup_pack_sub.add_parser("create", help="Create a portable setup pack.")
+    setup_pack_create.add_argument("--workspace", required=True)
+    setup_pack_create.add_argument("--pack-id")
+
+    role_workflow = subparsers.add_parser("role-workflow", help="Role-based operating workflow commands.")
+    role_workflow_sub = role_workflow.add_subparsers(dest="role_workflow_command", required=True)
+    role_workflow_export = role_workflow_sub.add_parser("export", help="Export role workflow packs.")
+    role_workflow_export.add_argument("--workspace", required=True)
+    role_workflow_export.add_argument("--role", default=None)
+
+    eval_pack = subparsers.add_parser("evaluation-pack", help="Commercial evaluation pack commands.")
+    eval_pack_sub = eval_pack.add_subparsers(dest="eval_pack_command", required=True)
+    eval_pack_create = eval_pack_sub.add_parser("create", help="Create an evaluation pack.")
+    eval_pack_create.add_argument("--workspace", required=True)
+
+    ws_eval = subparsers.add_parser("workspace-evaluation", help="Workspace evaluation flow commands.")
+    ws_eval_sub = ws_eval.add_subparsers(dest="ws_eval_command", required=True)
+    ws_eval_build = ws_eval_sub.add_parser("build", help="Build a full evaluation sequence.")
+    ws_eval_build.add_argument("--workspace", required=True)
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -554,6 +581,37 @@ def main(argv: list[str] | None = None) -> int:
         outputs = synthesize_patterns(config.output_dir)
         print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
         return 0
+
+    if args.command == "pilot-readiness" and args.pilot_readiness_command == "check":
+        from .pilot_deployment import check_pilot_readiness
+        outputs = check_pilot_readiness(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "setup-pack" and args.setup_pack_command == "create":
+        from .setup_pack import create_setup_pack
+        outputs = create_setup_pack(args.workspace, args.pack_id)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "role-workflow" and args.role_workflow_command == "export":
+        from .role_workflows import export_role_workflows
+        outputs = export_role_workflows(args.workspace, args.role)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "evaluation-pack" and args.eval_pack_command == "create":
+        from .evaluation_pack import create_evaluation_pack
+        outputs = create_evaluation_pack(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "workspace-evaluation" and args.ws_eval_command == "build":
+        from .workspace_evaluation import build_workspace_evaluation_sequence
+        outputs = build_workspace_evaluation_sequence(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
     if args.command == "version":
         print(__version__)
         return 0

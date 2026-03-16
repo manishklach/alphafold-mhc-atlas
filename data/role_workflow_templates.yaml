@@ -1,0 +1,32 @@
+roles:
+  - role_id: scientist
+    name: Scientist
+    entrypoint: "Variant Explorer -> Shortlists"
+    recommended_packets: ["scientist_role_view"]
+    questions_to_ask:
+      - "Does this variant have structural evidence supporting a change?"
+      - "Are there missing contacts compared to WT?"
+      - "What are the biological caveats?"
+    outputs_to_inspect: ["evidence_manifest.csv", "variant_summary.json"]
+    common_pitfalls: ["Assuming structural prediction guarantees binding affinity."]
+
+  - role_id: comp_lead
+    name: Computational Lead
+    entrypoint: "Execution Metrics -> Template Effectiveness"
+    recommended_packets: ["comp_lead_role_view", "execution_plan_summary"]
+    questions_to_ask:
+      - "Are there recurring execution bottlenecks?"
+      - "Which templates lead to the highest task closure rate?"
+    outputs_to_inspect: ["execution_metrics.csv", "blocked_reasons_summary.csv"]
+    common_pitfalls: ["Focusing on pipeline speed over decision quality."]
+
+  - role_id: manager
+    name: Manager / Reviewer
+    entrypoint: "Retrospective Reports -> Multi-Cycle History"
+    recommended_packets: ["manager_role_view", "weekly_decision_packet"]
+    questions_to_ask:
+      - "What decisions are stalled?"
+      - "What items moved forward?"
+      - "Do we have sufficient outcomes captured?"
+    outputs_to_inspect: ["multicycle_decision_summary.csv", "outcomes_summary.csv"]
+    common_pitfalls: ["Treating operational task completion as scientific validation."]

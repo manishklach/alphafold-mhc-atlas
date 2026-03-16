@@ -1,0 +1,25 @@
+evaluation_questions:
+  - id: q1
+    question: "Did the weekly review workflow improve clarity?"
+  - id: q2
+    question: "Did role-based views reduce confusion for each role?"
+  - id: q3
+    question: "Did execution bundles improve handoff quality?"
+  - id: q4
+    question: "Did retrospective reporting improve understanding of recurring issues?"
+  - id: q5
+    question: "Did the platform reduce unresolved carry-forward or decision churn?"
+  - id: q6
+    question: "Was evidence linkage preserved clearly?"
+
+success_criteria:
+  - "Evaluator can run end-to-end pipeline locally."
+  - "Team agrees structural context aids prioritization discussions."
+  - "Manager finds retrospective views useful without overstating certainty."
+
+checklists:
+  - "Run setup pack and verify environment."
+  - "Generate initial workspace review packet."
+  - "Discuss shortlists using the role views."
+  - "Execute follow-up task and capture outcome."
+  - "Generate pattern synthesis digest."

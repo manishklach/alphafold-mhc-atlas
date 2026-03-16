@@ -1,0 +1,17 @@
+setup_pack:
+  required_templates:
+    - "data/scenario_templates.yaml"
+    - "data/workflow_templates.yaml"
+    - "data/execution_templates.yaml"
+    - "data/retrospective_templates.yaml"
+  required_commands:
+    - "mhc-atlas pilot-readiness check --workspace <workspace_file>"
+    - "mhc-atlas evaluation-pack create --workspace <workspace_file>"
+    - "mhc-atlas role-workflow export --workspace <workspace_file> --role manager"
+  expected_structure:
+    - "outputs/"
+    - "outputs/program_memory/"
+    - "outputs/review_packets/"
+    - "outputs/execution_bundles/"
+  caveats:
+    - "This setup pack provides an evaluable workspace. It is intended for exploratory structural analysis and hypothesis generation. It is not a binding affinity predictor."

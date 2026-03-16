@@ -749,6 +749,10 @@ def render_workspace_app(st, workspace_config) -> None:
             "Execution Metrics",
             "Retrospective Reports",
             "Pattern Synthesis Digest",
+            "Pilot Readiness",
+            "Role Workflow Packs",
+            "Evaluation Pack",
+            "Workspace Evaluation",
             "Review Cycles",
             "Recurring Questions",
             "Workflow Templates",
@@ -949,6 +953,35 @@ def render_workspace_app(st, workspace_config) -> None:
         st.subheader("Pattern Synthesis Digest")
         st.dataframe(preview_table(safe_read_csv(outputs["pattern_synthesis.csv"]), 200), use_container_width=True)
         st.text(safe_read_text(outputs["pattern_digest.md"]))
+    elif page == "Pilot Readiness":
+        from src.pilot_deployment import check_pilot_readiness
+        outputs = check_pilot_readiness(workspace_config)
+        st.subheader("Pilot Readiness")
+        st.text(safe_read_text(outputs["pilot_readiness_report.md"]))
+        st.dataframe(preview_table(safe_read_csv(outputs["deployment_checklist.csv"]), 200), use_container_width=True)
+    elif page == "Role Workflow Packs":
+        from src.role_workflows import export_role_workflows
+        outputs = export_role_workflows(workspace_config)
+        st.subheader("Role Workflow Packs")
+        manifest = safe_read_csv(outputs["role_workflow_manifest.csv"])
+        if not manifest.empty:
+            role_map = dict(zip(manifest["role_name"], manifest["file_name"]))
+            selected_role = st.selectbox("Role", list(role_map.keys()))
+            st.text(safe_read_text(outputs[role_map[selected_role]]))
+    elif page == "Evaluation Pack":
+        from src.evaluation_pack import create_evaluation_pack
+        outputs = create_evaluation_pack(workspace_config)
+        st.subheader("Commercial Evaluation Pack")
+        st.markdown("**Evaluation Guide**")
+        st.text(safe_read_text(outputs["PILOT_EVALUATION_GUIDE.md"]))
+        st.markdown("**Questions**")
+        st.text(safe_read_text(outputs["evaluation_questions.md"]))
+    elif page == "Workspace Evaluation":
+        from src.workspace_evaluation import build_workspace_evaluation_sequence
+        outputs = build_workspace_evaluation_sequence(workspace_config)
+        st.subheader("Workspace Evaluation Sequence")
+        st.text(safe_read_text(outputs["workspace_evaluation_plan.md"]))
+        st.dataframe(preview_table(safe_read_csv(outputs["evaluation_sequence.csv"]), 200), use_container_width=True)
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)
         st.subheader("Decision Lineage")

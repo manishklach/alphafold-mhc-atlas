@@ -292,7 +292,23 @@ Conservative limits:
 - no causal claims from purely associational pattern synthesis
 - no predictive modeling of program success
 
-## 19. Planned Next-Step Areas
+## 19. Pilot Deployment and Evaluation (Phase 15)
+
+Implemented:
+
+- automated pilot readiness checks
+- portable setup pack creation
+- reusable role-based operating workflows
+- commercial evaluation guides and success criteria
+- workspace evaluation sequence generation (Day 1, 3, 7 plans)
+
+Conservative limits:
+
+- no SaaS hosting or multi-tenant infrastructure
+- no user auth systems
+- evaluation guides remain grounded in operational usefulness, not biological guarantees
+
+## 20. Planned Next-Step Areas
 
 Most likely future directions:
 

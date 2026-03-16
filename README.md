@@ -226,11 +226,32 @@ mhc-atlas retrospective generate --workspace workspaces/demo_workspace.yaml --te
 mhc-atlas retrospective patterns --workspace workspaces/demo_workspace.yaml
 ```
 
+## Phase 15: Pilot Deployment Readiness and Evaluation Packs
+
+Phase 15 makes the repository ready for external pilot evaluation by wrapping the core decision workflows in clean, role-based onboarding and setup automation.
+
+What it adds:
+
+- automated pilot readiness checks to ensure a workspace is ready for evaluation
+- portable setup pack creation for handing off a workspace to an external team
+- reusable role-based operating workflow guides (Scientist, Comp Lead, Manager)
+- commercial evaluation packs to guide structured 1-2 week pilot trials
+- workspace evaluation sequence generation (Day 1, Day 3, Day 7 plans)
+
+Useful Phase 15 commands:
+
+```bash
+mhc-atlas pilot-readiness check --workspace workspaces/demo_workspace.yaml
+mhc-atlas setup-pack create --workspace workspaces/demo_workspace.yaml
+mhc-atlas role-workflow export --workspace workspaces/demo_workspace.yaml
+mhc-atlas evaluation-pack create --workspace workspaces/demo_workspace.yaml
+mhc-atlas workspace-evaluation build --workspace workspaces/demo_workspace.yaml
+```
+
 What it does not do:
-- it does not build auto-slide marketing generation or LLM narrative fluff
-- it does not imply retrospective patterns validate biology
-- it does not overstate workflow-effectiveness associations as causal proof
-- it does not turn closures into scientific validation
+- it does not build hosted SaaS infrastructure or cloud user management
+- it does not auto-generate marketing fluff
+- it does not imply pilot readiness guarantees biological validity
 
 What it does not do:
 - it does not build generic task-management software
