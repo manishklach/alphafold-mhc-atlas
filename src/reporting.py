@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from datetime import datetime
 
 import pandas as pd
 
@@ -114,6 +115,38 @@ def build_markdown_report(
     for caveat in caveats:
         lines.append(f"- {caveat}")
     lines.extend(["", brief_scope_markdown(), "", expanded_scope_markdown()])
+    return "\n".join(lines)
+
+
+def build_printable_report(
+    report_summary: dict[str, object],
+    priority_df: pd.DataFrame | None = None,
+    panel_df: pd.DataFrame | None = None,
+) -> str:
+    """Build a simplified, high-contrast report for printing/PDF."""
+    lines = [
+        f"# Executive Summary: {report_summary['project_name']}",
+        f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        "",
+        "## Key Metrics",
+        f"- **Alleles**: {report_summary['num_alleles']}",
+        f"- **Variants**: {report_summary['num_variants']}",
+        f"- **Structural Coverage**: {report_summary['num_variants_with_structural_metrics']} variants",
+        "",
+        "## Top Prioritized Variants",
+    ]
+    if priority_df is not None and not priority_df.empty:
+        top_v = priority_df.head(10)
+        for _, row in top_v.iterrows():
+            lines.append(f"- **{row['variant_id']}** (Rank {row['priority_rank']}): Score {row['priority_score']:.2f}")
+    else:
+        lines.append("No prioritized data available.")
+
+    lines.extend([
+        "",
+        "## Scientific Guardrails",
+        expanded_scope_markdown()
+    ])
     return "\n".join(lines)
 
 

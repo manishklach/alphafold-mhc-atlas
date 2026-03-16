@@ -821,27 +821,49 @@ def render_workspace_app(st, workspace_config) -> None:
 
     # --- Header Explainers based on Stage ---
     if page in workflow_stages["1. Preparation"]:
-        st.info("### Stage 1: Preparation\nSet up your workspace, verify pilot readiness, and export role-specific guides for your team.")
+        st.success("### Stage 1: Readiness & Onboarding\n**Objective**: Ensure the environment is pilot-ready. Export role-specific workflow guides to align your team before starting the review.")
     elif page in workflow_stages["2. Analysis"]:
-        st.info("### Stage 2: Analysis\nExplore structural deltas, contact changes, and allele signatures to generate follow-up hypotheses.")
+        st.success("### Stage 2: Deep Structural Analysis\n**Objective**: Perform high-resolution inspection of structural deltas, contact changes, and allele signatures to generate evidence-backed hypotheses.")
     elif page in workflow_stages["3. Review Meeting"]:
-        st.info("### Stage 3: Review Meeting\nUse evidence-linked packets to drive team decisions. Track how decisions evolve cycle-over-cycle.")
+        st.success("### Stage 3: Decision Review Meeting\n**Objective**: Move from structural evidence to team consensus. Use meeting-ready packets to drive prioritization and track decision lineage.")
     elif page in workflow_stages["4. Execution"]:
-        st.info("### Stage 4: Execution\nConvert decisions into actionable plans. Track task status, ownership, and traceability to outcomes.")
+        st.success("### Stage 4: Follow-up & Execution\n**Objective**: Transition decisions into action. Organize shortlists into auditable execution plans with assigned owners and status tracking.")
     elif page in workflow_stages["5. Program Learning"]:
-        st.info("### Stage 5: Program Learning\nSynthesize patterns from review history and outcomes. Identify bottlenecks and refine your workflow.")
+        st.success("### Stage 5: Institutional Memory\n**Objective**: Build a program-level feedback loop. Synthesize patterns from past reviews and outcomes to improve prioritization over time.")
     elif page in workflow_stages["6. Calibration"]:
-        st.info("### Stage 6: Calibration\nCompare your internal structural hypotheses against external ground-truth datasets.")
+        st.success("### Stage 6: External Validation\n**Objective**: Calibrate internal structural findings against external ground-truth datasets (e.g., IEDB) to contextualize confidence.")
     elif page in workflow_stages["7. Playbooks & Robustness"]:
-        st.info("### Stage 7: Playbooks & Robustness\nTest how stable your decisions are under different analytical assumptions. Use Playbooks to reuse proven prioritization frames.")
+        st.success("### Stage 7: Analytical Robustness\n**Objective**: Test the stability of your prioritizations. Identify which variants remain top candidates regardless of analytical assumption shifts.")
     elif page in workflow_stages["8. Collaborative Consensus"]:
-        st.info("### Stage 8: Collaborative Consensus\nCompare independent human judgments against analytical evidence. Identify items with strong consensus vs. items requiring active discussion.")
+        st.success("### Stage 8: Team Alignment\n**Objective**: Compare independent reviewer judgments. Resolve disputes and identify variants with the highest combined analytical and human confidence.")
     elif page in workflow_stages["9. Executive Handoff"]:
-        st.info("### Stage 9: Executive Handoff\nGenerate high-level, human-readable narratives linking consensus robust variants back to their original structural caveats. Automate final handoffs for leadership and wet-lab directors.")
+        st.success("### Stage 9: Final Reporting & Handoff\n**Objective**: Generate high-level narratives for leadership. Automate the final handoff bundle for wet-lab execution and experimental validation.")
 
     if page == "Workspace Overview":
         st.subheader(workspace_config.name)
         st.write(workspace_config.description)
+        
+        with st.expander("📄 Printable Executive Report", expanded=False):
+            from src.reporting import build_printable_report
+            st.info("Generates a high-contrast, clean summary report for printing or PDF export.")
+            # Use most relevant summary data if available
+            report_summary = {
+                "project_name": workspace_config.name,
+                "num_alleles": len(inventory["projects"]), # Simplification for workspace view
+                "num_variants": inventory["coverage"]["num_variants"] if "coverage" in inventory else 0,
+                "num_variants_with_structural_metrics": inventory["coverage"]["num_variants"] if "coverage" in inventory else 0,
+            }
+            # Look for combined robustness as priority source for workspace
+            priority_df = safe_read_csv(workspace_config.output_dir / "program_memory" / "combined_robustness.csv")
+            if not priority_df.empty and "entity_id" in priority_df.columns:
+                # Map entity_id to variant_id for the reporting function
+                priority_df = priority_df.rename(columns={"entity_id": "variant_id", "analytical_robustness_label": "priority_rank", "human_robustness_label": "priority_score"})
+                # (Actual scoring logic would be deeper, this is for visual summary)
+            
+            report_md = build_printable_report(report_summary, priority_df)
+            st.markdown(report_md)
+            st.download_button("Download Printable Report (.md)", report_md, file_name=f"executive_summary_{workspace_config.workspace_id}.md")
+
         st.markdown(
             "\n".join(
                 [

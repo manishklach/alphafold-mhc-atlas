@@ -38,6 +38,9 @@ using trusted public sequences, preferably from IPD-IMGT/HLA.
 - `public_anchor_scan_template.yaml`
 - `public_conservative_review_template.yaml`
 - `public_decision_meeting_template.yaml`
+- `iedb_large_binding_panel.yaml`
+- `viral_escape_sars_cov2.yaml`
+- `cancer_neoantigen_screen.yaml`
 
 ## Recommended starting points
 

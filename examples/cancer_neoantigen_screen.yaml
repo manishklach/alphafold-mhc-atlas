@@ -1,0 +1,32 @@
+project_name: "cancer_neoantigen_screen"
+description: "Prioritizing tumor-specific neoantigens by comparing WT vs Mutant structural stability."
+output_dir: "outputs/cancer_neoantigen_screen"
+
+alleles:
+  - allele_name: "HLA-A*02:01"
+  - allele_name: "HLA-C*07:02"
+
+peptides:
+  mode: "allele_specific"
+  wildtype_sequences:
+    "HLA-A*02:01": ["KLVVVGAVGV"] # KRAS G12V WT
+    "HLA-C*07:02": ["VVVGAVGVG"] # KRAS G12V WT
+  mutation_positions: [2, 3, 4]
+  allowed_substitutions: ["V", "D", "R", "C"]
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+
+prioritization:
+  enabled: true
+  ranking_modes:
+    - "tolerated_mutations" # We want the mutant to be as stable as WT or more
+
+panel_design:
+  enabled: true
+  max_panel_size: 10
+  ranking_goal: "balanced_exploration_panel"
+
+reporting:
+  enabled: true

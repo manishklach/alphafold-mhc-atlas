@@ -1,0 +1,45 @@
+project_name: "iedb_large_binding_panel"
+description: "Large-scale binding panel derived from IEDB validated peptides across multiple HLA-A alleles."
+output_dir: "outputs/iedb_large_binding_panel"
+
+alleles:
+  - allele_name: "HLA-A*02:01"
+    class_type: "I"
+  - allele_name: "HLA-A*01:01"
+    class_type: "I"
+  - allele_name: "HLA-A*03:01"
+    class_type: "I"
+  - allele_name: "HLA-A*11:01"
+    class_type: "I"
+  - allele_name: "HLA-A*24:02"
+    class_type: "I"
+
+peptides:
+  mode: "shared_panel"
+  wildtype_sequences:
+    - "GILGFVFTL"  # Flu
+    - "VLEETSVML"  # CMV
+    - "NLVPMVATV"  # CMV
+    - "STLPETTVVRR" # RSV
+    - "AVCPVVIV"   # HIV
+  mutation_positions: [2, 5, 9]
+  allowed_substitutions: ["A", "L", "I", "V", "F", "Y", "W"]
+
+structure_analysis:
+  enabled: true
+  contact_distance_angstrom: 4.5
+  anchor_positions: [2, 9]
+
+prioritization:
+  enabled: true
+  ranking_modes:
+    - "disruptive_mutations"
+    - "tolerated_mutations"
+
+panel_design:
+  enabled: true
+  max_panel_size: 24
+  ranking_goal: "balanced_exploration_panel"
+
+reporting:
+  enabled: true
