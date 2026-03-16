@@ -1,0 +1,27 @@
+benchmarks:
+  - benchmark_id: iedb_binding_subset
+    label: IEDB Binding (Subset)
+    description: Known binding affinity classes from IEDB.
+    data_source: iedb.org
+    schema_version: 1.0
+    columns:
+      id_col: peptide_id
+      outcome_col: binding_class
+      allele_col: allele
+    outcome_mapping:
+      Positive: high_affinity
+      Negative: non_binder
+      Intermediate: moderate_affinity
+
+  - benchmark_id: public_escape_mutants
+    label: Public Escape Mutants
+    description: Known viral escape mutants with validated wet-lab impact.
+    data_source: literature_curation
+    schema_version: 1.0
+    columns:
+      id_col: variant_id
+      outcome_col: escape_status
+      allele_col: allele_name
+    outcome_mapping:
+      Escape: loss_of_binding
+      Neutral: preserved_binding

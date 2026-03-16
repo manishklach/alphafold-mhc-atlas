@@ -308,7 +308,23 @@ Conservative limits:
 - no user auth systems
 - evaluation guides remain grounded in operational usefulness, not biological guarantees
 
-## 20. Planned Next-Step Areas
+## 20. External Benchmarking and Workflow UI (Phase 16)
+
+Implemented:
+
+- external benchmark data loading and joining
+- alignment reports (structural evidence vs benchmark outcome)
+- 6-stage workflow-oriented dashboard organization
+- simplified product explainers per workflow stage
+- benchmark templates for IEDB and escape datasets
+
+Conservative limits:
+
+- descriptive alignment only, not a predictive proof engine
+- no live external API dependencies
+- benchmark comparisons do not override primary structural deltas
+
+## 21. Planned Next-Step Areas
 
 Most likely future directions:
 

@@ -248,10 +248,27 @@ mhc-atlas evaluation-pack create --workspace workspaces/demo_workspace.yaml
 mhc-atlas workspace-evaluation build --workspace workspaces/demo_workspace.yaml
 ```
 
+## Phase 16: External Benchmarking and Workflow Simplification
+
+Phase 16 introduces external validation integration and refactors the dashboard to guide researchers through a logical 6-stage discovery workflow.
+
+What it adds:
+
+- **External Benchmarking**: Join internal structural evidence against external datasets (IEDB, literature curation).
+- **Workflow-Oriented UI**: The dashboard is now grouped into Preparation, Analysis, Review, Execution, Learning, and Calibration.
+- **Simplified Explaners**: Each workflow stage now includes high-level product guidance to help teams understand the discovery process.
+- **Benchmark Templates**: Standardized schemas for binding affinity and escape mutant datasets.
+
+Useful Phase 16 commands:
+
+```bash
+mhc-atlas benchmark compare --workspace workspaces/demo_workspace.yaml --benchmark-id iedb_binding_subset --data path/to/external_data.csv
+```
+
 What it does not do:
-- it does not build hosted SaaS infrastructure or cloud user management
-- it does not auto-generate marketing fluff
-- it does not imply pilot readiness guarantees biological validity
+- it does not claim predictive accuracy (it is a descriptive comparison tool)
+- it does not automatically sync with live external databases
+- it does not hide structural deltas in favor of benchmark labels
 
 What it does not do:
 - it does not build generic task-management software

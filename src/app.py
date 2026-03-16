@@ -730,48 +730,93 @@ def render_workspace_app(st, workspace_config) -> None:
     inventory = build_workspace_inventory(workspace_config)
     st.sidebar.markdown("### Workspace")
     st.sidebar.code(str(workspace_config.source_path))
-    st.sidebar.caption("Recommended path: Workspace Overview -> Changes Since Last Review -> Weekly Review Packet -> Role Views -> Next Actions")
-    page = st.sidebar.selectbox(
-        "Workspace page",
-        [
+    
+    # Workflow-oriented grouping
+    workflow_stages = {
+        "1. Preparation": [
             "Workspace Overview",
             "Project Portfolio",
-            "Program Memory",
-            "Decision Lineage",
-            "Multi-Cycle History",
-            "Outcomes",
-            "Rationale Lineage",
-            "Template Effectiveness",
-            "Workflow Metrics",
-            "Execution Plans",
-            "Execution Tasks",
-            "Action-to-Outcome Trace",
-            "Execution Metrics",
-            "Retrospective Reports",
-            "Pattern Synthesis Digest",
             "Pilot Readiness",
+            "Setup Pack",
             "Role Workflow Packs",
             "Evaluation Pack",
             "Workspace Evaluation",
+        ],
+        "2. Analysis": [
+            "Variant Explorer",
+            "Cross-Allele Comparison",
+            "Open Questions",
+            "Scenario Analysis",
+            "Hypotheses",
+        ],
+        "3. Review Meeting": [
+            "Weekly Review Packet",
+            "Review Queues / Shortlists",
+            "Decision Lineage",
+            "Multi-Cycle History",
+            "Decision Packets",
+            "Changes Since Last Review",
+        ],
+        "4. Execution": [
+            "Execution Plans",
+            "Execution Tasks",
+            "Handoff Bundles",
+            "Action-to-Outcome Trace",
+            "Execution Metrics",
+        ],
+        "5. Program Learning": [
+            "Outcomes",
+            "Retrospective Reports",
+            "Pattern Synthesis Digest",
+            "Rationale Lineage",
+            "Template Effectiveness",
+            "Workflow Metrics",
             "Review Cycles",
             "Recurring Questions",
-            "Workflow Templates",
-            "Changes Since Last Review",
-            "Weekly Review Packet",
-            "Role Views",
-            "Open Questions",
-            "Next Actions",
-            "Project History",
-            "Review Queues / Shortlists",
-            "Handoff Bundles",
         ],
-    )
+        "6. Calibration": [
+            "External Benchmarking",
+        ],
+        "Admin": [
+            "Workflow Templates",
+            "Project History",
+        ]
+    }
+
+    # Flatten for the selectbox but keep the visual structure if possible
+    all_pages = []
+    for stage, pages in workflow_stages.items():
+        all_pages.append(f"--- {stage} ---")
+        all_pages.extend(pages)
+
+    selected_index = 1 # Default to Workspace Overview
+    page = st.sidebar.selectbox("Workflow Stage", all_pages, index=selected_index)
+    
+    if page.startswith("---"):
+        st.info("Select a specific page within the workflow group.")
+        return
+
     projects_df = pd.DataFrame(inventory["projects"])
     selected_project_id = st.sidebar.selectbox("Project", projects_df["project_id"].tolist() if not projects_df.empty else [""])
     selected_project_path = None
     if not projects_df.empty and selected_project_id:
         selected_row = projects_df[projects_df["project_id"] == selected_project_id].iloc[0].to_dict()
         selected_project_path = Path(selected_row["project_path"])
+
+    # --- Header Explainers based on Stage ---
+    if page in workflow_stages["1. Preparation"]:
+        st.info("### Stage 1: Preparation\nSet up your workspace, verify pilot readiness, and export role-specific guides for your team.")
+    elif page in workflow_stages["2. Analysis"]:
+        st.info("### Stage 2: Analysis\nExplore structural deltas, contact changes, and allele signatures to generate follow-up hypotheses.")
+    elif page in workflow_stages["3. Review Meeting"]:
+        st.info("### Stage 3: Review Meeting\nUse evidence-linked packets to drive team decisions. Track how decisions evolve cycle-over-cycle.")
+    elif page in workflow_stages["4. Execution"]:
+        st.info("### Stage 4: Execution\nConvert decisions into actionable plans. Track task status, ownership, and traceability to outcomes.")
+    elif page in workflow_stages["5. Program Learning"]:
+        st.info("### Stage 5: Program Learning\nSynthesize patterns from review history and outcomes. Identify bottlenecks and refine your workflow.")
+    elif page in workflow_stages["6. Calibration"]:
+        st.info("### Stage 6: Calibration\nCompare your internal structural hypotheses against external ground-truth datasets.")
+
     if page == "Workspace Overview":
         st.subheader(workspace_config.name)
         st.write(workspace_config.description)
@@ -982,6 +1027,62 @@ def render_workspace_app(st, workspace_config) -> None:
         st.subheader("Workspace Evaluation Sequence")
         st.text(safe_read_text(outputs["workspace_evaluation_plan.md"]))
         st.dataframe(preview_table(safe_read_csv(outputs["evaluation_sequence.csv"]), 200), use_container_width=True)
+    
+    # 2. Analysis
+    elif page == "Variant Explorer" and selected_project_path is not None:
+        tables = load_project_tables(selected_project_path)
+        inventory = build_project_inventory(selected_project_path)
+        _render_variant_explorer(st, tables, inventory)
+    elif page == "Cross-Allele Comparison" and selected_project_path is not None:
+        tables = load_project_tables(selected_project_path)
+        _render_cross_allele(st, tables)
+    elif page == "Scenario Analysis" and selected_project_path is not None:
+        tables = load_project_tables(selected_project_path)
+        templates = load_scenario_templates(repo_or_resource_path("data", "scenario_templates.yaml"))
+        scenario_a = _scenario_controls(st.sidebar, "Scenario A", templates, tables)
+        _render_scenario_analysis(st, selected_project_path, tables, scenario_a)
+    elif page == "Hypotheses" and selected_project_path is not None:
+        tables = load_project_tables(selected_project_path)
+        _render_hypotheses(st, tables)
+
+    # 3. Review Meeting
+    elif page == "Decision Packets" and selected_project_path is not None:
+        from src.decision_packet import generate_workspace_decision_packet
+        if st.button("Generate Workspace Decision Packet"):
+            packet_dir = generate_workspace_decision_packet(workspace_config)
+            st.success(f"Wrote {packet_dir}")
+
+    # 6. Calibration
+    elif page == "External Benchmarking":
+        from src.benchmark_schema import load_benchmark_templates
+        from src.benchmarking import run_benchmark_comparison
+        st.subheader("External Benchmarking")
+        st.info("Compare internal structural evidence against external ground-truth datasets (e.g. IEDB).")
+        
+        templates = load_benchmark_templates()
+        if not templates:
+            st.warning("No benchmark templates found.")
+        else:
+            template_map = {t.label: t for t in templates}
+            selected_label = st.selectbox("Benchmark Template", list(template_map.keys()))
+            template = template_map[selected_label]
+            
+            st.markdown(f"**Description**: {template.description}")
+            st.markdown(f"**Source**: {template.data_source}")
+            
+            data_path = st.text_input("External CSV Path", placeholder="path/to/benchmark_data.csv")
+            if st.button("Run Comparison"):
+                if not data_path:
+                    st.error("Please provide a path to the external data CSV.")
+                else:
+                    try:
+                        results = run_benchmark_comparison(workspace_config, template.benchmark_id, Path(data_path))
+                        st.success("Comparison complete.")
+                        st.text(safe_read_text(results["benchmark_report.md"]))
+                        st.dataframe(preview_table(safe_read_csv(results["benchmark_comparison.csv"]), 500), use_container_width=True)
+                    except Exception as e:
+                        st.error(f"Error running comparison: {e}")
+
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)
         st.subheader("Decision Lineage")

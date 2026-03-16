@@ -304,6 +304,13 @@ def build_parser() -> argparse.ArgumentParser:
     ws_eval_build = ws_eval_sub.add_parser("build", help="Build a full evaluation sequence.")
     ws_eval_build.add_argument("--workspace", required=True)
 
+    benchmark = subparsers.add_parser("benchmark", help="External benchmarking commands.")
+    benchmark_sub = benchmark.add_subparsers(dest="benchmark_command", required=True)
+    benchmark_compare = benchmark_sub.add_parser("compare", help="Compare internal evidence against external benchmark.")
+    benchmark_compare.add_argument("--workspace", required=True)
+    benchmark_compare.add_argument("--benchmark-id", required=True)
+    benchmark_compare.add_argument("--data", required=True, help="Path to external benchmark CSV.")
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -609,6 +616,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "workspace-evaluation" and args.ws_eval_command == "build":
         from .workspace_evaluation import build_workspace_evaluation_sequence
         outputs = build_workspace_evaluation_sequence(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "benchmark" and args.benchmark_command == "compare":
+        from .benchmarking import run_benchmark_comparison
+        outputs = run_benchmark_comparison(args.workspace, args.benchmark_id, Path(args.data))
         print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
         return 0
 
