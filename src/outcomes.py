@@ -61,8 +61,13 @@ def summarize_outcomes(workspace: WorkspaceConfig | str | Path) -> dict[str, Pat
     lineage_df = safe_read_csv(decision_outputs["decision_lineage.csv"])
     rationale_df = safe_read_csv(rationale_outputs["rationale_lineage.csv"])
 
+    # Normalize entity types for merging: 'variant' in outcomes maps to 'shortlist_item' in decisions
+    outcomes_for_merge = outcomes_df.copy()
+    if "entity_type" in outcomes_for_merge.columns:
+        outcomes_for_merge["entity_type"] = outcomes_for_merge["entity_type"].replace("variant", "shortlist_item")
+
     outcome_aware_df = lineage_df.merge(
-        outcomes_df[
+        outcomes_for_merge[
             [
                 "entity_type",
                 "entity_id",
@@ -76,13 +81,25 @@ def summarize_outcomes(workspace: WorkspaceConfig | str | Path) -> dict[str, Pat
         on=["entity_type", "entity_id"],
         how="left",
     )
+
+    def _is_divergent(row: pd.Series) -> bool:
+        status = str(row.get("current_status", "")).lower()
+        outcome = str(row.get("outcome_class", "")).lower()
+        if status == "rejected" and outcome in ["tested_followup", "wet_lab_supported", "wet_lab_not_supported"]:
+            return True
+        if status in ["shortlisted", "experimental_followup"] and outcome == "decision_reversed":
+            return True
+        return False
+
+    outcome_aware_df["is_decision_outcome_divergent"] = outcome_aware_df.apply(_is_divergent, axis=1)
+
     followup_df = outcomes_df[
         outcomes_df["outcome_class"].isin(
             ["tested_followup", "wet_lab_supported", "wet_lab_not_supported", "pending_followup", "decision_reversed"]
         )
     ].copy()
     rationale_pattern_df = rationale_df.merge(
-        outcomes_df[["entity_type", "entity_id", "outcome_class", "outcome_source"]],
+        outcomes_for_merge[["entity_type", "entity_id", "outcome_class", "outcome_source"]],
         on=["entity_type", "entity_id"],
         how="inner",
     )

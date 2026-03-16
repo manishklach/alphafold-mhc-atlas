@@ -27,8 +27,10 @@ def build_rationale_tracking(workspace: WorkspaceConfig | str | Path) -> dict[st
                 entity_id = str(record.get("entity_id") or record.get("variant_id") or "").strip()
                 if not entity_id:
                     continue
-                rationale_text = str(record.get("rationale") or record.get("selection_reason") or "").strip()
-                decision_status = str(record.get("review_status") or "shortlisted").strip()
+                val = record.get("rationale") or record.get("selection_reason") or ""
+                rationale_text = str(val).strip() if not pd.isna(val) else ""
+                status_val = record.get("review_status") or "shortlisted"
+                decision_status = str(status_val).strip() if not pd.isna(status_val) else "shortlisted"
                 rows.append(
                     {
                         "entity_type": "shortlist_item",
@@ -40,6 +42,14 @@ def build_rationale_tracking(workspace: WorkspaceConfig | str | Path) -> dict[st
                         "decision_status": decision_status,
                         "rationale_text": rationale_text,
                         "rationale_category": _categorize_rationale(rationale_text, categories),
+                        "rationale_completeness": bool(rationale_text),
+                        "rationale_length": len(rationale_text.split()),
+                        "is_thin_rationale": bool(rationale_text and len(rationale_text.split()) < 3),
+                        "is_silent_status_change": bool(
+                            entity_id in prior_rationale_by_entity
+                            and prior_status_by_entity[entity_id] != decision_status
+                            and prior_rationale_by_entity[entity_id] == rationale_text
+                        ),
                         "carry_forward_reason": str(record.get("next_action") or "").strip(),
                         "changed_from_prior_flag": bool(
                             entity_id in prior_rationale_by_entity
@@ -67,6 +77,10 @@ def build_rationale_tracking(workspace: WorkspaceConfig | str | Path) -> dict[st
                     "decision_status",
                     "rationale_text",
                     "rationale_category",
+                    "rationale_completeness",
+                    "rationale_length",
+                    "is_thin_rationale",
+                    "is_silent_status_change",
                     "carry_forward_reason",
                     "changed_from_prior_flag",
                     "notes",

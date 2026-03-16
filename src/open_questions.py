@@ -71,6 +71,7 @@ def build_open_questions(project_dir: Path) -> Path:
                 }
             )
     output_dir = project_dir / "analysis"
+    output_dir.mkdir(parents=True, exist_ok=True)
     question_df = pd.DataFrame(rows).drop_duplicates().reset_index(drop=True)
     question_df.to_csv(output_dir / "open_questions.csv", index=False)
     lines = ["# Open Questions", ""]
