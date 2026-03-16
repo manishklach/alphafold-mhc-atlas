@@ -357,7 +357,20 @@ Conservative limits:
 - no chat or real-time collaboration platforms
 - no social scoring or reputation mechanics
 
-## 23. Planned Next-Step Areas
+## 23. Generative Executive Summaries & Handoff (Phase 19)
+
+Implemented:
+
+- deterministic executive briefs summarizing consensus-robust and stable-disputed candidates
+- workspace-level final handoff bundles packaging briefs, candidates, and evidence
+- integration into a final "Executive Handoff" UI stage
+
+Conservative limits:
+
+- executive summaries are deterministic and template-based, avoiding LLM hallucinations or invented claims
+- handoffs emphasize that candidates remain exploratory structural hypotheses
+
+## 24. Planned Next-Step Areas
 
 Most likely future directions:
 

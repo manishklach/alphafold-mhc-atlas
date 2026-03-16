@@ -308,8 +308,26 @@ mhc-atlas reviewer-pack create --workspace workspaces/demo_workspace.yaml --pack
 mhc-atlas consensus-meeting create --workspace workspaces/demo_workspace.yaml --meeting-id final_review
 ```
 
+## Phase 19: Generative Executive Summaries & Handoff Automation
+
+Phase 19 provides the final link in the decision chain by automating the creation of high-level, human-readable briefs for leadership and wet-lab directors.
+
+What it adds:
+
+- **Deterministic Executive Briefs**: Auto-generates markdown summaries that highlight the top "consensus robust" variants and disputed stable candidates, without inventing biological claims.
+- **Final Handoff Automation**: Packages the executive brief alongside the final candidate lists, generic evidence manifests, and explicit caveats into a final export bundle (`final_handoffs/`).
+- **UI Integration**: A new "Executive Handoff" stage in the dashboard to review and export these final artifacts.
+
+Useful Phase 19 commands:
+
+```bash
+mhc-atlas executive-brief create --workspace workspaces/demo_workspace.yaml --brief-id Q3_summary
+mhc-atlas final-handoff build --workspace workspaces/demo_workspace.yaml --handoff-id lab_handoff_v1
+```
+
 What it does not do:
 - it does not build chat threads, real-time collaboration, or cloud review systems.
+
 - it does not turn reviewer judgments into absolute truth labels.
 - it does not build reputation scoring.
 

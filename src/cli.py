@@ -359,6 +359,18 @@ def build_parser() -> argparse.ArgumentParser:
     con_meeting_create.add_argument("--workspace", required=True)
     con_meeting_create.add_argument("--meeting-id", required=True)
 
+    exec_brief = subparsers.add_parser("executive-brief", help="Executive brief commands.")
+    exec_brief_sub = exec_brief.add_subparsers(dest="exec_brief_command", required=True)
+    exec_brief_create = exec_brief_sub.add_parser("create", help="Generate a deterministic executive brief.")
+    exec_brief_create.add_argument("--workspace", required=True)
+    exec_brief_create.add_argument("--brief-id")
+
+    final_handoff = subparsers.add_parser("final-handoff", help="Final handoff automation commands.")
+    final_handoff_sub = final_handoff.add_subparsers(dest="final_handoff_command", required=True)
+    final_handoff_build = final_handoff_sub.add_parser("build", help="Build a final workspace handoff bundle.")
+    final_handoff_build.add_argument("--workspace", required=True)
+    final_handoff_build.add_argument("--handoff-id")
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -752,6 +764,18 @@ def main(argv: list[str] | None = None) -> int:
         from .consensus_meeting import create_consensus_meeting_pack
         path = create_consensus_meeting_pack(args.workspace, args.meeting_id)
         print(path)
+        return 0
+
+    if args.command == "executive-brief" and args.exec_brief_command == "create":
+        from .executive_brief import generate_executive_brief
+        outputs = generate_executive_brief(args.workspace, args.brief_id)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "final-handoff" and args.final_handoff_command == "build":
+        from .final_handoff import build_final_handoff
+        outputs = build_final_handoff(args.workspace, args.handoff_id)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
         return 0
 
     if args.command == "version":

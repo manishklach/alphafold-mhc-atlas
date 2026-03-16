@@ -789,6 +789,10 @@ def render_workspace_app(st, workspace_config) -> None:
             "Human Robustness",
             "Combined Robustness",
         ],
+        "9. Executive Handoff": [
+            "Executive Briefs",
+            "Final Handoff Automation",
+        ],
         "Admin": [
             "Workflow Templates",
             "Project History",
@@ -832,6 +836,8 @@ def render_workspace_app(st, workspace_config) -> None:
         st.info("### Stage 7: Playbooks & Robustness\nTest how stable your decisions are under different analytical assumptions. Use Playbooks to reuse proven prioritization frames.")
     elif page in workflow_stages["8. Collaborative Consensus"]:
         st.info("### Stage 8: Collaborative Consensus\nCompare independent human judgments against analytical evidence. Identify items with strong consensus vs. items requiring active discussion.")
+    elif page in workflow_stages["9. Executive Handoff"]:
+        st.info("### Stage 9: Executive Handoff\nGenerate high-level, human-readable narratives linking consensus robust variants back to their original structural caveats. Automate final handoffs for leadership and wet-lab directors.")
 
     if page == "Workspace Overview":
         st.subheader(workspace_config.name)
@@ -1272,6 +1278,36 @@ def render_workspace_app(st, workspace_config) -> None:
             queue_path = workspace_config.output_dir / "program_memory" / "decision_attention_queue.csv"
             if queue_path.exists():
                 st.dataframe(preview_table(safe_read_csv(queue_path), 200), use_container_width=True)
+
+    # 9. Executive Handoff
+    elif page == "Executive Briefs":
+        from src.executive_brief import generate_executive_brief
+        st.subheader("Executive Briefs")
+        st.info("Generates a human-readable narrative linking final variants to their original caveats.")
+        
+        if st.button("Generate Executive Brief"):
+            res = generate_executive_brief(workspace_config)
+            st.success("Brief generated.")
+            st.markdown(safe_read_text(res["executive_brief.md"]))
+            
+        briefs_dir = workspace_config.output_dir / "executive_briefs"
+        if briefs_dir.exists():
+            briefs = sorted([d.name for d in briefs_dir.iterdir() if d.is_dir()], reverse=True)
+            if briefs:
+                selected_brief = st.selectbox("View Past Briefs", briefs)
+                st.markdown(safe_read_text(briefs_dir / selected_brief / "executive_brief.md"))
+
+    elif page == "Final Handoff Automation":
+        from src.final_handoff import build_final_handoff
+        st.subheader("Final Handoff Automation")
+        st.info("Packages the executive brief, consensus robust candidates, and evidence manifest into a final export.")
+        
+        if st.button("Build Final Handoff Bundle"):
+            res = build_final_handoff(workspace_config)
+            st.success(f"Handoff bundle created at: {res['handoff_dir']}")
+            st.markdown(f"**Included Files:**")
+            for k in ["executive_brief.md", "consensus_robust_candidates.csv", "evidence_manifest.csv", "caveats_and_limitations.md"]:
+                st.markdown(f"- `{k}`")
 
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)

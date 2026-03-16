@@ -1,0 +1,13 @@
+sections:
+  - id: high_level_summary
+    title: "High-Level Executive Summary"
+    description: "A plain-text narrative summarizing the most robust recommendations."
+  - id: robust_candidates
+    title: "Consensus-Backed Robust Candidates"
+    description: "Variants that passed both analytical sensitivity and multi-reviewer consensus."
+  - id: disputed_candidates
+    title: "Stable but Disputed Candidates"
+    description: "Analytically strong items where human reviewers disagreed."
+  - id: caveats
+    title: "Scientific Caveats"
+    description: "Mandatory guardrails."
