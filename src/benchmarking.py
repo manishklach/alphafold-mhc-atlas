@@ -100,3 +100,12 @@ def run_benchmark_comparison(
         "benchmark_summary.json": summary_path,
         "benchmark_report.md": md_path
     }
+
+
+def run_benchmarking(
+    summary_df: pd.DataFrame,
+    fingerprint_df: pd.DataFrame,
+    config: object,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    # Legacy project-level benchmarking stub to fix pipeline break
+    return pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()

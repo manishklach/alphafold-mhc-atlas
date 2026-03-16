@@ -5,6 +5,8 @@ import json
 import sys
 from pathlib import Path
 
+import pandas as pd
+
 from .annotations import add_annotation
 from .app import launch_app
 from .checklists import run_checklist
@@ -310,6 +312,29 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark_compare.add_argument("--workspace", required=True)
     benchmark_compare.add_argument("--benchmark-id", required=True)
     benchmark_compare.add_argument("--data", required=True, help="Path to external benchmark CSV.")
+
+    playbook = subparsers.add_parser("playbook", help="Scenario playbook commands.")
+    playbook_sub = playbook.add_subparsers(dest="playbook_command", required=True)
+    playbook_list = playbook_sub.add_parser("list", help="List available playbooks.")
+    playbook_run = playbook_sub.add_parser("run", help="Run a playbook for a workspace.")
+    playbook_run.add_argument("--workspace", required=True)
+    playbook_run.add_argument("--name", required=True)
+    playbook_compare = playbook_sub.add_parser("compare", help="Compare two playbooks.")
+    playbook_compare.add_argument("--workspace", required=True)
+    playbook_compare.add_argument("--a", required=True)
+    playbook_compare.add_argument("--b", required=True)
+
+    sensitivity = subparsers.add_parser("sensitivity", help="Sensitivity testing commands.")
+    sensitivity_sub = sensitivity.add_subparsers(dest="sensitivity_command", required=True)
+    sensitivity_run = sensitivity_sub.add_parser("run", help="Run sensitivity suite for a playbook.")
+    sensitivity_run.add_argument("--workspace", required=True)
+    sensitivity_run.add_argument("--playbook", required=True)
+
+    robustness = subparsers.add_parser("robustness", help="Decision robustness commands.")
+    robustness_sub = robustness.add_subparsers(dest="robustness_command", required=True)
+    robustness_summarize = robustness_sub.add_parser("summarize", help="Summarize robustness across sensitivity runs.")
+    robustness_summarize.add_argument("--workspace", required=True)
+    robustness_summarize.add_argument("--playbook", required=True)
 
     subparsers.add_parser("version", help="Print package version.")
     return parser
@@ -625,11 +650,77 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
         return 0
 
+    if args.command == "playbook" and args.playbook_command == "list":
+        from .playbook_schema import load_playbooks
+        playbooks = load_playbooks()
+        for p in playbooks:
+            print(f"- {p.playbook_id}: {p.display_name} ({p.intended_use})")
+        return 0
+
+    if args.command == "playbook" and args.playbook_command == "run":
+        from .scenario_playbooks import run_playbook
+        from .workspace_index import build_workspace_inventory
+        config = load_workspace_config(args.workspace)
+        inventory = build_workspace_inventory(config)
+        # Combine tables from all projects
+        tables = _combine_project_tables(inventory)
+        outputs = run_playbook(config.output_dir, args.name, tables, config.output_dir / "playbooks" / args.name)
+        print(json.dumps({k: str(v) for k, v in outputs.items() if isinstance(v, (str, Path))}, indent=2))
+        return 0
+
+    if args.command == "playbook" and args.playbook_command == "compare":
+        from .playbook_compare import compare_playbooks
+        from .workspace_index import build_workspace_inventory
+        config = load_workspace_config(args.workspace)
+        inventory = build_workspace_inventory(config)
+        tables = _combine_project_tables(inventory)
+        outputs = compare_playbooks(config.output_dir, args.a, args.b, tables)
+        print(json.dumps({k: str(v) for k, v in outputs.items() if isinstance(v, (str, Path))}, indent=2))
+        return 0
+
+    if args.command == "sensitivity" and args.sensitivity_command == "run":
+        from .sensitivity_testing import run_sensitivity_suite
+        from .workspace_index import build_workspace_inventory
+        config = load_workspace_config(args.workspace)
+        inventory = build_workspace_inventory(config)
+        tables = _combine_project_tables(inventory)
+        outputs = run_sensitivity_suite(config.output_dir, args.playbook, tables)
+        print(json.dumps({k: str(v) for k, v in outputs.items() if isinstance(v, (str, Path))}, indent=2))
+        return 0
+
+    if args.command == "robustness" and args.robustness_command == "summarize":
+        from .sensitivity_testing import run_sensitivity_suite
+        from .decision_robustness import compute_decision_robustness
+        from .workspace_index import build_workspace_inventory
+        config = load_workspace_config(args.workspace)
+        inventory = build_workspace_inventory(config)
+        tables = _combine_project_tables(inventory)
+        # Run sensitivity first to ensure we have data
+        res = run_sensitivity_suite(config.output_dir, args.playbook, tables)
+        outputs = compute_decision_robustness(res["results"], res["output_dir"])
+        print(json.dumps({k: str(v) for k, v in outputs.items() if isinstance(v, (str, Path))}, indent=2))
+        return 0
+
     if args.command == "version":
         print(__version__)
         return 0
     parser.error("Unknown command")
     return 1
+
+
+def _combine_project_tables(inventory: dict[str, object]) -> dict[str, pd.DataFrame]:
+    from .app import load_project_tables
+    combined = {"priority": [], "panel": [], "priority_evidence": []}
+    for project in inventory.get("projects", []):
+        path = Path(project["project_path"])
+        tables = load_project_tables(path)
+        for key in combined:
+            if key in tables and not tables[key].empty:
+                df = tables[key].copy()
+                df["project_id"] = project["project_id"]
+                combined[key].append(df)
+    
+    return {k: pd.concat(v, ignore_index=True) if v else pd.DataFrame() for k, v in combined.items()}
 
 
 def _resolve_path(value: str) -> Path:

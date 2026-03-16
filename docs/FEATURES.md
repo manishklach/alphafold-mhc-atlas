@@ -324,7 +324,23 @@ Conservative limits:
 - no live external API dependencies
 - benchmark comparisons do not override primary structural deltas
 
-## 21. Planned Next-Step Areas
+## 21. Scenario Playbooks and Decision Robustness (Phase 17)
+
+Implemented:
+
+- reusable named scenario playbooks (e.g. Conservative Binder, Viral Escape)
+- automated sensitivity testing for thresholds and assumptions
+- decision robustness summaries (robust vs fragile variants)
+- side-by-side playbook comparison logic
+- benchmark-aware and benchmark-blind playbook modes
+
+Conservative limits:
+
+- no automated "answer chasing" or parameter optimization
+- robustness labels remain descriptive, not predictive
+- no assumption that a stable mathematical ranking is biologically "correct"
+
+## 22. Planned Next-Step Areas
 
 Most likely future directions:
 

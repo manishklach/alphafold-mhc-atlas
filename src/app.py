@@ -777,6 +777,12 @@ def render_workspace_app(st, workspace_config) -> None:
         "6. Calibration": [
             "External Benchmarking",
         ],
+        "7. Playbooks & Robustness": [
+            "Scenario Playbooks",
+            "Sensitivity Testing",
+            "Robustness Summary",
+            "Playbook Comparison",
+        ],
         "Admin": [
             "Workflow Templates",
             "Project History",
@@ -816,6 +822,8 @@ def render_workspace_app(st, workspace_config) -> None:
         st.info("### Stage 5: Program Learning\nSynthesize patterns from review history and outcomes. Identify bottlenecks and refine your workflow.")
     elif page in workflow_stages["6. Calibration"]:
         st.info("### Stage 6: Calibration\nCompare your internal structural hypotheses against external ground-truth datasets.")
+    elif page in workflow_stages["7. Playbooks & Robustness"]:
+        st.info("### Stage 7: Playbooks & Robustness\nTest how stable your decisions are under different analytical assumptions. Use Playbooks to reuse proven prioritization frames.")
 
     if page == "Workspace Overview":
         st.subheader(workspace_config.name)
@@ -1083,6 +1091,115 @@ def render_workspace_app(st, workspace_config) -> None:
                     except Exception as e:
                         st.error(f"Error running comparison: {e}")
 
+    # 7. Playbooks & Robustness
+    elif page == "Scenario Playbooks":
+        from src.playbook_schema import load_playbooks
+        from src.scenario_playbooks import run_playbook
+        st.subheader("Scenario Playbooks")
+        st.info("Reusable prioritization frames with saved weights, filters, and thresholds.")
+        
+        playbooks = load_playbooks()
+        if not playbooks:
+            st.warning("No playbooks found in data/playbook_templates.yaml")
+        else:
+            pb_map = {p.display_name: p for p in playbooks}
+            selected_name = st.selectbox("Select Playbook", list(pb_map.keys()))
+            pb = pb_map[selected_name]
+            
+            st.markdown(f"**Description**: {pb.description}")
+            st.markdown(f"**Intended Use**: {pb.intended_use}")
+            with st.expander("Assumptions & Settings"):
+                st.json(pb.to_dict())
+            
+            if st.button("Run Playbook"):
+                inventory = build_workspace_inventory(workspace_config)
+                combined_tables = _get_combined_workspace_tables(workspace_config, inventory)
+                if not combined_tables["priority"].empty:
+                    res = run_playbook(workspace_config.output_dir, pb.playbook_id, combined_tables, workspace_config.output_dir / "playbooks" / pb.playbook_id)
+                    st.success("Playbook run complete.")
+                    st.text(res["notes_markdown"])
+                    st.dataframe(preview_table(res["ranked_variants"], 500), use_container_width=True)
+                else:
+                    st.error("No project data available in this workspace.")
+
+    elif page == "Sensitivity Testing":
+        from src.playbook_schema import load_playbooks
+        from src.sensitivity_testing import run_sensitivity_suite
+        st.subheader("Sensitivity Testing")
+        st.info("Analyze how prioritization shifts when thresholds or assumptions are perturbed.")
+        
+        playbooks = load_playbooks()
+        pb_map = {p.display_name: p for p in playbooks}
+        selected_name = st.selectbox("Select Base Playbook", list(pb_map.keys()))
+        
+        if st.button("Run Sensitivity Suite"):
+            inventory = build_workspace_inventory(workspace_config)
+            combined_tables = _get_combined_workspace_tables(workspace_config, inventory)
+            if not combined_tables["priority"].empty:
+                with st.spinner("Running perturbations..."):
+                    res = run_sensitivity_suite(workspace_config.output_dir, pb_map[selected_name].playbook_id, combined_tables)
+                    st.success("Sensitivity suite complete.")
+                    st.markdown(res["summary_markdown"])
+            else:
+                st.error("No project data available.")
+
+    elif page == "Robustness Summary":
+        from src.decision_robustness import compute_decision_robustness
+        st.subheader("Decision Robustness")
+        st.info("Highlights variants that remain stable (robust) or fragile across multiple scenarios.")
+        
+        sensitivity_dir = workspace_config.output_dir / "sensitivity"
+        if not sensitivity_dir.exists():
+            st.warning("Run a Sensitivity Suite first to generate robustness data.")
+        else:
+            runs = sorted([d.name for d in sensitivity_dir.iterdir() if d.is_dir()], reverse=True)
+            if not runs:
+                st.warning("No sensitivity runs found.")
+            else:
+                selected_run = st.selectbox("Select Sensitivity Run", runs)
+                run_path = sensitivity_dir / selected_run
+                
+                results = []
+                for subdir in run_path.iterdir():
+                    if subdir.is_dir() and (subdir / "scenario_ranked_variants.csv").exists():
+                        results.append({
+                            "ranked_variants": safe_read_csv(subdir / "scenario_ranked_variants.csv")
+                        })
+                
+                if results:
+                    if st.button("Compute Robustness"):
+                        robustness = compute_decision_robustness(results, run_path / "robustness")
+                        st.success("Robustness computation complete.")
+                        st.markdown(robustness["robustness_digest.md"])
+                        st.dataframe(preview_table(robustness["robustness_summary.csv"], 500), use_container_width=True)
+                else:
+                    st.error("Invalid sensitivity run directory structure.")
+
+    elif page == "Playbook Comparison":
+        from src.playbook_schema import load_playbooks
+        from src.playbook_compare import compare_playbooks
+        st.subheader("Playbook Comparison")
+        st.info("Directly compare the prioritizations of two different analytical frames.")
+        
+        playbooks = load_playbooks()
+        pb_names = [p.display_name for p in playbooks]
+        col1, col2 = st.columns(2)
+        pb_a = col1.selectbox("Playbook A", pb_names, index=0)
+        pb_b = col2.selectbox("Playbook B", pb_names, index=1 if len(pb_names) > 1 else 0)
+        
+        if st.button("Compare Playbooks"):
+            pb_map = {p.display_name: p.playbook_id for p in playbooks}
+            inventory = build_workspace_inventory(workspace_config)
+            combined_tables = _get_combined_workspace_tables(workspace_config, inventory)
+            if not combined_tables["priority"].empty:
+                res = compare_playbooks(workspace_config.output_dir, pb_map[pb_a], pb_map[pb_b], combined_tables)
+                st.success("Comparison complete.")
+                st.markdown(safe_read_text(res["playbook_comparison_summary.md"]))
+                st.subheader("Rank Differences")
+                st.dataframe(preview_table(res["rank_diff"], 500), use_container_width=True)
+            else:
+                st.error("No project data available.")
+
     elif page == "Decision Lineage":
         outputs = build_decision_history(workspace_config)
         st.subheader("Decision Lineage")
@@ -1183,6 +1300,20 @@ def _ensure_streamlit_session(st, project_dir: Path) -> dict[str, object]:
         active = {"project_dir": current_project, **session}
         st.session_state["pilot_session"] = active
     return active
+
+
+def _get_combined_workspace_tables(config, inventory) -> dict[str, pd.DataFrame]:
+    combined = {"priority": [], "panel": [], "priority_evidence": []}
+    for project in inventory.get("projects", []):
+        path = Path(project["project_path"])
+        tables = load_project_tables(path)
+        for key in combined:
+            if key in tables and not tables[key].empty:
+                df = tables[key].copy()
+                df["project_id"] = project["project_id"]
+                combined[key].append(df)
+    
+    return {k: pd.concat(v, ignore_index=True) if v else pd.DataFrame() for k, v in combined.items()}
 
 
 def _log_page_view(project_dir: Path, session_id: str, page: str) -> None:

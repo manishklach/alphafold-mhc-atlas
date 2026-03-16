@@ -1,0 +1,52 @@
+playbooks:
+  - playbook_id: conservative_binder
+    display_name: Conservative Binder Playbook
+    description: Prioritizes variants with high structural confidence and minimal WT perturbation.
+    intended_use: Standard clinical prioritization.
+    ranking_mode: disruptive_mutations
+    evidence_coverage_threshold: 0.8
+    allowed_uncertainty: ["low"]
+    require_structural_support: true
+    benchmark_mode: benchmark_blind
+    outcome_mode: outcome_blind
+    role_emphasis: scientist
+    caution_notes: May miss novel but high-uncertainty variants.
+
+  - playbook_id: viral_escape_explorer
+    display_name: Viral Escape Playbook
+    description: Focuses on variants that significantly disrupt WT contacts, prioritizing potential escape.
+    intended_use: Viral surveillance and vaccine design.
+    ranking_mode: disruptive_mutations
+    evidence_coverage_threshold: 0.5
+    allowed_uncertainty: ["low", "medium"]
+    require_structural_support: true
+    benchmark_mode: benchmark_aware
+    outcome_mode: outcome_aware
+    role_emphasis: scientist
+    caution_notes: High disruption doesn't always guarantee biological escape.
+
+  - playbook_id: cross_allele_divergence
+    display_name: Cross-Allele Divergence Playbook
+    description: Highlights variants that behave differently across multiple alleles.
+    intended_use: Allele discrimination studies.
+    ranking_mode: allele_discriminating_mutations
+    evidence_coverage_threshold: 0.6
+    allowed_uncertainty: ["low", "medium"]
+    require_structural_support: true
+    benchmark_mode: benchmark_blind
+    outcome_mode: outcome_blind
+    role_emphasis: comp_lead
+    caution_notes: Requires high-quality data across all alleles in scope.
+
+  - playbook_id: benchmark_aware_review
+    display_name: Benchmark-Aware Review
+    description: Uses external benchmark overlays to contextualize structural deltas.
+    intended_use: Model validation and ground-truth comparison.
+    ranking_mode: disruptive_mutations
+    evidence_coverage_threshold: 0.7
+    allowed_uncertainty: ["low"]
+    require_structural_support: true
+    benchmark_mode: benchmark_aware
+    outcome_mode: outcome_blind
+    role_emphasis: manager
+    caution_notes: Benchmark data should not be treated as absolute truth for structural models.

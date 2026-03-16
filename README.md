@@ -265,12 +265,36 @@ Useful Phase 16 commands:
 mhc-atlas benchmark compare --workspace workspaces/demo_workspace.yaml --benchmark-id iedb_binding_subset --data path/to/external_data.csv
 ```
 
+## Phase 17: Scenario Playbooks, Sensitivity Analysis, and Decision Robustness
+
+Phase 17 makes prioritization logic more trustworthy by making analytical assumptions explicit, reusable, and testable across multiple scenarios.
+
+What it adds:
+
+- **Scenario Playbooks**: Reusable, named prioritization frames (e.g., Conservative Binder, Viral Escape) with saved weights and thresholds.
+- **Sensitivity Testing**: Automated suite that perturbs analytical assumptions (evidence thresholds, uncertainty levels) to measure prioritization stability.
+- **Decision Robustness Summaries**: Identification of "Robust" variants that consistently appear across multiple scenarios and "Fragile" variants sensitive to assumptions.
+- **Playbook Comparison**: Side-by-side analysis of how different prioritization goals change the resulting shortlists.
+
+Useful Phase 17 commands:
+
+```bash
+mhc-atlas playbook list
+mhc-atlas playbook run --workspace workspaces/demo_workspace.yaml --name conservative_binder
+mhc-atlas sensitivity run --workspace workspaces/demo_workspace.yaml --playbook conservative_binder
+mhc-atlas robustness summarize --workspace workspaces/demo_workspace.yaml --playbook conservative_binder
+mhc-atlas playbook compare --workspace workspaces/demo_workspace.yaml --a conservative_binder --b viral_escape_explorer
+```
+
+What it does not do:
+- it does not build automated weight optimization or hyperparameter tuning.
+- it does not imply that "Robust" items are biologically validated (robustness is mathematical stability).
+- it does not hide the trade-offs between different analytical frames.
+
 What it does not do:
 - it does not claim predictive accuracy (it is a descriptive comparison tool)
 - it does not automatically sync with live external databases
 - it does not hide structural deltas in favor of benchmark labels
-
-What it does not do:
 - it does not build generic task-management software
 - it does not replace wet-lab tracking or PM tools
 - it does not automatically update structural rankings based on task completion
