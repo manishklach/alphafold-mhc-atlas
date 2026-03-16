@@ -733,6 +733,14 @@ def render_workspace_app(st, workspace_config) -> None:
     
     # Workflow-oriented grouping
     workflow_stages = {
+        "0. Organization": [
+            "Organization Overview",
+            "Capacity Trends",
+            "Queue Health",
+            "Decision-System Health",
+            "Leadership Views",
+            "Operating Review Packets",
+        ],
         "1. Preparation": [
             "Workspace Overview",
             "Project Portfolio",
@@ -826,7 +834,9 @@ def render_workspace_app(st, workspace_config) -> None:
         selected_project_path = Path(selected_row["project_path"])
 
     # --- Header Explainers based on Stage ---
-    if page in workflow_stages["1. Preparation"]:
+    if page in workflow_stages["0. Organization"]:
+        st.success("### Stage 0: Organization-Level View\n**Objective**: Monitor discovery activity across multiple workspaces. Identify blockages, capacity issues, and portfolio-wide trends for leadership review.")
+    elif page in workflow_stages["1. Preparation"]:
         st.success("### Stage 1: Readiness & Onboarding\n**Objective**: Ensure the environment is pilot-ready. Export role-specific workflow guides to align your team before starting the review.")
     elif page in workflow_stages["2. Analysis"]:
         st.success("### Stage 2: Deep Structural Analysis\n**Objective**: Perform high-resolution inspection of structural deltas, contact changes, and allele signatures to generate evidence-backed hypotheses.")
@@ -847,7 +857,76 @@ def render_workspace_app(st, workspace_config) -> None:
     elif page in workflow_stages["10. Portfolio Prioritization"]:
         st.success("### Stage 10: Portfolio Prioritization\n**Objective**: Allocate limited scientific attention. Rank items across all workspaces into actionable capacity-aware buckets (do_now, monitor, escalate).")
 
-    if page == "Workspace Overview":
+    if page == "Organization Overview":
+        from src.org_aggregation import write_org_aggregation
+        st.subheader("Organization Overview")
+        st.info("Aggregates data across all discoverable workspace configurations.")
+        workspace_root = workspace_config.source_path.parent
+        if st.button("Aggregate Organization Data"):
+            outputs = write_org_aggregation(workspace_root, workspace_config.output_dir / "org_data")
+            st.success("Aggregation complete.")
+            
+        org_dir = workspace_config.output_dir / "org_data"
+        if org_dir.exists():
+            st.markdown("### Portfolio Summary")
+            st.dataframe(preview_table(safe_read_csv(org_dir / "org_portfolio_summary.csv"), 500), use_container_width=True)
+            st.markdown("### Project Inventory")
+            st.dataframe(preview_table(safe_read_csv(org_dir / "org_projects_summary.csv"), 500), use_container_width=True)
+
+    elif page == "Capacity Trends":
+        from src.capacity_retrospective import build_org_capacity_retrospective
+        st.subheader("Organization Capacity Trends")
+        workspace_root = workspace_config.source_path.parent
+        if st.button("Generate Capacity Retrospective"):
+            build_org_capacity_retrospective(workspace_root, workspace_config.output_dir / "org_data")
+            st.success("Retrospective generated.")
+            
+        digest_path = workspace_config.output_dir / "org_data" / "capacity_retrospective_digest.md"
+        if digest_path.exists():
+            st.markdown(safe_read_text(digest_path))
+
+    elif page == "Decision-System Health":
+        from src.system_health import build_org_system_health
+        st.subheader("Decision-System Health")
+        workspace_root = workspace_config.source_path.parent
+        if st.button("Build Health Summary"):
+            build_org_system_health(workspace_root, workspace_config.output_dir / "org_data")
+            st.success("Health summary built.")
+            
+        health_path = workspace_config.output_dir / "org_data" / "health_digest.md"
+        if health_path.exists():
+            st.markdown(safe_read_text(health_path))
+
+    elif page == "Leadership Views":
+        from src.org_views import build_org_role_views
+        st.subheader("Leadership Views")
+        workspace_root = workspace_config.source_path.parent
+        if st.button("Export Org Role Views"):
+            build_org_role_views(workspace_root, workspace_config.output_dir / "org_data")
+            st.success("Views exported.")
+            
+        view_dir = workspace_config.output_dir / "org_data"
+        role = st.selectbox("Org Role", ["manager", "comp_lead"])
+        view_path = view_dir / f"org_view_{role}.md"
+        if view_path.exists():
+            st.markdown(safe_read_text(view_path))
+
+    elif page == "Operating Review Packets":
+        from src.operating_review_packet import build_operating_review_packet
+        st.subheader("Operating Review Packets")
+        workspace_root = workspace_config.source_path.parent
+        if st.button("Generate Operating Review Packet"):
+            res = build_operating_review_packet(workspace_root, workspace_config.output_dir)
+            st.success(f"Packet created at: {res['packet_dir']}")
+            
+        packet_root = workspace_config.output_dir / "operating_review_packets"
+        if packet_root.exists():
+            packets = sorted([d.name for d in packet_root.iterdir() if d.is_dir()], reverse=True)
+            if packets:
+                selected_p = st.selectbox("View Past Packets", packets)
+                st.markdown(safe_read_text(packet_root / selected_p / "operating_review.md"))
+
+    elif page == "Workspace Overview":
         st.subheader(workspace_config.name)
         st.write(workspace_config.description)
         

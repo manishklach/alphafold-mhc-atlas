@@ -390,6 +390,23 @@ def build_parser() -> argparse.ArgumentParser:
     queue_build = queue_sub.add_parser("build", help="Build attention and escalation queues.")
     queue_build.add_argument("--workspace", required=True)
 
+    org = subparsers.add_parser("org", help="Organization-level commands.")
+    org_sub = org.add_subparsers(dest="org_command", required=True)
+    org_agg = org_sub.add_parser("aggregate", help="Aggregate data across workspaces.")
+    org_agg.add_argument("--workspace-root", required=True)
+    org_agg.add_argument("--output", required=True)
+    org_retro = org_sub.add_parser("retrospective", help="Generate organization retrospective.")
+    org_retro.add_argument("--workspace-root", required=True)
+    org_retro.add_argument("--output", required=True)
+    org_retro.add_argument("--template", default="quarterly_operating_review")
+    org_health = org_sub.add_parser("health", help="Summarize organization decision health.")
+    org_health.add_argument("--workspace-root", required=True)
+    org_health.add_argument("--output", required=True)
+    org_packet = org_sub.add_parser("packet", help="Create organization operating review packet.")
+    org_packet.add_argument("--workspace-root", required=True)
+    org_packet.add_argument("--output", required=True)
+    org_packet.add_argument("--packet-id")
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -814,6 +831,30 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "queue" and args.queue_command == "build":
         from .attention_queue import build_attention_queues
         outputs = build_attention_queues(args.workspace)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "org" and args.org_command == "aggregate":
+        from .org_aggregation import write_org_aggregation
+        outputs = write_org_aggregation(Path(args.workspace_root), Path(args.output))
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "org" and args.org_command == "retrospective":
+        from .org_retrospective import build_org_retrospective
+        outputs = build_org_retrospective(Path(args.workspace_root), Path(args.output), args.template)
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "org" and args.org_command == "health":
+        from .system_health import build_org_system_health
+        outputs = build_org_system_health(Path(args.workspace_root), Path(args.output))
+        print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
+        return 0
+
+    if args.command == "org" and args.org_command == "packet":
+        from .operating_review_packet import build_operating_review_packet
+        outputs = build_operating_review_packet(Path(args.workspace_root), Path(args.output), args.packet_id)
         print(json.dumps({k: str(v) for k, v in outputs.items()}, indent=2))
         return 0
 

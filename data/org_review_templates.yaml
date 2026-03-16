@@ -1,0 +1,12 @@
+templates:
+  - template_id: quarterly_operating_review
+    label: Quarterly Operating Review
+    description: High-level summary of portfolio evolution, capacity use, and system health.
+    sections: ["portfolio_overview", "capacity_trends", "workflow_health", "attention_risks", "caveats"]
+    role_views: ["manager", "comp_lead"]
+
+  - template_id: monthly_org_digest
+    label: Monthly Org Digest
+    description: Monthly snapshot of organization-wide review activity and blockages.
+    sections: ["review_activity", "queue_health", "execution_status", "caveats"]
+    role_views: ["manager", "scientist"]

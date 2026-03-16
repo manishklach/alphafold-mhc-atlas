@@ -1,0 +1,12 @@
+windows:
+  - window_id: 2026_q1
+    label: Q1 2026
+    start_date: "2026-01-01"
+    end_date: "2026-03-31"
+    cadence: quarterly
+
+  - window_id: 2026_march
+    label: March 2026
+    start_date: "2026-03-01"
+    end_date: "2026-03-31"
+    cadence: monthly

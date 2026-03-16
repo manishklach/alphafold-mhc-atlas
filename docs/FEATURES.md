@@ -384,7 +384,24 @@ Conservative limits:
 - strictly operational focus: buckets reflect team bandwidth, not scientific certainty
 - no enterprise resource planning (ERP) or budget forecasting systems
 
-## 25. Planned Next-Step Areas
+## 25. Organization-Level Operating Dashboard (Phase 20)
+
+Implemented:
+
+- cross-workspace portfolio aggregation
+- organization-level retrospectives and operating reports
+- capacity-use and queue-health trend analysis
+- decision-system health summaries (churn, unresolved burden)
+- organization-level role views (Manager, Comp Lead)
+- meeting-ready operating review packets
+
+Conservative limits:
+
+- dashboards reflect operational flow, not scientific truth
+- no automated executive performance scoring
+- provenance remains drillable to workspace evidence
+
+## 26. Planned Next-Step Areas
 
 Most likely future directions:
 
