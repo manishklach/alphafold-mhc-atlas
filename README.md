@@ -1126,3 +1126,26 @@ Run:
 
 If you need implementation detail, start with [docs/SPEC.md](docs/SPEC.md).
 If you need a concise inventory of current capabilities and boundaries, use [docs/FEATURES.md](docs/FEATURES.md).
+﻿
+## Phase 22: Pilot-to-Product Packaging, Offering Definition, and Customer-Facing Delivery
+
+Phase 22 transforms the platform from a capable pilot tool into a defined, adoptable offering for external teams.
+
+What it adds:
+
+- **Pilot Package Profiles**: Formal definitions of external offerings (e.g., Research Team Pilot, Translational Review Pilot) with scoped workflows and roles.
+- **Workflow Bundles**: Coherent, actionable use cases (e.g., Weekly Review, Scenario Robustness) with commands, inputs, and expected outputs.
+- **Deployment Profiles**: Guide-level configuration for different team contexts (e.g., Small Compbio Team, Translational Group).
+- **Adoption Readiness Summaries**: Evidence-linked artifacts to help translate pilot usage into adoption decisions.
+- **Pilot Conversion Packets**: Comprehensive internal bundles for evaluating pilot outcomes and next-step recommendations.
+- **Role-Specific External Guides**: Targeted documentation for Scientists, Computational Leads, and Managers.
+
+Useful Phase 22 commands:
+
+```bash
+mhc-atlas package-profile list
+mhc-atlas workflow-bundle list
+mhc-atlas deployment-profile show --name small_compbio_team
+mhc-atlas conversion-packet create --workspace workspaces/demo_workspace.yaml --packet-id pilot_round_1
+mhc-atlas adoption-readiness summarize --workspace workspaces/demo_workspace.yaml
+```

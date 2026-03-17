@@ -1,0 +1,49 @@
+- description: High-depth structural analysis pilot for core computational teams.
+  included_eval_artifacts:
+  - adoption_readiness
+  - usage_metrics
+  included_packets:
+  - review_packet
+  - decision_packet
+  included_playbooks:
+  - disruptive_mutation_sweep
+  - allele_sensitivity_check
+  included_roles:
+  - structural_analyst
+  - lead_scientist
+  included_workflows:
+  - weekly_review
+  - scenario_robustness
+  - consensus_review
+  intended_user: Computational Biologists / Structural Scientists
+  name: research_team_pilot
+  scope_limitations:
+  - No clinical prediction
+  - No binding affinity absolute truth
+  setup_complexity: High
+  success_criteria:
+  - Identification of structural motifs
+  - Evidence-linked prioritizations
+- description: Focused review pilot for translational immunology groups.
+  included_eval_artifacts:
+  - capacity_retrospective
+  - decision_lineage
+  included_packets:
+  - executive_brief
+  - operating_review_packet
+  included_playbooks:
+  - program_readiness_check
+  included_roles:
+  - program_manager
+  - translational_lead
+  included_workflows:
+  - operating_review
+  - portfolio_prioritization
+  intended_user: Translational Scientists / Program Leads
+  name: translational_review_pilot
+  scope_limitations:
+  - Not for direct patient treatment decisions
+  setup_complexity: Moderate
+  success_criteria:
+  - Clear portfolio visibility
+  - Consistent decision lineage

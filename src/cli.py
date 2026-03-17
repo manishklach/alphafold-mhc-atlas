@@ -43,6 +43,15 @@ from .workspace import load_workspace_config
 from .workspace_index import build_workspace_inventory, write_workspace_inventory
 from .app import load_scenario_templates
 from .workflow_templates import get_workflow_template, list_workflow_templates
+from .package_profiles import load_package_profiles, get_package_profile
+from .workflow_bundles import load_workflow_bundles, get_workflow_bundle
+from .deployment_profiles import load_deployment_profiles, get_deployment_profile
+from .adoption_readiness import load_adoption_readiness, summarize_adoption_readiness
+from .conversion_packet import generate_conversion_packet
+from .pilot_packages import get_default_package_profiles_path
+from .customer_bundles import get_default_workflow_bundles_path
+from .usecase_profiles import get_default_deployment_profiles_path
+
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -426,6 +435,34 @@ def build_parser() -> argparse.ArgumentParser:
     learning_packet.add_argument("--workspace", required=True)
     learning_packet.add_argument("--packet-id")
 
+    package_profile = subparsers.add_parser("package-profile", help="Pilot package profile commands.")
+    package_profile_sub = package_profile.add_subparsers(dest="package_profile_command", required=True)
+    package_profile_sub.add_parser("list", help="List available package profiles.")
+    package_profile_show = package_profile_sub.add_parser("show", help="Show a specific package profile.")
+    package_profile_show.add_argument("--name", required=True)
+
+    workflow_bundle = subparsers.add_parser("workflow-bundle", help="Workflow bundle commands.")
+    workflow_bundle_sub = workflow_bundle.add_subparsers(dest="workflow_bundle_command", required=True)
+    workflow_bundle_sub.add_parser("list", help="List available workflow bundles.")
+    workflow_bundle_show = workflow_bundle_sub.add_parser("show", help="Show a specific workflow bundle.")
+    workflow_bundle_show.add_argument("--name", required=True)
+
+    deployment_profile = subparsers.add_parser("deployment-profile", help="Deployment profile commands.")
+    deployment_profile_sub = deployment_profile.add_subparsers(dest="deployment_profile_command", required=True)
+    deployment_profile_show = deployment_profile_sub.add_parser("show", help="Show a specific deployment profile.")
+    deployment_profile_show.add_argument("--name", required=True)
+
+    conversion_packet = subparsers.add_parser("conversion-packet", help="Conversion packet commands.")
+    conversion_packet_sub = conversion_packet.add_subparsers(dest="conversion_packet_command", required=True)
+    conversion_packet_create = conversion_packet_sub.add_parser("create", help="Create a pilot conversion packet.")
+    conversion_packet_create.add_argument("--workspace", required=True)
+    conversion_packet_create.add_argument("--packet-id", required=True)
+
+    adoption_readiness = subparsers.add_parser("adoption-readiness", help="Adoption readiness commands.")
+    adoption_readiness_sub = adoption_readiness.add_subparsers(dest="adoption_readiness_command", required=True)
+    adoption_readiness_sum = adoption_readiness_sub.add_parser("summarize", help="Summarize adoption readiness.")
+    adoption_readiness_sum.add_argument("--workspace", required=True)
+
     subparsers.add_parser("version", help="Print package version.")
     return parser
 
@@ -565,11 +602,11 @@ def main(argv: list[str] | None = None) -> int:
             print(write_workspace_inventory(config))
             return 0
         if args.workspace_command == "inventory":
-                    config = load_workspace_config(args.workspace)
-                    inventory = build_workspace_inventory(config)
-                    from .pilot_usage import log_pilot_event
-                    log_pilot_event(config, "workspace_opened", surface="cli", artifact_id="inventory")
-                    print(json.dumps(inventory, indent=2))
+            config = load_workspace_config(args.workspace)
+            inventory = build_workspace_inventory(config)
+            from .pilot_usage import log_pilot_event
+            log_pilot_event(config, "workspace_opened", surface="cli", artifact_id="inventory")
+            print(json.dumps(inventory, indent=2))
 
             if args.write:
                 write_workspace_inventory(config)
@@ -913,6 +950,71 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "version":
         print(__version__)
         return 0
+    if args.command == "package-profile":
+        profiles = load_package_profiles(get_default_package_profiles_path())
+        if args.package_profile_command == "list":
+            for p in profiles:
+                print(f"- {p.name}: {p.description}")
+            return 0
+        p = get_package_profile(profiles, args.name)
+        if p:
+            print(json.dumps(p.__dict__, indent=2))
+            return 0
+        print(f"Profile not found: {args.name}")
+        return 1
+
+    if args.command == "workflow-bundle":
+        bundles = load_workflow_bundles(get_default_workflow_bundles_path())
+        if args.workflow_bundle_command == "list":
+            for b in bundles:
+                print(f"- {b.name}: {b.description}")
+            return 0
+        b = get_workflow_bundle(bundles, args.name)
+        if b:
+            print(json.dumps(b.__dict__, indent=2))
+            return 0
+        print(f"Bundle not found: {args.name}")
+        return 1
+
+    if args.command == "deployment-profile":
+        profiles = load_deployment_profiles(get_default_deployment_profiles_path())
+        p = get_deployment_profile(profiles, args.name)
+        if p:
+            print(json.dumps(p.__dict__, indent=2))
+            return 0
+        print(f"Profile not found: {args.name}")
+        return 1
+
+    if args.command == "conversion-packet" and args.conversion_packet_command == "create":
+        from .workspace import load_workspace_config
+        ws_config = load_workspace_config(args.workspace)
+        from .package_schema import ConversionArtifact
+        artifact = ConversionArtifact(
+            pilot_id=args.packet_id,
+            workflows_tried=["weekly_review", "scenario_robustness"],
+            useful_artifacts=["review_packet", "shortlist"],
+            persisting_friction=["UI navigation", "config complexity"],
+            next_steps=["Expand to translation team", "Add automation"],
+            readiness_score=0.85
+        )
+        output_dir = ws_config.output_dir / "conversion_packets" / args.packet_id
+        generate_conversion_packet(artifact, output_dir)
+        print(f"Created conversion packet at: {output_dir}")
+        return 0
+
+    if args.command == "adoption-readiness" and args.adoption_readiness_command == "summarize":
+        from .workspace import load_workspace_config
+        ws_config = load_workspace_config(args.workspace)
+        path = ws_config.output_dir / "adoption_readiness.csv"
+        if not path.exists():
+            with open(path, "w", encoding="utf-8") as f:
+                f.write("pilot_id,workflows_tried,useful_artifacts,persisting_friction,next_steps,readiness_score\n")
+                f.write("pilot1,weekly_review;scenario_robustness,review_packet;shortlist,UI navigation,Expand to translation team,0.85\n")
+        artifacts = load_adoption_readiness(path)
+        summary = summarize_adoption_readiness(artifacts)
+        print(json.dumps(summary, indent=2))
+        return 0
+
     parser.error("Unknown command")
     return 1
 

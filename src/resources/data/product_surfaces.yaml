@@ -1,0 +1,27 @@
+- core_workflows:
+  - weekly_review
+  - scenario_robustness
+  - consensus_review
+  de_emphasized_features:
+  - portfolio_aggregation
+  - org_aggregation
+  emphasized_outputs:
+  - review_packet
+  - decision_packet
+  - robustness_report
+  primary_docs:
+  - EXTERNAL_GUIDE_SCIENTIST
+  - EXTERNAL_GUIDE_COMP_LEAD
+  profile_name: research_team_pilot
+- core_workflows:
+  - operating_review
+  - portfolio_prioritization
+  de_emphasized_features:
+  - cluster_analysis
+  - contact_network_analysis
+  emphasized_outputs:
+  - executive_brief
+  - operating_review_packet
+  primary_docs:
+  - EXTERNAL_GUIDE_MANAGER
+  profile_name: translational_review_pilot

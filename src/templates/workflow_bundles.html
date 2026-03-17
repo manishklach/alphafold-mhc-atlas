@@ -1,0 +1,15 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<h1>Workflow Bundles</h1>
+<p>Coherent use cases for external teams.</p>
+{% for bundle in bundles %}
+<div class="card">
+    <h2>{{ bundle.name }}</h2>
+    <p><strong>Description:</strong> {{ bundle.description }}</p>
+    <p><strong>Objective:</strong> {{ bundle.objective }}</p>
+    <p><strong>Commands:</strong> <code>{{ bundle.commands | join(', ') }}</code></p>
+    <p><strong>Inputs:</strong> {{ bundle.expected_inputs | join(', ') }}</p>
+    <p><strong>Outputs:</strong> {{ bundle.expected_outputs | join(', ') }}</p>
+</div>
+{% endfor %}
+{% endblock %}

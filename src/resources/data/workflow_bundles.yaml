@@ -1,0 +1,37 @@
+- caveats:
+  - Requires human-in-the-loop review
+  commands:
+  - mhc-atlas review-queue list
+  - mhc-atlas project review
+  description: Recurring review of structural mutation patterns.
+  eval_questions:
+  - Did the review clarify structural hypotheses?
+  expected_inputs:
+  - AlphaFold results
+  - Project config
+  expected_outputs:
+  - Review packet
+  - Shortlist
+  name: weekly_review
+  objective: Ensure systematic evaluation of new structural data.
+  recommended_roles:
+  - structural_analyst
+  - lead_scientist
+- caveats:
+  - Sensitivity is not biological truth
+  commands:
+  - mhc-atlas scenario-analysis run
+  - mhc-atlas sensitivity-testing run
+  description: Sensitivity testing across analytical assumptions.
+  eval_questions:
+  - How stable are the top-ranked variants?
+  expected_inputs:
+  - Project results
+  - Scenario template
+  expected_outputs:
+  - Robustness report
+  - Playbook compare
+  name: scenario_robustness
+  objective: Evaluate stability of prioritizations under different thresholds.
+  recommended_roles:
+  - computational_lead

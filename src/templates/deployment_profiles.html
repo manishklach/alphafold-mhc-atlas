@@ -1,0 +1,14 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<h1>Deployment Profiles</h1>
+<p>Configuration guides for different team contexts.</p>
+{% for profile in profiles %}
+<div class="card">
+    <h2>{{ profile.name }}</h2>
+    <p><strong>Description:</strong> {{ profile.description }}</p>
+    <p><strong>Target Team:</strong> {{ profile.target_team }}</p>
+    <p><strong>Likely Workflows:</strong> {{ profile.likely_workflows | join(', ') }}</p>
+    <p><strong>Key Artifacts:</strong> {{ profile.key_artifacts | join(', ') }}</p>
+</div>
+{% endfor %}
+{% endblock %}

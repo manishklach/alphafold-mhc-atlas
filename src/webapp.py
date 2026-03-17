@@ -9,6 +9,13 @@ import sys
 from pathlib import Path
 
 from flask import Flask, abort, current_app, render_template, request, send_file
+from .package_profiles import load_package_profiles, get_package_profile
+from .workflow_bundles import load_workflow_bundles, get_workflow_bundle
+from .deployment_profiles import load_deployment_profiles, get_deployment_profile
+from .pilot_packages import get_default_package_profiles_path
+from .customer_bundles import get_default_workflow_bundles_path
+from .usecase_profiles import get_default_deployment_profiles_path
+
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -176,6 +183,22 @@ def create_app() -> Flask:
             headers=headers,
             rows=rows,
         )
+
+
+    @app.route("/package-profiles")
+    def list_package_profiles():
+        profiles = load_package_profiles(get_default_package_profiles_path())
+        return render_template("package_profiles.html", profiles=profiles)
+
+    @app.route("/workflow-bundles")
+    def list_workflow_bundles():
+        bundles = load_workflow_bundles(get_default_workflow_bundles_path())
+        return render_template("workflow_bundles.html", bundles=bundles)
+
+    @app.route("/deployment-profiles")
+    def list_deployment_profiles():
+        profiles = load_deployment_profiles(get_default_deployment_profiles_path())
+        return render_template("deployment_profiles.html", profiles=profiles)
 
     return app
 

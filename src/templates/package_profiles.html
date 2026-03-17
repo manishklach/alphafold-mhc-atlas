@@ -1,0 +1,15 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<h1>Pilot Package Profiles</h1>
+<p>Defined external offerings for pilot teams.</p>
+{% for profile in profiles %}
+<div class="card">
+    <h2>{{ profile.name }}</h2>
+    <p><strong>Description:</strong> {{ profile.description }}</p>
+    <p><strong>Intended User:</strong> {{ profile.intended_user }}</p>
+    <p><strong>Workflows:</strong> {{ profile.included_workflows | join(', ') }}</p>
+    <p><strong>Roles:</strong> {{ profile.included_roles | join(', ') }}</p>
+    <p><strong>Success Criteria:</strong> {{ profile.success_criteria | join(', ') }}</p>
+</div>
+{% endfor %}
+{% endblock %}
