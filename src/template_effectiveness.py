@@ -32,14 +32,12 @@ def summarize_template_effectiveness(workspace: WorkspaceConfig | str | Path) ->
         )
         unresolved_df = pd.DataFrame(columns=["template_name", "cycle_id", "unresolved_carryforward_ratio"])
     else:
-        cycle_df = cycle_df.copy()
-        cycle_df["avg_churn_score"] = cycle_df.get("cycle_item_survival_rate", 0.0).apply(lambda value: round(1.0 - float(value), 3))
         summary_df = (
             cycle_df.groupby("template_name", dropna=False)
             .agg(
                 num_cycles_used=("cycle_id", "count"),
                 avg_unresolved_carryforward=("unresolved_carryforward_ratio", "mean"),
-                avg_churn_score=("avg_churn_score", "mean"),
+                avg_churn_score=("cycle_status_churn_score", "mean"),
                 avg_open_questions_resolved=("open_question_resolution_ratio", "mean"),
                 avg_next_action_closure_rate=("next_action_completion_ratio", "mean"),
             )

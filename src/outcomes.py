@@ -60,6 +60,10 @@ def summarize_outcomes(workspace: WorkspaceConfig | str | Path) -> dict[str, Pat
     rationale_outputs = build_rationale_tracking(config)
     lineage_df = safe_read_csv(decision_outputs["decision_lineage.csv"])
     rationale_df = safe_read_csv(rationale_outputs["rationale_lineage.csv"])
+    if lineage_df.empty:
+        lineage_df = pd.DataFrame(columns=["entity_type", "entity_id", "current_status"])
+    if rationale_df.empty:
+        rationale_df = pd.DataFrame(columns=["entity_type", "entity_id", "rationale_category"])
 
     # Normalize entity types for merging: 'variant' in outcomes maps to 'shortlist_item' in decisions
     outcomes_for_merge = outcomes_df.copy()

@@ -986,7 +986,6 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if args.command == "conversion-packet" and args.conversion_packet_command == "create":
-        from .workspace import load_workspace_config
         ws_config = load_workspace_config(args.workspace)
         from .package_schema import ConversionArtifact
         artifact = ConversionArtifact(
@@ -1003,7 +1002,6 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "adoption-readiness" and args.adoption_readiness_command == "summarize":
-        from .workspace import load_workspace_config
         ws_config = load_workspace_config(args.workspace)
         path = ws_config.output_dir / "adoption_readiness.csv"
         if not path.exists():

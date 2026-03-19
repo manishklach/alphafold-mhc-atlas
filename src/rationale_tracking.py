@@ -19,9 +19,9 @@ def build_rationale_tracking(workspace: WorkspaceConfig | str | Path) -> dict[st
     for project in config.projects:
         if not project.path.exists():
             continue
-        prior_cycle_id = ""
         prior_status_by_entity: dict[str, str] = {}
         prior_rationale_by_entity: dict[str, str] = {}
+        prior_cycle_by_entity: dict[str, str] = {}
         for cycle_id, shortlist_df in _iter_shortlist_cycles(project.path):
             for record in shortlist_df.to_dict(orient="records"):
                 entity_id = str(record.get("entity_id") or record.get("variant_id") or "").strip()
@@ -38,7 +38,7 @@ def build_rationale_tracking(workspace: WorkspaceConfig | str | Path) -> dict[st
                         "project_id": project.project_id,
                         "workspace_id": config.workspace_id,
                         "cycle_id": cycle_id,
-                        "prior_cycle_id": prior_cycle_id if entity_id in prior_rationale_by_entity else "",
+                        "prior_cycle_id": prior_cycle_by_entity.get(entity_id, ""),
                         "decision_status": decision_status,
                         "rationale_text": rationale_text,
                         "rationale_category": _categorize_rationale(rationale_text, categories),
@@ -60,7 +60,7 @@ def build_rationale_tracking(workspace: WorkspaceConfig | str | Path) -> dict[st
                 )
                 prior_status_by_entity[entity_id] = decision_status
                 prior_rationale_by_entity[entity_id] = rationale_text
-            prior_cycle_id = cycle_id
+                prior_cycle_by_entity[entity_id] = cycle_id
 
     lineage_df = pd.DataFrame(rows)
     if lineage_df.empty:
