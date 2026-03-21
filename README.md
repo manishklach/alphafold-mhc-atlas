@@ -7,6 +7,10 @@ A structure-guided decision system for prioritizing peptide mutations using Alph
 
 MHC Atlas OS is designed for interpretable review workflows. It parses structure files, compares WT and mutant states, ranks candidates with explicit rules, applies policy checks, and generates readable decision outputs through both an API and a lightweight UI.
 
+This system does not attempt to predict binding affinity or biological outcomes directly.
+
+Instead, it provides structured, explainable prioritization signals to guide experimental validation.
+
 ## Features
 - Structure parsing (PDB/mmCIF)
 - WT vs mutant comparison
@@ -41,6 +45,17 @@ Runtime-agnostic architecture enabling deterministic, governed, and multi-agent 
 - runtime abstraction
 
 The core system remains runtime-agnostic and portable across different execution frameworks while preserving deterministic domain logic.
+
+## Scoring Model
+
+The system uses a structured, multi-factor scoring model that integrates:
+
+- Structural deviation metrics (geometric changes)
+- Biochemical mutation severity (residue class transitions)
+- Confidence signals (model reliability)
+- Consistency signals across multiple indicators
+
+This approach provides interpretable prioritization without relying on black-box machine learning models.
 
 ```text
 User Input

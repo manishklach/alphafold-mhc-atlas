@@ -161,14 +161,25 @@ def test_rank_candidates_scores_comparison_results_transparently() -> None:
         "candidate_mid",
         "candidate_low",
     ]
-    assert ranked[0]["priority_score"] == 7.0
-    assert ranked[0]["priority_label"] == "HIGH"
-    assert ranked[1]["priority_score"] == 3.0
+    assert ranked[0]["priority_label"] == "MEDIUM"
     assert ranked[1]["priority_label"] == "LOW"
-    assert ranked[2]["priority_score"] == 0.0
     assert ranked[2]["priority_label"] == "LOW"
-    assert "Significant structural change observed" in ranked[0]["explanation"]
-    assert "Confidence decreased, indicating potential instability." in ranked[0]["explanation"]
+    assert ranked[0]["priority_score"] > ranked[1]["priority_score"] > ranked[2]["priority_score"]
+    assert ranked[0]["score_breakdown"] == {
+        "structural": 5.0,
+        "confidence": -0.5,
+        "mutation": 0.0,
+        "consistency": 1.0,
+    }
+    assert set(ranked[1]["score_breakdown"]) == {
+        "structural",
+        "confidence",
+        "mutation",
+        "consistency",
+    }
+    assert "Significant structural deviation observed" in ranked[0]["explanation"]
+    assert "Confidence decreased moderately, indicating some uncertainty in the structural interpretation." in ranked[0]["explanation"]
+    assert "Overall, this mutation is prioritized as a plausible follow-up" in ranked[0]["explanation"]
 
 
 def test_rank_candidates_softens_confidence_penalty_when_shift_is_low() -> None:
@@ -189,6 +200,7 @@ def test_rank_candidates_softens_confidence_penalty_when_shift_is_low() -> None:
 
     assert ranked[0]["priority_score"] == 0.0
     assert ranked[0]["priority_label"] == "LOW"
+    assert ranked[0]["score_breakdown"]["confidence"] == -0.75
 
 
 def test_rank_candidates_uses_more_specific_moderate_language() -> None:
@@ -208,5 +220,34 @@ def test_rank_candidates_uses_more_specific_moderate_language() -> None:
     )
 
     explanation = ranked[0]["explanation"]
-    assert "localized conformational perturbation" in explanation
+    assert "Moderate structural deviation observed" in explanation
+    assert "Overall, the combined signals suggest limited evidence for a high-priority structural effect." in explanation
     assert "appears moderate" not in explanation
+
+
+def test_rank_candidates_describes_biochemical_transition() -> None:
+    ranked = rank_candidates(
+        [
+            {
+                "candidate_id": "candidate_biochemical_shift",
+                "comparison": {
+                    "avg_shift": 2.2,
+                    "max_shift": 2.8,
+                    "large_shift_count": 2,
+                    "confidence_delta": -3.0,
+                    "flags": ["high_structural_change"],
+                    "residue_changes": [
+                        {
+                            "change_type": "mutated",
+                            "wt_residue_name": "LEU",
+                            "mutant_residue_name": "LYS",
+                        }
+                    ],
+                },
+            }
+        ]
+    )
+
+    explanation = ranked[0]["explanation"]
+    assert "from hydrophobic to charged residue" in explanation
+    assert "potential disruption of local interactions" in explanation
