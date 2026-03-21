@@ -1,43 +1,68 @@
 # MHC Atlas OS
 
-MHC Atlas OS – structure-guided decision system.
+## Overview
+A structure-guided decision system for prioritizing peptide mutations using AlphaFold-derived structures.
 
-This repository provides a clean Python monorepo for parsing structures, comparing WT and mutant states, ranking candidates with transparent rules, and exposing the workflow through a small API and UI.
+MHC Atlas OS is designed for interpretable review workflows. It parses structure files, compares WT and mutant states, ranks candidates with explicit rules, applies policy checks, and generates readable decision outputs through both an API and a lightweight UI.
 
-## Setup
+## Features
+- Structure parsing (PDB/mmCIF)
+- WT vs mutant comparison
+- Interpretable prioritization engine
+- Policy-based decision rules
+- API + UI interface
+- Decision reports
+- Memory tracking
+
+## Architecture
+- Biology layer: parsing and structural comparison
+- Core layer: scoring, policies, and reporting
+- Agent layer: thin wrappers around reusable workflow steps
+- API layer: FastAPI endpoints for parse, compare, rank, and pipeline
+- UI layer: Streamlit interface for interactive review
+
+## Quickstart
+1. `pip install -r requirements.txt`
+2. `uvicorn apps.api.main:app --reload`
+3. `streamlit run apps/ui/app.py`
+
+Open:
+- `http://127.0.0.1:8000/docs`
+- `http://127.0.0.1:8501`
+
+## Example
+Run the full pipeline with the demo structures:
 
 ```bash
-pip install -r requirements.txt
-uvicorn apps.api.main:app --reload
+curl -X POST "http://127.0.0.1:8000/pipeline" ^
+  -H "Content-Type: application/json" ^
+  -d "{\"wt_file\":\"data/demo_structures/wt_example.pdb\",\"mutant_file\":\"data/demo_structures/mutant_example_a.pdb\",\"candidate_id\":\"demo\"}"
 ```
 
-The API will be available at:
+Or use the same payload in the FastAPI docs page at `http://127.0.0.1:8000/docs`.
 
-- `http://127.0.0.1:8000/health`
-- `http://127.0.0.1:8000/docs`
+The `/pipeline` endpoint:
+- parses the WT structure
+- parses the mutant structure
+- compares both structures
+- ranks the candidate
+- applies policy checks
+- saves a decision record
+- writes a markdown decision report under `reports/`
 
-## Folder Structure
+## Demo Workflow
+1. Input WT and mutant structures
+2. Run analysis
+3. System outputs:
+   - structural comparison
+   - prioritization score
+   - explanation
+   - flags
+4. Generate decision report
 
-```text
-alphafold-mhc-atlas/
-  apps/
-    api/
-    ui/
-  agents/
-  biology/
-  core/
-  data/
-  scripts/
-  storage/
-  tests/
-```
+## UI Preview
 
-- `apps/api` contains the FastAPI backend.
-- `apps/ui` contains the Streamlit frontend.
-- `agents` contains lightweight wrappers around core workflow steps.
-- `biology` contains structure parsing and comparison logic.
-- `core` contains shared configuration, scoring, and reporting.
-- `data` contains small demo assets and supporting files.
-- `storage` contains the SQLite and SQLAlchemy layer.
-- `scripts` contains developer and demo entry points.
-- `tests` contains unit tests.
+![UI](./docs/ui.png)
+
+## Why This Project
+MHC Atlas OS focuses on explainability and decision-making, not black-box prediction. The goal is to make structural evidence easier to inspect, compare, and communicate so prioritization decisions remain transparent and reviewable.
