@@ -1,5 +1,7 @@
 # MHC Atlas OS
 
+A runtime-agnostic, policy-governed agent system for structure-guided experimental prioritization using AlphaFold-derived data.
+
 ## Overview
 A structure-guided decision system for prioritizing peptide mutations using AlphaFold-derived structures.
 
@@ -14,32 +16,31 @@ MHC Atlas OS is designed for interpretable review workflows. It parses structure
 - Decision reports
 - Memory tracking
 
-## Architecture
-- Biology layer: parsing and structural comparison
-- Core layer: scoring, policies, and reporting
-- Agent layer: thin wrappers around reusable workflow steps
-- API layer: FastAPI endpoints for parse, compare, rank, and pipeline
-- UI layer: Streamlit interface for interactive review
+## System Architecture
+
+![Architecture](./docs/architecture.svg)
+
+Runtime-agnostic architecture enabling deterministic, governed, and multi-agent execution modes.
+
+## Runtime Modes
+
+- Local Runtime:
+  deterministic pipeline execution
+
+- Nemo Runtime:
+  governed execution with policy enforcement and execution context
+
+- AutoGen Runtime:
+  multi-agent collaborative execution
 
 ## Design Philosophy
 
-This system separates:
+- no black-box ML
+- explainable scoring
+- policy-driven decisions
+- runtime abstraction
 
-1. Domain Logic
-   - Structure parsing
-   - Comparison
-   - Scoring
-
-2. Orchestration
-   - Agent runner
-   - Pipeline execution
-
-3. Runtime (Pluggable)
-   - Custom runner (default)
-   - NemoClaw (planned)
-   - LangGraph (optional)
-
-This allows the system to remain runtime-agnostic and portable across different agent execution frameworks.
+The core system remains runtime-agnostic and portable across different execution frameworks while preserving deterministic domain logic.
 
 ```text
 User Input
@@ -55,21 +56,31 @@ Policy Engine
 Decision Output + Report + Memory
 ```
 
+## Folder Structure
+
+```text
+core/
+  runtime/
+    base_runtime.py
+    local_runtime.py
+    nemo_runtime.py
+    autogen_runtime.py
+  orchestration/
+  policies/
+
+agents/
+biology/
+apps/
+```
+
 ## Governed Runtime Mode
 
-This project supports two execution modes:
+This project supports two primary governed execution patterns:
 
-- Local Runtime:
-  direct orchestration for fast development and testing
+- Local Runtime for direct deterministic execution during development and testing
+- Nemo Runtime for execution context, policy gating, logging, warnings, and traceability
 
-- Nemo Runtime:
-  governed execution mode with:
-  - execution context
-  - runtime policy gate
-  - stage logging
-  - warnings and traceability
-
-This is a Nemo-style governed runtime architecture that prepares the system for future integration with NVIDIA NemoClaw / OpenShell style execution environments.
+This is a Nemo-style governed runtime architecture that prepares MHC Atlas OS for future integration with NVIDIA NemoClaw / OpenShell style execution environments.
 
 ## Quickstart
 1. `pip install -r requirements.txt`

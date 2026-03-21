@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from agents import comparison_agent, prioritization_agent, structure_agent
 from core.config import get_settings
+from core.runtime.autogen_runtime import AutoGenRuntime
 from core.runtime.local_runtime import LocalRuntime
 from core.runtime.nemo_runtime import NemoRuntime
 from storage.db import get_decisions, init_db, save_decision
@@ -94,6 +95,7 @@ class PipelineResponse(BaseModel):
     warnings: list[str] | None = None
     logs: list[dict[str, Any]] | None = None
     task_id: str | None = None
+    agent_trace: list[str] | None = None
 
 
 class BatchPipelineResultResponse(BaseModel):
@@ -106,6 +108,7 @@ class BatchPipelineResultResponse(BaseModel):
     warnings: list[str] | None = None
     log_summary: list[str] | None = None
     task_id: str | None = None
+    agent_trace: list[str] | None = None
 
 
 class BatchPipelineResponse(BaseModel):
@@ -257,6 +260,8 @@ def batch_pipeline_endpoint(payload: BatchPipelineRequest) -> dict[str, Any]:
                 row["warnings"] = extras["warnings"]
             if extras.get("task_id"):
                 row["task_id"] = extras["task_id"]
+            if extras.get("agent_trace"):
+                row["agent_trace"] = extras["agent_trace"]
             if extras.get("logs"):
                 row["log_summary"] = [
                     f"{entry.get('stage', 'unknown')}:{entry.get('status', 'unknown')}"
@@ -319,8 +324,11 @@ def _parse_file(file_path: str) -> dict[str, Any]:
 
 
 def _get_runtime(runtime_name: str):
-    if str(runtime_name).lower() == "nemo":
+    normalized = str(runtime_name).lower()
+    if normalized == "nemo":
         return NemoRuntime()
+    if normalized == "autogen":
+        return AutoGenRuntime()
     return LocalRuntime()
 
 
@@ -344,6 +352,7 @@ def _normalize_runtime_result(runtime_result: dict[str, Any]) -> tuple[dict[str,
             "warnings": runtime_result.get("warnings"),
             "logs": runtime_result.get("logs"),
             "task_id": runtime_result.get("task_id"),
+            "agent_trace": runtime_result.get("agent_trace"),
         }
 
     return runtime_result, {}

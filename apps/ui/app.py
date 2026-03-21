@@ -155,7 +155,7 @@ def render_rankings_page() -> None:
     candidate_id = st.text_input("Candidate ID", value="demo")
     runtime_mode = st.selectbox(
         "Execution Mode",
-        ["Local", "Nemo (Governed)"],
+        ["Local", "Nemo (Governed)", "AutoGen (Multi-Agent)"],
         key="ranking_runtime_mode",
     )
 
@@ -205,7 +205,7 @@ def render_rankings_page() -> None:
         st.write(f"WT Confidence: {_format_confidence(wt_confidence)}")
         st.write(f"Mutant Confidence: {_format_confidence(mutant_confidence)}")
         st.write(f"Δ Confidence: {confidence_delta:.1f}")
-        if _runtime_value(runtime_mode) == "nemo":
+        if _runtime_value(runtime_mode) in {"nemo", "autogen"}:
             _render_runtime_details(pipeline_result)
         if st.button("Download Report"):
             try:
@@ -234,7 +234,7 @@ def render_batch_page() -> None:
     )
     runtime_mode = st.selectbox(
         "Execution Mode",
-        ["Local", "Nemo (Governed)"],
+        ["Local", "Nemo (Governed)", "AutoGen (Multi-Agent)"],
         key="batch_runtime_mode",
     )
     upload = st.file_uploader("Upload candidate CSV", type=["csv"], key="batch_csv_upload")
@@ -332,13 +332,15 @@ def render_batch_page() -> None:
         st.markdown("### Candidate Errors")
         st.dataframe(error_rows, use_container_width=True, hide_index=True)
 
-    if _runtime_value(runtime_mode) == "nemo":
+    if _runtime_value(runtime_mode) in {"nemo", "autogen"}:
         successful_rows = [row for row in batch_result.get("results", []) if not row.get("error")]
         for row in successful_rows:
             if row.get("warnings"):
                 st.warning(f"{row['candidate_id']}: " + " | ".join(row["warnings"]))
             if row.get("task_id"):
                 st.caption(f"{row['candidate_id']} task_id: {row['task_id']}")
+            if row.get("agent_trace"):
+                st.caption(f"{row['candidate_id']} trace: {' → '.join(row['agent_trace'])}")
             if row.get("log_summary"):
                 with st.expander(f"Execution Logs: {row['candidate_id']}"):
                     for entry in row["log_summary"]:
@@ -444,7 +446,11 @@ def _priority_label_style(value: Any) -> str:
 
 
 def _runtime_value(label: str) -> str:
-    return "nemo" if label == "Nemo (Governed)" else "local"
+    if label == "Nemo (Governed)":
+        return "nemo"
+    if label == "AutoGen (Multi-Agent)":
+        return "autogen"
+    return "local"
 
 
 def _render_runtime_details(pipeline_result: dict[str, Any]) -> None:
@@ -455,6 +461,9 @@ def _render_runtime_details(pipeline_result: dict[str, Any]) -> None:
     task_id = pipeline_result.get("task_id")
     if task_id:
         st.caption(f"Task ID: {task_id}")
+    agent_trace = pipeline_result.get("agent_trace") or []
+    if agent_trace:
+        st.caption("Agent Trace: " + " → ".join(agent_trace))
     logs = pipeline_result.get("logs") or []
     if logs:
         with st.expander("Execution Logs"):

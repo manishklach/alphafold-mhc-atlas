@@ -8,6 +8,10 @@ from core.policies.policy_engine import apply_policies
 
 
 def run_agent_pipeline(candidate_id: str, wt_file: str, mutant_file: str) -> dict[str, Any]:
+    # The orchestration layer is responsible for sequencing reusable domain agents.
+    # It does not decide which runtime is active; runtimes call into this function.
+    # Keeping orchestration separate from runtime selection makes execution
+    # pluggable across local, governed, and multi-agent modes.
     logs: list[dict[str, Any]] = []
     stages: dict[str, Any] = {}
     overall_start = _utcnow()

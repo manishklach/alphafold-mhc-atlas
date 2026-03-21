@@ -48,6 +48,7 @@ def test_build_batch_display_rows_sorts_and_marks_top_candidates() -> None:
 def test_runtime_value_maps_governed_mode_to_nemo() -> None:
     assert _runtime_value("Local") == "local"
     assert _runtime_value("Nemo (Governed)") == "nemo"
+    assert _runtime_value("AutoGen (Multi-Agent)") == "autogen"
 
 
 def test_parse_batch_csv_returns_candidate_rows() -> None:

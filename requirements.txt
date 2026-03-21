@@ -5,3 +5,4 @@ sqlalchemy>=2.0
 biopython>=1.84
 pandas>=2.2
 streamlit>=1.44
+pyautogen

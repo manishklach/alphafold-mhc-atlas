@@ -1,13 +1,20 @@
 from __future__ import annotations
 
-from .base_runtime import BaseRuntime
-from .execution_context import ExecutionContext
 from core.orchestration.agent_runner import run_agent_pipeline
 from core.policies.policy_gate import post_execution_policy, pre_execution_policy
 
+from .base_runtime import BaseRuntime
+from .execution_context import ExecutionContext
+
 
 class NemoRuntime(BaseRuntime):
-    """This runtime will integrate with NVIDIA NemoClaw/OpenShell for agent execution, policy enforcement, and sandboxing."""
+    """Governed runtime for MHC Atlas OS.
+
+    NemoRuntime wraps the shared orchestration layer with execution context,
+    policy gates, warnings, and traceability. It is the governed counterpart to
+    LocalRuntime and is designed to align with future NVIDIA NemoClaw /
+    OpenShell-style execution environments.
+    """
 
     def run(self, task_input: dict) -> dict:
         context = ExecutionContext(task_input)

@@ -134,3 +134,60 @@ def test_report_endpoint_returns_markdown_report_content() -> None:
     payload = report_response.json()
     assert payload["file_name"] == "report_demo.md"
     assert "# MHC Atlas Decision Report" in payload["content"]
+
+
+def test_pipeline_autogen_runtime_includes_agent_trace() -> None:
+    client = TestClient(app)
+
+    response = client.post(
+        "/pipeline",
+        json={
+            "wt_file": "data/wt.pdb",
+            "mutant_file": "data/mut2.pdb",
+            "candidate_id": "demo_autogen",
+            "runtime": "autogen",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["candidate_id"] == "demo_autogen"
+    assert payload["agent_trace"] == [
+        "StructureAgent",
+        "ComparisonAgent",
+        "PrioritizationAgent",
+        "ReviewAgent",
+    ]
+
+
+def test_batch_pipeline_autogen_runtime_includes_agent_trace() -> None:
+    client = TestClient(app)
+
+    response = client.post(
+        "/batch_pipeline",
+        json={
+            "runtime": "autogen",
+            "candidates": [
+                {
+                    "candidate_id": "mut1",
+                    "wt_file": "data/wt.pdb",
+                    "mutant_file": "data/mut1.pdb",
+                },
+                {
+                    "candidate_id": "mut2",
+                    "wt_file": "data/wt.pdb",
+                    "mutant_file": "data/mut2.pdb",
+                },
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["results"][0]["candidate_id"] == "mut2"
+    assert payload["results"][0]["agent_trace"] == [
+        "StructureAgent",
+        "ComparisonAgent",
+        "PrioritizationAgent",
+        "ReviewAgent",
+    ]
