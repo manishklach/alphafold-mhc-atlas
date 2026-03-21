@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.12.0
+
+- Added the `MHC Atlas OS` monorepo scaffold with dedicated `apps`, `agents`, `biology`, `core`, `storage`, and `tests` layers
+- Added Biopython-based structure parsing for PDB and mmCIF files with residue, chain, coordinate, and confidence summaries
+- Added WT-vs-mutant structural comparison with residue changes, CA shift metrics, and confidence delta tracking
+- Added an interpretable prioritization engine with policy-based post-processing and human-readable explanations
+- Added a FastAPI backend with `/parse`, `/compare`, `/rank`, and `/pipeline` endpoints
+- Added a Streamlit UI for parsing, comparison, ranking, interpretation, confidence review, and impact summaries
+- Added decision report generation and SQLite-backed decision history persistence
+- Added thin workflow agents, demo structures, seed scripts, and deterministic golden-path tests
+
 ## v0.10.5
 
 - Added a canonical `golden_weekly_review_demo` as the primary evaluator workflow
@@ -39,11 +50,3 @@
 - Added interactive local app
 - Added scenario analysis and comparison
 - Added evidence drilldown and demo projects
-# Changelog
-
-## v0.10.2
-
-- added a researcher-first onboarding path with [MY_FIRST_PROJECT.md](MY_FIRST_PROJECT.md)
-- added [examples/researcher_project_template.yaml](examples/researcher_project_template.yaml)
-- added a `Start Your Own Project` panel to the local HTML dashboard
-- updated README, quickstart, and examples docs to support real-project setup
