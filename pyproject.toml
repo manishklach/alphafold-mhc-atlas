@@ -3,60 +3,24 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mhc-atlas"
-version = "0.10.0"
-description = "Peptide-MHC comparative structural analysis and decision-support framework."
+name = "mhc-atlas-os"
+version = "0.1.0"
+description = "MHC Atlas OS monorepo scaffold."
 readme = "README.md"
-requires-python = ">=3.10"
-license = "MIT"
-authors = [
-  {name = "Manish Klach"}
-]
+requires-python = ">=3.11"
+authors = [{ name = "Manish Klach" }]
 dependencies = [
-  "PyYAML>=6.0",
-  "numpy>=1.24",
-  "pandas>=2.0",
-  "matplotlib>=3.7",
+  "fastapi>=0.115",
+  "uvicorn>=0.30",
+  "pydantic>=2.8",
+  "sqlalchemy>=2.0",
   "biopython>=1.84",
-  "Flask>=3.0",
-]
-
-[project.optional-dependencies]
-app = [
-  "streamlit>=1.34",
-]
-test = [
-  "pytest>=7.0",
-]
-dev = [
-  "streamlit>=1.34",
-  "pytest>=7.0",
-  "build>=1.2",
-]
-all = [
-  "streamlit>=1.34",
-  "pytest>=7.0",
-  "build>=1.2",
+  "pandas>=2.2",
+  "streamlit>=1.44",
 ]
 
 [project.scripts]
-mhc-atlas = "src.cli:main"
-
-[tool.setuptools]
-include-package-data = true
+mhc-atlas-os-api = "apps.api.main:run"
 
 [tool.setuptools.packages.find]
-include = ["src*"]
-
-[tool.setuptools.package-data]
-src = [
-  "templates/*.html",
-  "static/*",
-  "resources/data/*.yaml",
-  "resources/workspaces/*.yaml",
-  "resources/demo/**/*.md",
-  "resources/demo/**/*.yaml",
-  "resources/demo/**/*.csv",
-  "resources/demo/**/*.json",
-  "resources/demo/**/*.jsonl",
-]
+include = ["apps*", "agents*", "core*", "biology*", "storage*"]

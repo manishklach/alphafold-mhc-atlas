@@ -1,5 +1,6 @@
 import pandas as pd
 
+from core.scoring.prioritization import rank_candidates
 from src.config import PrioritizationConfig, RankingFeatureConfig, RankingModeConfig
 from src.prioritization import run_prioritization
 
@@ -117,3 +118,74 @@ def test_run_prioritization_handles_missing_features_gracefully() -> None:
 
     assert result.variant_priority_df.iloc[0]["priority_score"] == 0.0
     assert result.evidence_df.iloc[0]["evidence_status"] == "missing"
+
+
+def test_rank_candidates_scores_comparison_results_transparently() -> None:
+    comparison_results_list = [
+        {
+            "candidate_id": "candidate_high",
+            "comparison": {
+                "avg_shift": 2.6,
+                "max_shift": 3.1,
+                "large_shift_count": 4,
+                "confidence_delta": -7.0,
+                "flags": ["high_structural_change", "confidence_drop"],
+            },
+        },
+        {
+            "candidate_id": "candidate_mid",
+            "comparison": {
+                "avg_shift": 1.4,
+                "max_shift": 1.6,
+                "large_shift_count": 1,
+                "confidence_delta": -2.0,
+                "flags": [],
+            },
+        },
+        {
+            "candidate_id": "candidate_low",
+            "comparison": {
+                "avg_shift": 0.2,
+                "max_shift": 0.5,
+                "large_shift_count": 0,
+                "confidence_delta": 0.0,
+                "flags": [],
+            },
+        },
+    ]
+
+    ranked = rank_candidates(comparison_results_list)
+
+    assert [item["candidate_id"] for item in ranked] == [
+        "candidate_high",
+        "candidate_mid",
+        "candidate_low",
+    ]
+    assert ranked[0]["priority_score"] == 7.0
+    assert ranked[0]["priority_label"] == "HIGH"
+    assert ranked[1]["priority_score"] == 3.0
+    assert ranked[1]["priority_label"] == "LOW"
+    assert ranked[2]["priority_score"] == 0.0
+    assert ranked[2]["priority_label"] == "LOW"
+    assert "Significant structural change observed" in ranked[0]["explanation"]
+    assert "Confidence decreased, indicating potential instability." in ranked[0]["explanation"]
+
+
+def test_rank_candidates_softens_confidence_penalty_when_shift_is_low() -> None:
+    ranked = rank_candidates(
+        [
+            {
+                "candidate_id": "candidate_uncertain_low_shift",
+                "comparison": {
+                    "avg_shift": 0.8,
+                    "max_shift": 0.9,
+                    "large_shift_count": 0,
+                    "confidence_delta": -8.0,
+                    "flags": ["confidence_drop"],
+                },
+            }
+        ]
+    )
+
+    assert ranked[0]["priority_score"] == 0.0
+    assert ranked[0]["priority_label"] == "LOW"
