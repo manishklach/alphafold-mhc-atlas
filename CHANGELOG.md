@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.12.1
+
+- Added a follow-up patch release on top of `v0.12.0` with more detailed release documentation for the new `MHC Atlas OS` monorepo flow
+- Refreshed committed demo history snapshots under the bundled demo projects so shipped examples reflect the latest pipeline runs
+- Kept the current modular API, UI, parsing, comparison, prioritization, policy, reporting, and decision-persistence stack unchanged from `v0.12.0`
+- Preserved the current conservative framing: interpretable structure-guided decision support, not affinity prediction, immunogenicity prediction, or proof of mechanism
+
 ## v0.12.0
 
 - Added the `MHC Atlas OS` monorepo scaffold with dedicated `apps`, `agents`, `biology`, `core`, `storage`, and `tests` layers
