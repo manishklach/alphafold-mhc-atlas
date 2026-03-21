@@ -1,7 +1,9 @@
 import json
 from unittest.mock import patch
 
-from apps.ui.app import _api_request, _build_batch_display_rows
+import pytest
+
+from apps.ui.app import _api_request, _build_batch_display_rows, _parse_batch_csv, _runtime_value
 
 
 class _FakeResponse:
@@ -35,7 +37,30 @@ def test_build_batch_display_rows_sorts_and_marks_top_candidates() -> None:
     )
 
     assert [row["candidate_id"] for row in rows] == ["a", "c", "b"]
+    assert [row["rank"] for row in rows] == [1, 2, 3]
     assert rows[0]["_is_top_candidate"] is True
     assert rows[1]["_is_top_candidate"] is True
     assert rows[2]["_is_top_candidate"] is True
+    assert rows[0]["_is_top_one"] is True
     assert rows[0]["flags"] == "x"
+
+
+def test_runtime_value_maps_governed_mode_to_nemo() -> None:
+    assert _runtime_value("Local") == "local"
+    assert _runtime_value("Nemo (Governed)") == "nemo"
+
+
+def test_parse_batch_csv_returns_candidate_rows() -> None:
+    rows = _parse_batch_csv("candidate_id,wt_file,mutant_file\nmut1,data/wt.pdb,data/mut1.pdb\n")
+    assert rows == [
+        {
+            "candidate_id": "mut1",
+            "wt_file": "data/wt.pdb",
+            "mutant_file": "data/mut1.pdb",
+        }
+    ]
+
+
+def test_parse_batch_csv_validates_required_columns() -> None:
+    with pytest.raises(ValueError, match="CSV must contain"):
+        _parse_batch_csv("candidate_id,wt_file\nmut1,data/wt.pdb\n")

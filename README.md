@@ -55,6 +55,22 @@ Policy Engine
 Decision Output + Report + Memory
 ```
 
+## Governed Runtime Mode
+
+This project supports two execution modes:
+
+- Local Runtime:
+  direct orchestration for fast development and testing
+
+- Nemo Runtime:
+  governed execution mode with:
+  - execution context
+  - runtime policy gate
+  - stage logging
+  - warnings and traceability
+
+This is a Nemo-style governed runtime architecture that prepares the system for future integration with NVIDIA NemoClaw / OpenShell style execution environments.
+
 ## Quickstart
 1. `pip install -r requirements.txt`
 2. `uvicorn apps.api.main:app --reload`
@@ -93,6 +109,29 @@ The `/pipeline` endpoint:
    - explanation
    - flags
 4. Generate decision report
+
+### End-to-End Demo Script
+
+Run the scripted showcase:
+
+```bash
+python scripts/demo_showcase.py
+```
+
+What it demonstrates:
+- single mutation analysis
+- batch ranking shortlist
+- decision history review
+- governed runtime example
+
+Demo talk track:
+
+- “Here’s a wild-type and mutant structure”
+- “This system explains why a mutation matters, not just scoring it”
+- “Now instead of one mutation, I can evaluate 20 at once”
+- “This gives me a shortlist of candidates to test experimentally”
+- “And the system tracks past decisions, so we can compare over time”
+- “The system is runtime-agnostic — I can run it locally or in a governed execution environment like Nemo-style systems with policy enforcement.”
 
 ## UI Preview
 

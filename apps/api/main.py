@@ -7,10 +7,10 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from agents import comparison_agent, prioritization_agent, review_agent, structure_agent
+from agents import comparison_agent, prioritization_agent, structure_agent
 from core.config import get_settings
 from core.runtime.local_runtime import LocalRuntime
-from core.policies.policy_engine import apply_policies
+from core.runtime.nemo_runtime import NemoRuntime
 from storage.db import get_decisions, init_db, save_decision
 
 settings = get_settings()
@@ -40,6 +40,7 @@ class PipelineRequest(BaseModel):
     wt_file: str = Field(..., min_length=1)
     mutant_file: str = Field(..., min_length=1)
     candidate_id: str = Field(..., min_length=1)
+    runtime: str = "local"
 
 
 class BatchPipelineItem(BaseModel):
@@ -49,6 +50,7 @@ class BatchPipelineItem(BaseModel):
 
 
 class BatchPipelineRequest(BaseModel):
+    runtime: str = "local"
     candidates: list[BatchPipelineItem] = Field(default_factory=list)
 
 
@@ -89,6 +91,9 @@ class PipelineResponse(BaseModel):
     ranking: RankedCandidateResponse
     report_path: str
     decision: dict[str, Any]
+    warnings: list[str] | None = None
+    logs: list[dict[str, Any]] | None = None
+    task_id: str | None = None
 
 
 class BatchPipelineResultResponse(BaseModel):
@@ -98,6 +103,9 @@ class BatchPipelineResultResponse(BaseModel):
     explanation: str | None = None
     flags: list[str] = Field(default_factory=list)
     error: str | None = None
+    warnings: list[str] | None = None
+    log_summary: list[str] | None = None
+    task_id: str | None = None
 
 
 class BatchPipelineResponse(BaseModel):
@@ -110,10 +118,18 @@ class DecisionHistoryItemResponse(BaseModel):
     priority_score: float
     priority_label: str
     timestamp: str | None = None
+    explanation: str | None = None
+    flags: list[str] | None = None
 
 
 class DecisionHistoryResponse(BaseModel):
     decisions: list[DecisionHistoryItemResponse]
+
+
+class ReportResponse(BaseModel):
+    candidate_id: str
+    file_name: str
+    content: str
 
 
 @app.on_event("startup")
@@ -136,9 +152,23 @@ def decisions_endpoint(candidate_id: str | None = Query(default=None)) -> dict[s
                 "priority_score": item["priority_score"],
                 "priority_label": item["priority_label"],
                 "timestamp": item["timestamp"],
+                "explanation": item["explanation"],
+                "flags": item["flags"],
             }
             for item in decisions
         ]
+    }
+
+
+@app.get("/report", response_model=ReportResponse)
+def report_endpoint(candidate_id: str = Query(..., min_length=1)) -> dict[str, Any]:
+    report_path = Path("reports") / f"{candidate_id}.md"
+    if not report_path.exists():
+        raise HTTPException(status_code=404, detail=f"Report not found for candidate: {candidate_id}")
+    return {
+        "candidate_id": candidate_id,
+        "file_name": report_path.name,
+        "content": report_path.read_text(encoding="utf-8"),
     }
 
 
@@ -164,25 +194,17 @@ def rank_endpoint(payload: RankRequest) -> dict[str, Any]:
     return {"ranked_candidates": ranked}
 
 
-@app.post("/pipeline", response_model=PipelineResponse)
+@app.post("/pipeline", response_model=PipelineResponse, response_model_exclude_none=True)
 def pipeline_endpoint(payload: PipelineRequest) -> dict[str, Any]:
-    runtime = LocalRuntime()
-    orchestrated = runtime.run(
+    runtime = _get_runtime(payload.runtime)
+    runtime_result = runtime.run(
         {
             "candidate_id": payload.candidate_id,
             "wt_file": payload.wt_file,
             "mutant_file": payload.mutant_file,
         }
     )
-    if orchestrated["status"] == "error":
-        failed_log = next(
-            (entry for entry in reversed(orchestrated["logs"]) if entry["status"] == "failure"),
-            None,
-        )
-        detail = failed_log["message"] if failed_log else "Pipeline execution failed."
-        if "not found" in detail.lower():
-            raise HTTPException(status_code=404, detail=detail)
-        raise HTTPException(status_code=400, detail=detail)
+    orchestrated, extras = _normalize_runtime_result(runtime_result)
 
     structure_stage = orchestrated["stages"]["structure"]["output"]
     comparison = orchestrated["stages"]["comparison"]["output"]
@@ -204,30 +226,43 @@ def pipeline_endpoint(payload: PipelineRequest) -> dict[str, Any]:
         "ranking": ranking,
         "report_path": report_path,
         "decision": decision,
+        **extras,
     }
 
 
 @app.post("/batch_pipeline", response_model=BatchPipelineResponse, response_model_exclude_none=True)
 def batch_pipeline_endpoint(payload: BatchPipelineRequest) -> dict[str, Any]:
+    runtime = _get_runtime(payload.runtime)
     results: list[dict[str, Any]] = []
 
     for candidate in payload.candidates:
         try:
-            pipeline_result = _run_pipeline(
-                candidate.candidate_id,
-                candidate.wt_file,
-                candidate.mutant_file,
-            )
-            ranking = pipeline_result["ranking"]
-            results.append(
+            runtime_result = runtime.run(
                 {
-                    "candidate_id": ranking["candidate_id"],
-                    "priority_score": ranking["priority_score"],
-                    "priority_label": ranking["priority_label"],
-                    "explanation": ranking["explanation"],
-                    "flags": ranking["flags"],
+                    "candidate_id": candidate.candidate_id,
+                    "wt_file": candidate.wt_file,
+                    "mutant_file": candidate.mutant_file,
                 }
             )
+            orchestrated, extras = _normalize_runtime_result(runtime_result)
+            ranking = orchestrated["stages"]["policy"]["output"]
+            row = {
+                "candidate_id": ranking["candidate_id"],
+                "priority_score": ranking["priority_score"],
+                "priority_label": ranking["priority_label"],
+                "explanation": ranking["explanation"],
+                "flags": ranking["flags"],
+            }
+            if extras.get("warnings"):
+                row["warnings"] = extras["warnings"]
+            if extras.get("task_id"):
+                row["task_id"] = extras["task_id"]
+            if extras.get("logs"):
+                row["log_summary"] = [
+                    f"{entry.get('stage', 'unknown')}:{entry.get('status', 'unknown')}"
+                    for entry in extras["logs"]
+                ]
+            results.append(row)
         except HTTPException as exc:
             results.append(
                 {
@@ -283,54 +318,35 @@ def _parse_file(file_path: str) -> dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Unexpected error while parsing structure: {exc}") from exc
 
 
-def _run_pipeline(candidate_id: str, wt_file: str, mutant_file: str) -> dict[str, Any]:
-    wt_structure = _parse_file(wt_file)
-    mutant_structure = _parse_file(mutant_file)
-    comparison = comparison_agent.run(
-        {"wt_structure": wt_structure, "mutant_structure": mutant_structure}
-    )["output"]
-    ranked = prioritization_agent.run(
-        {
-            "comparison_results": [
-                {
-                    "candidate_id": candidate_id,
-                    "comparison": comparison,
-                }
-            ]
+def _get_runtime(runtime_name: str):
+    if str(runtime_name).lower() == "nemo":
+        return NemoRuntime()
+    return LocalRuntime()
+
+
+def _normalize_runtime_result(runtime_result: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    if runtime_result.get("status") == "blocked":
+        raise HTTPException(status_code=400, detail=runtime_result.get("reason", "Execution blocked."))
+    if runtime_result.get("status") == "error" and "result" not in runtime_result:
+        detail = runtime_result.get("error")
+        if not detail:
+            failed_log = next(
+                (entry for entry in reversed(runtime_result.get("logs", [])) if entry.get("status") in {"failure", "error"}),
+                None,
+            )
+            detail = failed_log.get("message") if failed_log else "Pipeline execution failed."
+        if "not found" in str(detail).lower():
+            raise HTTPException(status_code=404, detail=str(detail))
+        raise HTTPException(status_code=400, detail=str(detail))
+
+    if "result" in runtime_result:
+        return runtime_result["result"], {
+            "warnings": runtime_result.get("warnings"),
+            "logs": runtime_result.get("logs"),
+            "task_id": runtime_result.get("task_id"),
         }
-    )["output"]
-    ranking = apply_policies(
-        {
-            **ranked[0],
-            "comparison": comparison,
-            "mutant_confidence": mutant_structure.get("confidence_summary", {}).get("avg"),
-        }
-    )
-    pipeline_output = {
-        "candidate_id": candidate_id,
-        "wt_structure": wt_structure,
-        "mutant_structure": mutant_structure,
-        "comparison": comparison,
-        "ranking": ranking,
-    }
-    review_agent.run({"ranked_candidates": [ranking], "pipeline_output": pipeline_output})
-    decision = save_decision(
-        candidate_id=candidate_id,
-        priority_score=ranking["priority_score"],
-        priority_label=ranking["priority_label"],
-        explanation=ranking["explanation"],
-        flags=ranking["flags"],
-    )
-    report_path = str(Path("reports") / f"{candidate_id}.md")
-    return {
-        "candidate_id": candidate_id,
-        "wt_structure": wt_structure,
-        "mutant_structure": mutant_structure,
-        "comparison": comparison,
-        "ranking": ranking,
-        "report_path": report_path,
-        "decision": decision,
-    }
+
+    return runtime_result, {}
 
 
 if __name__ == "__main__":

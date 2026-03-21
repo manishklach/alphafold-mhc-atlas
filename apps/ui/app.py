@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from io import StringIO
 from typing import Any
 from urllib import error, request
 
@@ -66,6 +67,8 @@ def main() -> None:
         st.session_state["batch_result"] = None
     if "decision_history" not in st.session_state:
         st.session_state["decision_history"] = None
+    if "report_download" not in st.session_state:
+        st.session_state["report_download"] = None
 
     if page == "Upload Structures":
         render_parse_page()
@@ -150,6 +153,11 @@ def render_rankings_page() -> None:
     wt_file = st.text_input("WT file path", value=DEFAULT_WT_FILE, key="ranking_wt_file")
     mutant_file = st.text_input("Mutant file path", value=DEFAULT_MUTANT_FILE, key="ranking_mutant_file")
     candidate_id = st.text_input("Candidate ID", value="demo")
+    runtime_mode = st.selectbox(
+        "Execution Mode",
+        ["Local", "Nemo (Governed)"],
+        key="ranking_runtime_mode",
+    )
 
     if st.button("Run pipeline", type="primary"):
         if not wt_file.strip() or not mutant_file.strip() or not candidate_id.strip():
@@ -162,6 +170,7 @@ def render_rankings_page() -> None:
                     "wt_file": wt_file.strip(),
                     "mutant_file": mutant_file.strip(),
                     "candidate_id": candidate_id.strip(),
+                    "runtime": _runtime_value(runtime_mode),
                 },
             )
         except RuntimeError as exc:
@@ -196,6 +205,26 @@ def render_rankings_page() -> None:
         st.write(f"WT Confidence: {_format_confidence(wt_confidence)}")
         st.write(f"Mutant Confidence: {_format_confidence(mutant_confidence)}")
         st.write(f"Δ Confidence: {confidence_delta:.1f}")
+        if _runtime_value(runtime_mode) == "nemo":
+            _render_runtime_details(pipeline_result)
+        if st.button("Download Report"):
+            try:
+                report_response = api_get(f"/report?candidate_id={candidate_id.strip()}")
+            except RuntimeError as exc:
+                st.error(str(exc))
+            else:
+                st.session_state["report_download"] = report_response
+                st.success(f"Report ready: {report_response['file_name']}")
+
+        report_download = st.session_state.get("report_download")
+        if report_download and report_download.get("candidate_id") == candidate_id.strip():
+            st.caption(f"File: {report_download['file_name']}")
+            st.download_button(
+                "Save Markdown Report",
+                data=report_download["content"],
+                file_name=report_download["file_name"],
+                mime="text/markdown",
+            )
 
 
 def render_batch_page() -> None:
@@ -203,6 +232,21 @@ def render_batch_page() -> None:
     st.write(
         "Evaluate multiple candidates simultaneously and receive a ranked shortlist for experimental prioritization."
     )
+    runtime_mode = st.selectbox(
+        "Execution Mode",
+        ["Local", "Nemo (Governed)"],
+        key="batch_runtime_mode",
+    )
+    upload = st.file_uploader("Upload candidate CSV", type=["csv"], key="batch_csv_upload")
+
+    csv_candidates: list[dict[str, str]] = []
+    if upload is not None:
+        try:
+            csv_candidates = _parse_batch_csv(upload.getvalue().decode("utf-8"))
+            st.markdown("### CSV Preview")
+            st.dataframe(csv_candidates, use_container_width=True, hide_index=True)
+        except ValueError as exc:
+            st.error(str(exc))
 
     batch_count = st.number_input("Number of candidates", min_value=1, max_value=10, value=2, step=1)
 
@@ -235,12 +279,23 @@ def render_batch_page() -> None:
             }
         )
 
+    effective_candidates = csv_candidates or candidates
+    if effective_candidates:
+        st.markdown("### Candidate Preview")
+        st.dataframe(effective_candidates, use_container_width=True, hide_index=True)
+
     if st.button("Run Batch Analysis", type="primary"):
-        if any(not item["candidate_id"] or not item["wt_file"] or not item["mutant_file"] for item in candidates):
+        if any(
+            not item["candidate_id"] or not item["wt_file"] or not item["mutant_file"]
+            for item in effective_candidates
+        ):
             st.error("Each batch candidate requires candidate_id, WT file, and mutant file.")
             return
         try:
-            response = api_post("/batch_pipeline", {"candidates": candidates})
+            response = api_post(
+                "/batch_pipeline",
+                {"runtime": _runtime_value(runtime_mode), "candidates": effective_candidates},
+            )
         except RuntimeError as exc:
             st.error(str(exc))
             return
@@ -253,7 +308,7 @@ def render_batch_page() -> None:
 
     display_rows = _build_batch_display_rows(batch_result.get("results", []))
     if display_rows:
-        st.markdown("### Ranked Results")
+        st.markdown("### Ranked Leaderboard")
         dataframe = pd.DataFrame(display_rows)
         styled = (
             dataframe.style.apply(_highlight_top_candidates, axis=1)
@@ -261,18 +316,33 @@ def render_batch_page() -> None:
                 _priority_label_style,
                 subset=["priority_label"],
             )
-            .hide(axis="columns", subset=["_is_top_candidate"])
+            .hide(axis="columns", subset=["_is_top_candidate", "_is_top_one", "explanation"])
         )
         st.dataframe(
             styled,
             use_container_width=True,
             hide_index=True,
         )
+        for row in display_rows:
+            with st.expander(f"#{row['rank']} {row['candidate_id']}"):
+                st.write(row["explanation"])
 
     error_rows = [row for row in batch_result.get("results", []) if row.get("error")]
     if error_rows:
         st.markdown("### Candidate Errors")
         st.dataframe(error_rows, use_container_width=True, hide_index=True)
+
+    if _runtime_value(runtime_mode) == "nemo":
+        successful_rows = [row for row in batch_result.get("results", []) if not row.get("error")]
+        for row in successful_rows:
+            if row.get("warnings"):
+                st.warning(f"{row['candidate_id']}: " + " | ".join(row["warnings"]))
+            if row.get("task_id"):
+                st.caption(f"{row['candidate_id']} task_id: {row['task_id']}")
+            if row.get("log_summary"):
+                with st.expander(f"Execution Logs: {row['candidate_id']}"):
+                    for entry in row["log_summary"]:
+                        st.write(f"- {entry}")
 
 
 def render_decision_history_page() -> None:
@@ -298,7 +368,21 @@ def render_decision_history_page() -> None:
 
     rows = decision_history.get("decisions", [])
     if rows:
-        st.dataframe(rows, use_container_width=True, hide_index=True)
+        table_rows = [
+            {
+                "candidate_id": row.get("candidate_id"),
+                "priority_score": row.get("priority_score"),
+                "priority_label": row.get("priority_label"),
+                "timestamp": row.get("timestamp"),
+            }
+            for row in rows
+        ]
+        st.dataframe(table_rows, use_container_width=True, hide_index=True)
+        for row in rows:
+            with st.expander(f"{row.get('candidate_id')} • {row.get('timestamp') or 'no timestamp'}"):
+                st.write(row.get("explanation") or "No explanation recorded.")
+                if row.get("flags"):
+                    st.write("Flags:", row["flags"])
     else:
         st.info("No decision history found for the current filter.")
 
@@ -320,11 +404,14 @@ def _why_this_matters(priority_label: str) -> str:
 def _build_batch_display_rows(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
     successful_rows = [
         {
+            "rank": index + 1,
             "candidate_id": row.get("candidate_id", ""),
             "priority_score": float(row.get("priority_score", 0.0)),
             "priority_label": row.get("priority_label", ""),
             "flags": ", ".join(row.get("flags", [])),
+            "explanation": row.get("explanation", ""),
             "_is_top_candidate": index < 3,
+            "_is_top_one": index == 0,
         }
         for index, row in enumerate(
             sorted(
@@ -337,7 +424,12 @@ def _build_batch_display_rows(results: list[dict[str, Any]]) -> list[dict[str, A
 
 
 def _highlight_top_candidates(row: pd.Series) -> list[str]:
-    highlight = "background-color: #fff7cc;" if bool(row.get("_is_top_candidate")) else ""
+    if bool(row.get("_is_top_one")):
+        highlight = "background-color: #ffe9a8; font-weight: 700;"
+    elif bool(row.get("_is_top_candidate")):
+        highlight = "background-color: #fff7cc;"
+    else:
+        highlight = ""
     return [highlight] * len(row)
 
 
@@ -347,8 +439,44 @@ def _priority_label_style(value: Any) -> str:
     if value == "MEDIUM":
         return "background-color: #fff3cd; color: #8a6d00; font-weight: 600;"
     if value == "LOW":
-        return "background-color: #d1ecf1; color: #0c5460; font-weight: 600;"
+        return "background-color: #d4edda; color: #155724; font-weight: 600;"
     return ""
+
+
+def _runtime_value(label: str) -> str:
+    return "nemo" if label == "Nemo (Governed)" else "local"
+
+
+def _render_runtime_details(pipeline_result: dict[str, Any]) -> None:
+    warnings = pipeline_result.get("warnings") or []
+    if warnings:
+        for warning in warnings:
+            st.warning(warning)
+    task_id = pipeline_result.get("task_id")
+    if task_id:
+        st.caption(f"Task ID: {task_id}")
+    logs = pipeline_result.get("logs") or []
+    if logs:
+        with st.expander("Execution Logs"):
+            st.dataframe(logs, use_container_width=True, hide_index=True)
+
+
+def _parse_batch_csv(content: str) -> list[dict[str, str]]:
+    dataframe = pd.read_csv(StringIO(content))
+    required = ("candidate_id", "wt_file", "mutant_file")
+    if not set(required).issubset(set(dataframe.columns)):
+        raise ValueError("CSV must contain candidate_id, wt_file, mutant_file columns.")
+    rows = dataframe[list(required)].fillna("").to_dict(orient="records")
+    if not rows:
+        raise ValueError("CSV contains no candidate rows.")
+    return [
+        {
+            "candidate_id": str(row["candidate_id"]).strip(),
+            "wt_file": str(row["wt_file"]).strip(),
+            "mutant_file": str(row["mutant_file"]).strip(),
+        }
+        for row in rows
+    ]
 
 
 if __name__ == "__main__":
