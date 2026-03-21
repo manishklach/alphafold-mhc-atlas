@@ -21,6 +21,40 @@ MHC Atlas OS is designed for interpretable review workflows. It parses structure
 - API layer: FastAPI endpoints for parse, compare, rank, and pipeline
 - UI layer: Streamlit interface for interactive review
 
+## Design Philosophy
+
+This system separates:
+
+1. Domain Logic
+   - Structure parsing
+   - Comparison
+   - Scoring
+
+2. Orchestration
+   - Agent runner
+   - Pipeline execution
+
+3. Runtime (Pluggable)
+   - Custom runner (default)
+   - NemoClaw (planned)
+   - LangGraph (optional)
+
+This allows the system to remain runtime-agnostic and portable across different agent execution frameworks.
+
+```text
+User Input
+   ↓
+Runtime Layer (pluggable)
+   ↓
+Agent Orchestration
+   ↓
+Domain Logic (biology + scoring)
+   ↓
+Policy Engine
+   ↓
+Decision Output + Report + Memory
+```
+
 ## Quickstart
 1. `pip install -r requirements.txt`
 2. `uvicorn apps.api.main:app --reload`
@@ -63,6 +97,18 @@ The `/pipeline` endpoint:
 ## UI Preview
 
 ![UI](./docs/ui.png)
+
+## Why This Matters
+
+Most AlphaFold-based tools focus on structure prediction or visualization.
+
+This system focuses on:
+- decision-making
+- prioritization
+- explainability
+- reproducibility
+
+It is designed to assist in experimental planning, not replace it.
 
 ## Why This Project
 MHC Atlas OS focuses on explainability and decision-making, not black-box prediction. The goal is to make structural evidence easier to inspect, compare, and communicate so prioritization decisions remain transparent and reviewable.

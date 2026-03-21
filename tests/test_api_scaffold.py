@@ -10,6 +10,8 @@ def test_api_has_expected_routes() -> None:
     assert "/compare" in paths
     assert "/rank" in paths
     assert "/pipeline" in paths
+    assert "/batch_pipeline" in paths
+    assert "/decisions" in paths
 
 
 def test_api_flow_endpoints_return_json() -> None:
@@ -64,3 +66,9 @@ def test_api_flow_endpoints_return_json() -> None:
     assert pipeline["ranking"]["candidate_id"] == "api_candidate_1"
     assert pipeline["decision"]["candidate_id"] == "api_candidate_1"
     assert pipeline["report_path"].endswith("api_candidate_1.md")
+
+    decisions_response = client.get("/decisions", params={"candidate_id": "api_candidate_1"})
+    assert decisions_response.status_code == 200
+    decisions = decisions_response.json()
+    assert decisions["decisions"]
+    assert decisions["decisions"][0]["candidate_id"] == "api_candidate_1"

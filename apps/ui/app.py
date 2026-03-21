@@ -5,6 +5,7 @@ import os
 from typing import Any
 from urllib import error, request
 
+import pandas as pd
 import streamlit as st
 
 
@@ -49,7 +50,7 @@ def main() -> None:
     st.sidebar.markdown("### Navigation")
     page = st.sidebar.radio(
         "Page",
-        ["Upload Structures", "Compare WT vs Mutant", "View Rankings"],
+        ["Upload Structures", "Compare WT vs Mutant", "View Rankings", "Batch Analysis", "Decision History"],
     )
     st.sidebar.caption(f"API: {API_BASE_URL}")
 
@@ -61,13 +62,21 @@ def main() -> None:
         st.session_state["ranking_result"] = None
     if "pipeline_result" not in st.session_state:
         st.session_state["pipeline_result"] = None
+    if "batch_result" not in st.session_state:
+        st.session_state["batch_result"] = None
+    if "decision_history" not in st.session_state:
+        st.session_state["decision_history"] = None
 
     if page == "Upload Structures":
         render_parse_page()
     elif page == "Compare WT vs Mutant":
         render_compare_page()
-    else:
+    elif page == "View Rankings":
         render_rankings_page()
+    elif page == "Batch Analysis":
+        render_batch_page()
+    else:
+        render_decision_history_page()
 
 
 def render_parse_page() -> None:
@@ -189,6 +198,111 @@ def render_rankings_page() -> None:
         st.write(f"Δ Confidence: {confidence_delta:.1f}")
 
 
+def render_batch_page() -> None:
+    st.subheader("Batch Analysis")
+    st.write(
+        "Evaluate multiple candidates simultaneously and receive a ranked shortlist for experimental prioritization."
+    )
+
+    batch_count = st.number_input("Number of candidates", min_value=1, max_value=10, value=2, step=1)
+
+    candidates: list[dict[str, str]] = []
+    for index in range(int(batch_count)):
+        st.markdown(f"#### Candidate {index + 1}")
+        cols = st.columns(3)
+        default_wt = "data/wt.pdb" if index < 2 else DEFAULT_WT_FILE
+        default_mutant = f"data/mut{index + 1}.pdb" if index < 2 else DEFAULT_MUTANT_FILE
+        candidate_id = cols[0].text_input(
+            "candidate_id",
+            value=f"mut{index + 1}",
+            key=f"batch_candidate_id_{index}",
+        )
+        wt_file = cols[1].text_input(
+            "WT file",
+            value=default_wt,
+            key=f"batch_wt_file_{index}",
+        )
+        mutant_file = cols[2].text_input(
+            "mutant file",
+            value=default_mutant,
+            key=f"batch_mutant_file_{index}",
+        )
+        candidates.append(
+            {
+                "candidate_id": candidate_id.strip(),
+                "wt_file": wt_file.strip(),
+                "mutant_file": mutant_file.strip(),
+            }
+        )
+
+    if st.button("Run Batch Analysis", type="primary"):
+        if any(not item["candidate_id"] or not item["wt_file"] or not item["mutant_file"] for item in candidates):
+            st.error("Each batch candidate requires candidate_id, WT file, and mutant file.")
+            return
+        try:
+            response = api_post("/batch_pipeline", {"candidates": candidates})
+        except RuntimeError as exc:
+            st.error(str(exc))
+            return
+        st.session_state["batch_result"] = response
+        st.success("Batch analysis complete.")
+
+    batch_result = st.session_state.get("batch_result")
+    if not batch_result:
+        return
+
+    display_rows = _build_batch_display_rows(batch_result.get("results", []))
+    if display_rows:
+        st.markdown("### Ranked Results")
+        dataframe = pd.DataFrame(display_rows)
+        styled = (
+            dataframe.style.apply(_highlight_top_candidates, axis=1)
+            .map(
+                _priority_label_style,
+                subset=["priority_label"],
+            )
+            .hide(axis="columns", subset=["_is_top_candidate"])
+        )
+        st.dataframe(
+            styled,
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    error_rows = [row for row in batch_result.get("results", []) if row.get("error")]
+    if error_rows:
+        st.markdown("### Candidate Errors")
+        st.dataframe(error_rows, use_container_width=True, hide_index=True)
+
+
+def render_decision_history_page() -> None:
+    st.subheader("Decision History")
+    st.write("Review stored prioritization decisions and filter by candidate ID.")
+
+    candidate_filter = st.text_input("Filter by candidate_id", value="", key="decision_history_filter")
+
+    if st.button("Load Decision History", type="primary"):
+        path = "/decisions"
+        if candidate_filter.strip():
+            path = f"/decisions?candidate_id={candidate_filter.strip()}"
+        try:
+            response = api_get(path)
+        except RuntimeError as exc:
+            st.error(str(exc))
+            return
+        st.session_state["decision_history"] = response
+
+    decision_history = st.session_state.get("decision_history")
+    if not decision_history:
+        return
+
+    rows = decision_history.get("decisions", [])
+    if rows:
+        st.dataframe(rows, use_container_width=True, hide_index=True)
+    else:
+        st.info("No decision history found for the current filter.")
+
+
 def _format_confidence(value: Any) -> str:
     if value is None:
         return "N/A"
@@ -201,6 +315,40 @@ def _why_this_matters(priority_label: str) -> str:
     if priority_label == "MEDIUM":
         return "Moderate structural change suggests mutation may impact local behavior."
     return "Minimal structural deviation suggests mutation is unlikely to significantly alter function."
+
+
+def _build_batch_display_rows(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    successful_rows = [
+        {
+            "candidate_id": row.get("candidate_id", ""),
+            "priority_score": float(row.get("priority_score", 0.0)),
+            "priority_label": row.get("priority_label", ""),
+            "flags": ", ".join(row.get("flags", [])),
+            "_is_top_candidate": index < 3,
+        }
+        for index, row in enumerate(
+            sorted(
+                [result for result in results if result.get("error") is None],
+                key=lambda item: (-float(item.get("priority_score", 0.0)), str(item.get("candidate_id", ""))),
+            )
+        )
+    ]
+    return successful_rows
+
+
+def _highlight_top_candidates(row: pd.Series) -> list[str]:
+    highlight = "background-color: #fff7cc;" if bool(row.get("_is_top_candidate")) else ""
+    return [highlight] * len(row)
+
+
+def _priority_label_style(value: Any) -> str:
+    if value == "HIGH":
+        return "background-color: #f8d7da; color: #7a1020; font-weight: 600;"
+    if value == "MEDIUM":
+        return "background-color: #fff3cd; color: #8a6d00; font-weight: 600;"
+    if value == "LOW":
+        return "background-color: #d1ecf1; color: #0c5460; font-weight: 600;"
+    return ""
 
 
 if __name__ == "__main__":

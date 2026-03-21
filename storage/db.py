@@ -140,6 +140,22 @@ def get_decision_history(candidate_id: str, database_url: str | None = None) -> 
         return [_decision_to_dict(record) for record in records]
 
 
+def get_decisions(
+    candidate_id: str | None = None,
+    database_url: str | None = None,
+) -> list[dict[str, Any]]:
+    init_db(database_url)
+    session_factory = _get_session_factory(database_url)
+    with session_factory() as session:
+        statement = select(DecisionRecord)
+        if candidate_id:
+            statement = statement.where(DecisionRecord.candidate_id == candidate_id)
+        records = session.scalars(
+            statement.order_by(DecisionRecord.timestamp.desc(), DecisionRecord.id.desc())
+        ).all()
+        return [_decision_to_dict(record) for record in records]
+
+
 def _get_engine(database_url: str | None = None):
     url = database_url or get_settings().database_url
     if url.startswith("sqlite:///"):

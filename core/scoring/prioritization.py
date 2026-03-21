@@ -108,6 +108,9 @@ def _build_explanation(
         )
 
     second_parts = [f"Mutation impact appears {impact_label}."]
+    moderate_sentence = _moderate_impact_sentence(avg_shift, large_shift_count)
+    if moderate_sentence:
+        second_parts = [moderate_sentence]
     if confidence_delta < -5:
         second_parts.append("Confidence decreased, indicating potential instability.")
     elif any("legacy mean confidence" in reason for reason in reasons):
@@ -132,3 +135,11 @@ def _impact_label(avg_shift: float, large_shift_count: int) -> str:
     if avg_shift > 1.0 or large_shift_count == 1:
         return "moderate"
     return "limited"
+
+
+def _moderate_impact_sentence(avg_shift: float, large_shift_count: int) -> str:
+    if avg_shift > 1.0 or large_shift_count == 1:
+        if large_shift_count >= 1:
+            return "The shift pattern suggests a localized conformational change that may affect residue presentation or local packing."
+        return "The observed displacement suggests a localized conformational perturbation rather than a global rearrangement."
+    return ""

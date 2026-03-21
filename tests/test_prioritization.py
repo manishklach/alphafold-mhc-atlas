@@ -189,3 +189,24 @@ def test_rank_candidates_softens_confidence_penalty_when_shift_is_low() -> None:
 
     assert ranked[0]["priority_score"] == 0.0
     assert ranked[0]["priority_label"] == "LOW"
+
+
+def test_rank_candidates_uses_more_specific_moderate_language() -> None:
+    ranked = rank_candidates(
+        [
+            {
+                "candidate_id": "candidate_moderate",
+                "comparison": {
+                    "avg_shift": 1.4,
+                    "max_shift": 1.6,
+                    "large_shift_count": 0,
+                    "confidence_delta": 0.0,
+                    "flags": [],
+                },
+            }
+        ]
+    )
+
+    explanation = ranked[0]["explanation"]
+    assert "localized conformational perturbation" in explanation
+    assert "appears moderate" not in explanation
