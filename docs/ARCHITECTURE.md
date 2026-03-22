@@ -1,4 +1,6 @@
-# Architecture
+# MHC Atlas OS Architecture
+
+Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization
 
 ## High-Level Flow
 

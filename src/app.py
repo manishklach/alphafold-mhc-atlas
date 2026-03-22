@@ -59,7 +59,9 @@ OUTPUTS_ROOT = REPO_ROOT / "outputs"
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Interactive local analyst app for the peptide-MHC atlas.")
+    parser = argparse.ArgumentParser(
+        description="Interactive local analyst app for MHC Atlas OS, the Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization."
+    )
     parser.add_argument("--project", help="Path to an existing project output directory.", default=None)
     parser.add_argument("--demo", help="Load a curated demo project by name.", default=None)
     parser.add_argument("--workspace", help="Path to a workspace YAML or JSON config.", default=None)
@@ -145,9 +147,11 @@ def render_streamlit_app(args: argparse.Namespace) -> None:
             args.workspace = str(resolve_demo_workspace(args.demo))
             args.demo = None
 
-    st.set_page_config(page_title="Peptide-MHC Atlas", layout="wide")
-    st.title("Peptide-MHC Atlas Decision Support")
-    st.caption(f"Version {__version__} | Local-first decision platform for structure-guided experimental prioritization")
+    st.set_page_config(page_title="MHC Atlas OS", layout="wide")
+    st.title("MHC Atlas OS")
+    st.caption(
+        f"Version {__version__} | Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization"
+    )
 
     templates = load_scenario_templates(repo_or_resource_path("data", "scenario_templates.yaml"))
     source_options = ["Local project", "Demo project", "Workspace"]

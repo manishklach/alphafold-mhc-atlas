@@ -2,29 +2,30 @@
 
 A runtime-agnostic, policy-governed agent system for structure-guided experimental prioritization using AlphaFold-derived data.
 
-## Overview
-A structure-guided decision system for prioritizing peptide mutations using AlphaFold-derived structures.
+Explainable • Multi-factor • Runtime-agnostic • Agent-driven
 
-MHC Atlas OS is designed for interpretable review workflows. It parses structure files, compares WT and mutant states, ranks candidates with explicit rules, applies policy checks, and generates readable decision outputs through both an API and a lightweight UI.
+A Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization.
 
-This system does not attempt to predict binding affinity or biological outcomes directly.
-
-Instead, it provides structured, explainable prioritization signals to guide experimental validation.
-
-## Features
-- Structure parsing (PDB/mmCIF)
-- WT vs mutant comparison
-- Interpretable prioritization engine
-- Policy-based decision rules
-- API + UI interface
-- Decision reports
-- Memory tracking
+MHC Atlas OS is designed as a runtime-agnostic agent system for interpretable review workflows. It parses structure files, compares WT and mutant states, ranks candidates with multi-factor scoring, applies policy checks, and generates readable decision outputs through both an API and a lightweight UI.
 
 ## System Architecture
 
 ![Architecture](./docs/architecture.svg)
 
 Runtime-agnostic architecture enabling deterministic, governed, and multi-agent execution modes.
+
+## Key Capabilities
+- Structure parsing (PDB/mmCIF)
+- WT vs mutant comparison
+- Explainable multi-factor scoring
+- Policy-based decision rules
+- API + UI interface
+- Decision reports
+- Decision memory tracking
+
+This system does not attempt to predict binding affinity or biological outcomes directly.
+
+Instead, it provides structured, explainable prioritization signals to guide experimental validation.
 
 ## Runtime Modes
 
@@ -174,6 +175,3 @@ This system focuses on:
 - reproducibility
 
 It is designed to assist in experimental planning, not replace it.
-
-## Why This Project
-MHC Atlas OS focuses on explainability and decision-making, not black-box prediction. The goal is to make structural evidence easier to inspect, compare, and communicate so prioritization decisions remain transparent and reviewable.

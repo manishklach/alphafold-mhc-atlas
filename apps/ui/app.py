@@ -46,7 +46,8 @@ def _api_request(method: str, path: str, payload: dict[str, Any] | None = None) 
 def main() -> None:
     st.set_page_config(page_title="MHC Atlas OS", layout="wide")
     st.title("MHC Atlas OS")
-    st.caption("Minimal UI for parsing structures, comparing WT vs mutant, and viewing rankings.")
+    st.caption("Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization")
+    st.caption("Explainable • Multi-factor • Runtime-agnostic • Agent-driven")
 
     st.sidebar.markdown("### Navigation")
     page = st.sidebar.radio(

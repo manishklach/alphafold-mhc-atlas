@@ -16,7 +16,10 @@ from storage.db import get_decisions, init_db, save_decision
 
 settings = get_settings()
 
-app = FastAPI(title="MHC Atlas OS")
+app = FastAPI(
+    title="MHC Atlas OS",
+    description="Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization",
+)
 
 
 class ParseRequest(BaseModel):

@@ -1,8 +1,12 @@
 # Research Pitch
 
+Product name: **MHC Atlas OS**
+
+Subtitle: **Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization**
+
 ## One-Sentence Pitch
 
-This repository is a reproducible peptide-MHC comparative structural analysis framework that turns mutation panels and AlphaFold or ColabFold outputs into interpretable WT-relative, cross-allele, and report-ready structural summaries.
+MHC Atlas OS is a reproducible peptide-MHC decision platform that turns mutation panels and AlphaFold or ColabFold outputs into interpretable WT-relative, cross-allele, and report-ready structural summaries.
 
 ## 30-Second Pitch
 

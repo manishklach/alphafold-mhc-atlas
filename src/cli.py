@@ -55,7 +55,10 @@ from .usecase_profiles import get_default_deployment_profiles_path
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog=PACKAGE_NAME, description="Peptide-MHC Atlas CLI")
+    parser = argparse.ArgumentParser(
+        prog=PACKAGE_NAME,
+        description="MHC Atlas OS CLI — Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run_parser = subparsers.add_parser("run", help="Run the analysis pipeline.")

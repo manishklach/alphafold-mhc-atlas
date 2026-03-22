@@ -1,12 +1,16 @@
 # GitHub Presentation Notes
 
+Primary name: **MHC Atlas OS**
+
+Subtitle: **Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization**
+
 ## Recommended About Blurb
 
-Peptide-MHC comparative structural analysis framework with AlphaFold/ColabFold-ready inputs, WT-relative contact fingerprints, cross-allele comparison, reporting, and a local HTML dashboard.
+MHC Atlas OS is a peptide-MHC decision platform with AlphaFold/ColabFold-ready inputs, WT-relative contact fingerprints, cross-allele comparison, reporting, and local interactive interfaces.
 
 ## Recommended Short Pitch
 
-Reproducible peptide-MHC structural perturbation analysis for WT-versus-mutant and cross-allele studies.
+Explainable peptide-MHC decision platform for WT-versus-mutant and cross-allele structural prioritization.
 
 ## Recommended Topics
 

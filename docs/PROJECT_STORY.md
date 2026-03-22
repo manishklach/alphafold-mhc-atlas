@@ -1,10 +1,10 @@
-# Peptide-MHC Atlas: Project Story
+# MHC Atlas OS: Project Story
 
 ## Research Pitch
 
 # Peptide-MHC comparative structural analysis without the usual notebook sprawl
 
-This repository is a reproducible framework for turning peptide-MHC mutation panels and AlphaFold or ColabFold outputs into interpretable WT-relative, cross-allele, and publication-oriented structural summaries.
+MHC Atlas OS is a reproducible peptide-MHC decision platform for turning mutation panels and AlphaFold or ColabFold outputs into interpretable WT-relative, cross-allele, and publication-oriented structural summaries.
 
 ## Core Pitch
 
