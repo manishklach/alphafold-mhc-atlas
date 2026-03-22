@@ -4,10 +4,6 @@ A runtime-agnostic, policy-governed agent system for structure-guided experiment
 
 Explainable • Multi-factor • Runtime-agnostic • Agent-driven
 
-A Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization.
-
-MHC Atlas OS is designed as a runtime-agnostic agent system for interpretable review workflows. It parses structure files, compares WT and mutant states, ranks candidates with multi-factor scoring, applies policy checks, and generates readable decision outputs through both an API and a lightweight UI.
-
 ## System Architecture
 
 ![Architecture](./docs/architecture.svg)
@@ -22,6 +18,8 @@ Runtime-agnostic architecture enabling deterministic, governed, and multi-agent 
 - API + UI interface
 - Decision reports
 - Decision memory tracking
+
+MHC Atlas OS is a Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization. It parses structure files, compares WT and mutant states, ranks candidates with multi-factor scoring, applies policy checks, and generates readable decision outputs through both an API and a lightweight UI.
 
 This system does not attempt to predict binding affinity or biological outcomes directly.
 
