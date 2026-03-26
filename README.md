@@ -1,34 +1,97 @@
 # MHC Atlas OS Website
 
-This directory contains the static GitHub Pages microsite for **MHC Atlas OS**. It is intended to present the project as a serious architecture-driven technical platform, not as a startup landing page and not as a README pasted onto the web.
+This directory contains the polished GitHub Pages microsite for **MHC Atlas OS**. It is designed as a serious, architecture-driven technical project site with stronger SEO metadata, clearer problem framing, and premium static presentation.
 
 ## Files
 
-- `index.html` - homepage structure, section content, and link targets
+- `index.html` - page structure, copy, metadata, structured data, navigation, and link targets
 - `styles.css` - visual system, layout, responsiveness, and component styling
-- `script.js` - sticky navigation, active section highlighting, mobile nav toggle, image fallback behavior, and subtle reveal-on-scroll
+- `script.js` - sticky navigation, active section highlighting, mobile nav toggle, image fallback handling, and subtle reveal-on-scroll
 - `.nojekyll` - disables Jekyll processing so GitHub Pages serves the site as plain static files
 
-## Deploy on GitHub Pages
+## SEO metadata
 
-1. Commit these files to the repository root.
-2. Push the changes to the branch you want to publish, usually `main`.
-3. In GitHub, open `Settings -> Pages`.
-4. Choose:
-   - `Source: Deploy from a branch`
-   - `Branch: main`
-   - `Folder: / (root)`
-5. Save and wait for the Pages deployment to complete.
+The page includes:
 
-For a repository named `alphafold-mhc-atlas`, the published URL is typically:
+- title tag
+- meta description
+- meta keywords
+- robots tag
+- canonical URL
+- author meta
+- Open Graph metadata
+- Twitter card metadata
+- JSON-LD structured data
 
-```text
-https://manishklach.github.io/alphafold-mhc-atlas/
-```
+### Where to edit SEO fields
+
+Open `index.html` and update these areas in the `<head>`:
+
+- `<title>`
+- `<meta name="description">`
+- `<meta name="keywords">`
+- `<link rel="canonical">`
+- Open Graph tags:
+  - `og:title`
+  - `og:description`
+  - `og:url`
+  - `og:image`
+  - `og:site_name`
+- Twitter tags:
+  - `twitter:title`
+  - `twitter:description`
+  - `twitter:image`
+
+### Where to edit structured data / JSON-LD
+
+Also in `index.html`, update the `<script type="application/ld+json">` block.
+
+Useful fields to adjust there:
+
+- `name`
+- `description`
+- `url`
+- `codeRepository`
+- `image`
+- `keywords`
+- `author`
+
+## Problem and why-it-matters copy
+
+The homepage now includes stronger narrative framing around:
+
+- the project problem
+- why the problem matters
+- why raw structure outputs are not enough
+- why runtime abstraction and policy-governed execution matter
+
+### Where to edit this copy
+
+In `index.html`, the main narrative sections are:
+
+- `#problem`
+- `#why-matters`
+- `#platform`
+- `#execution-why`
+- `#architecture`
+
+These are the main places to update the problem statement and explanation of why the platform matters.
+
+## Hero metadata and CTA buttons
+
+The hero content is defined in `index.html`.
+
+Edit these blocks to update the top-of-page positioning:
+
+- `<h1>` for the project name
+- `<p class="hero-subtitle">` for the subtitle
+- `<p class="hero-thesis">` for the one-line thesis
+- `<dl class="meta-grid">` for the metadata row
+- `<div class="hero-actions">` for button labels and URLs
 
 ## Asset placement
 
-Place static visuals in:
+The site can use these asset paths:
 
 ```text
 ./assets/architecture.png
@@ -39,31 +102,24 @@ Place static visuals in:
 ./assets/favicon.png
 ```
 
-The homepage already points to those paths.
+### Current built-in asset behavior
 
-### Current asset behavior
+This version uses shipped repo assets where available so the live site does not depend on missing files:
 
-- `./assets/architecture.png` falls back to `./docs/architecture.svg` if the PNG is missing.
-- `./assets/scoring-flow.png` shows a styled placeholder if the image does not exist.
-- `./assets/favicon.png` is optional but recommended.
+- architecture figure:
+  `./docs/architecture.svg`
+- UI preview:
+  `./docs/ui.png`
+- social preview:
+  `./docs/social_preview.png`
 
-## Edit hero metadata
+The scoring section currently uses a built-in HTML/CSS diagram instead of an external image, so it remains stable even without `./assets/scoring-flow.png`.
 
-The hero is defined in `index.html`.
-
-Update these blocks to change the top-of-page positioning:
-
-- `<h1>` for the project name
-- `<p class="hero-subtitle">` for the subtitle
-- `<p class="hero-thesis">` for the one-line thesis
-- `<dl class="meta-grid">` for the metadata row
-- `<div class="hero-actions">` for CTA button labels and links
-
-## Customize repository, docs, and demo links
+## Update repository, docs, and demo links
 
 Most public-facing links live directly in `index.html`.
 
-Common links you may want to change:
+Common links to update:
 
 - repository:
   `https://github.com/manishklach/alphafold-mhc-atlas`
@@ -73,41 +129,37 @@ Common links you may want to change:
   `./QUICKSTART.md`
 - contribution guide:
   `./CONTRIBUTING.md`
-- issues:
-  `https://github.com/manishklach/alphafold-mhc-atlas/issues`
+- pilot workflow:
+  `./PILOT_WORKFLOW.md`
 - demo script:
   `./scripts/demo_showcase.py`
-- UI notes:
-  `./apps/ui/README.md`
 
-If you rename sections or IDs, also update the matching navigation links in the header.
+If you rename section IDs, also update the corresponding header navigation links.
 
-## Swap in real architecture and UI screenshots later
+## Deploy on GitHub Pages
 
-The site is already prepared for production visuals.
+1. Commit these files to the repository root.
+2. Push to the branch you want to publish, usually `main`.
+3. In GitHub, open `Settings -> Pages`.
+4. Set:
+   - `Source: Deploy from a branch`
+   - `Branch: main`
+   - `Folder: / (root)`
+5. Save and wait for the Pages deployment to complete.
 
-Recommended replacements:
+Typical published URL:
 
-- `architecture.png`
-  Use this for the primary system architecture figure.
-- `runtime-modes.png`
-  Reserved for a future runtime comparison image if you want one.
-- `scoring-flow.png`
-  Use this for a dedicated scoring or signal-composition diagram.
-- `ui-preview.png`
-  Use this for Open Graph preview and future UI section visuals.
-- `pdb-compare.png`
-  Use this for a WT vs mutant comparison image if you add one later.
+```text
+https://manishklach.github.io/alphafold-mhc-atlas/
+```
 
-Keep all new images under `./assets/` and link them with relative paths.
+## Why `.nojekyll` is included
 
-## .nojekyll
-
-Keep `.nojekyll` in the published root. This ensures GitHub Pages serves the site as plain static files and does not try to process the site through Jekyll.
+GitHub Pages often processes sites through Jekyll by default. This site is a plain static HTML, CSS, and JavaScript site, so `.nojekyll` ensures GitHub serves it directly without unnecessary processing.
 
 ## Local preview
 
-Any static file server will work. For example:
+Any static file server works. Example:
 
 ```bash
 python -m http.server 8000
@@ -121,7 +173,6 @@ http://localhost:8000/
 
 ## Notes
 
-- The site is intentionally framework-free: plain HTML, CSS, and vanilla JavaScript only.
-- It is responsive and keyboard-friendly.
-- JavaScript is optional enhancement; navigation and content remain accessible without it.
-- The color system and major spacing tokens live in `:root` at the top of `styles.css`.
+- The site remains framework-free.
+- JavaScript is minimal and optional enhancement only.
+- The main color and spacing tokens live in `:root` at the top of `styles.css`.

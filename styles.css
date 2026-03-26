@@ -425,6 +425,11 @@ code,
   gap: 1rem;
 }
 
+.problem-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1.5rem;
+}
+
 .feature-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -580,6 +585,71 @@ code,
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.importance-panel {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 1.2rem;
+}
+
+.importance-copy p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.02rem;
+}
+
+.importance-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.importance-list div,
+.bridge-panel article {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(120, 216, 232, 0.12);
+  background: rgba(120, 216, 232, 0.05);
+}
+
+.importance-kicker {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+
+.bridge-panel {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(17, 28, 41, 0.92), rgba(8, 14, 22, 0.94));
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.bridge-panel h3,
+.bridge-panel p {
+  margin: 0;
+}
+
+.bridge-panel h3 {
+  margin-bottom: 0.55rem;
+  font-size: 1.02rem;
+  letter-spacing: -0.02em;
+}
+
+.bridge-panel p {
+  color: var(--text-muted);
 }
 
 .runtime-card {
@@ -756,16 +826,20 @@ code,
 @media (max-width: 1120px) {
   .feature-grid,
   .resource-grid,
+  .problem-grid,
   .subsystem-grid,
   .principles-grid,
   .comparison-grid,
-  .status-grid {
+  .status-grid,
+  .importance-list,
+  .bridge-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hero-grid,
   .scoring-layout,
   .status-panel,
+  .importance-panel,
   .runtime-grid {
     grid-template-columns: 1fr;
   }
@@ -813,10 +887,13 @@ code,
   .signal-grid,
   .feature-grid,
   .resource-grid,
+  .problem-grid,
   .subsystem-grid,
   .principles-grid,
   .comparison-grid,
-  .status-grid {
+  .status-grid,
+  .importance-list,
+  .bridge-panel {
     grid-template-columns: 1fr;
   }
 

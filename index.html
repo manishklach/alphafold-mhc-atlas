@@ -3,18 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MHC Atlas OS | Explainable Structure-Guided Prioritization</title>
-  <meta name="description" content="MHC Atlas OS is a runtime-agnostic, explainable, structure-guided mutation prioritization platform with policy-governed execution and readable decision outputs.">
+  <title>MHC Atlas OS | Explainable Structure-Guided Mutation Prioritization Platform</title>
+  <meta name="description" content="MHC Atlas OS is a runtime-agnostic, policy-governed platform for explainable structure-guided mutation prioritization using AlphaFold-derived data. It turns protein structure mutation analysis into inspectable experimental prioritization workflows.">
+  <meta name="keywords" content="MHC Atlas OS, AlphaFold MHC, structure-guided mutation prioritization, explainable mutation scoring, peptide MHC decision platform, runtime-agnostic bioinformatics platform, policy-governed analysis workflow, protein structure mutation analysis">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="author" content="Manish Klach">
   <meta name="theme-color" content="#091018">
-  <meta property="og:title" content="MHC Atlas OS">
-  <meta property="og:description" content="Runtime-agnostic, explainable, structure-guided mutation prioritization.">
+  <link rel="canonical" href="https://manishklach.github.io/alphafold-mhc-atlas/">
+  <meta property="og:title" content="MHC Atlas OS | Explainable Structure-Guided Mutation Prioritization Platform">
+  <meta property="og:description" content="A runtime-agnostic, policy-governed platform for explainable structure-guided experimental prioritization using AlphaFold-derived data.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="./assets/demo-ui.png">
+  <meta property="og:url" content="https://manishklach.github.io/alphafold-mhc-atlas/">
+  <meta property="og:image" content="https://manishklach.github.io/alphafold-mhc-atlas/docs/social_preview.png">
+  <meta property="og:site_name" content="MHC Atlas OS">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MHC Atlas OS | Explainable Structure-Guided Mutation Prioritization Platform">
+  <meta name="twitter:description" content="Explainable mutation scoring, policy-governed analysis workflow, and runtime-agnostic execution for structure-guided experimental prioritization.">
+  <meta name="twitter:image" content="https://manishklach.github.io/alphafold-mhc-atlas/docs/social_preview.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="./assets/favicon.png">
+  <link rel="apple-touch-icon" href="./assets/favicon.png">
   <link rel="stylesheet" href="./styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MHC Atlas OS",
+    "applicationCategory": "BioinformaticsApplication",
+    "operatingSystem": "Cross-platform",
+    "isAccessibleForFree": true,
+    "author": {
+      "@type": "Person",
+      "name": "Manish Klach"
+    },
+    "url": "https://manishklach.github.io/alphafold-mhc-atlas/",
+    "codeRepository": "https://github.com/manishklach/alphafold-mhc-atlas",
+    "image": "https://manishklach.github.io/alphafold-mhc-atlas/docs/social_preview.png",
+    "description": "MHC Atlas OS is a runtime-agnostic, explainable, policy-governed platform for structure-guided experimental prioritization using AlphaFold-derived data. It combines protein structure mutation analysis, explainable structural scoring, policy evaluation, and runtime abstraction to produce inspectable prioritization outputs rather than direct biological prediction claims.",
+    "keywords": [
+      "MHC Atlas OS",
+      "AlphaFold MHC",
+      "structure-guided mutation prioritization",
+      "explainable mutation scoring",
+      "protein structure mutation analysis",
+      "policy-governed analysis workflow",
+      "runtime-agnostic bioinformatics platform"
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -34,11 +72,12 @@
           Menu
         </button>
         <div class="nav-menu" id="nav-menu">
+          <a href="#problem">Problem</a>
           <a href="#platform">Platform</a>
           <a href="#architecture">Architecture</a>
           <a href="#runtimes">Runtimes</a>
           <a href="#scoring">Scoring</a>
-          <a href="#workflow">Workflow</a>
+          <a href="#workflow">Flow</a>
           <a href="#resources">Resources</a>
           <a href="#contact">Contribute</a>
         </div>
@@ -54,8 +93,9 @@
           <h1>MHC Atlas OS</h1>
           <p class="hero-subtitle">Runtime-agnostic, explainable, structure-guided mutation prioritization</p>
           <p class="hero-thesis">
-            A policy-governed platform for structured experimental prioritization using AlphaFold-derived structure data,
-            designed to produce readable signals and decision artifacts without leaning on black-box prediction.
+            MHC Atlas OS is a peptide MHC decision platform that turns AlphaFold-derived structure signals into
+            inspectable experimental prioritization outputs through explainable mutation scoring, policy-governed
+            evaluation, and runtime-agnostic execution.
           </p>
 
           <dl class="meta-grid" aria-label="Project metadata">
@@ -115,17 +155,71 @@
       </div>
     </section>
 
-    <section class="section section-tight" id="why">
+    <section class="section section-tight" id="problem">
       <div class="container">
         <div class="section-heading reveal">
-          <p class="eyebrow">Why this exists</p>
-          <h2>Structures alone are not decisions.</h2>
+          <p class="eyebrow">The problem</p>
+          <h2>Structure outputs are useful, but they do not tell a team what to prioritize next.</h2>
           <p>
-            Experimental teams often have structure files, mutation lists, and fragmented review notes, but not a
-            governed way to translate that material into a prioritized queue. MHC Atlas OS focuses on the missing
-            layer: explainable candidate ranking, policy-aware evaluation, and execution portability across deterministic
-            and agent-capable runtimes.
+            In practice, protein structure mutation analysis often fragments across notebooks, scripts, manual
+            inspection, and disconnected model artifacts. Raw structure files, confidence values, and isolated
+            comparisons can be informative, but they do not by themselves create a consistent, explainable
+            structure-guided mutation prioritization workflow.
           </p>
+        </div>
+        <div class="card-grid problem-grid">
+          <article class="card reveal">
+            <h3>Raw outputs are hard to compare at scale</h3>
+            <p>Structural deviations, mutation properties, and model confidence do not naturally combine into a stable ranking without shared logic.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Review logic becomes opaque quickly</h3>
+            <p>Once prioritization spreads across scripts and manual inspection, the reasoning behind a decision becomes difficult to inspect or rerun.</p>
+          </article>
+          <article class="card reveal">
+            <h3>This is a workflow problem, not only an analysis problem</h3>
+            <p>Teams need interpretable, repeatable, policy-aware ways to turn structure-derived signals into prioritization decisions.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why-matters">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Why this is a big problem</p>
+          <h2>When review is manual, opaque, or runtime-specific, both scientific time and engineering trust erode.</h2>
+          <p>
+            Candidate review is rarely a one-shot task. Prioritization needs to be repeated, audited, compared over
+            time, and adapted across local runs, governed execution paths, and more automated orchestration modes.
+          </p>
+        </div>
+        <div class="importance-panel reveal">
+          <div class="importance-copy">
+            <p>
+              Manual or weakly structured review wastes time. Opaque ranking weakens trust. One-off scripts do not
+              scale well. And once decisions cannot be clearly explained or replayed, experimental planning becomes
+              harder to compare across cycles.
+            </p>
+          </div>
+          <div class="importance-list">
+            <div>
+              <span class="importance-kicker">Operational cost</span>
+              <p>Repeated manual review and fragile handoffs create avoidable overhead.</p>
+            </div>
+            <div>
+              <span class="importance-kicker">Reproducibility risk</span>
+              <p>Opaque ranking makes it difficult to justify why one candidate outranked another.</p>
+            </div>
+            <div>
+              <span class="importance-kicker">Execution brittleness</span>
+              <p>Runtime-specific tooling does not adapt well as review evolves from local inspection to governed or agent-capable execution.</p>
+            </div>
+            <div>
+              <span class="importance-kicker">Decision memory loss</span>
+              <p>Without stored outputs and rationale, teams relearn the same context instead of building on it.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -134,10 +228,11 @@
       <div class="container">
         <div class="section-heading reveal">
           <p class="eyebrow">What the platform does</p>
-          <h2>Structured analysis from input file to decision artifact.</h2>
+          <h2>Provides the missing layer between structure-derived evidence and experimental prioritization.</h2>
           <p>
-            The platform turns AlphaFold-derived inputs into interpretable prioritization outputs designed for review,
-            comparison, and downstream experimental planning.
+            MHC Atlas OS addresses the workflow problem directly: it parses structures, compares candidates,
+            applies explainable structural scoring, evaluates policy constraints, and produces readable outputs that
+            can be reviewed, remembered, and reused across execution modes.
           </p>
         </div>
 
@@ -170,6 +265,38 @@
       </div>
     </section>
 
+    <section class="section" id="execution-why">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Why governed and runtime-agnostic execution matters</p>
+          <h2>The platform is solving an execution problem as much as an analysis problem.</h2>
+          <p>
+            Different execution modes fit different review and automation needs. Local runs support direct inspection,
+            governed execution supports traceability and reproducibility, and agent-capable orchestration expands workflow
+            automation. Those changes should not require rewriting the core decision logic.
+          </p>
+        </div>
+        <div class="bridge-panel reveal">
+          <article>
+            <h3>Stable core logic</h3>
+            <p>Scoring and comparison logic should remain stable even when orchestration changes.</p>
+          </article>
+          <article>
+            <h3>Policy and trust</h3>
+            <p>Governance matters when prioritization outputs need to be reviewed, rerun, and defended.</p>
+          </article>
+          <article>
+            <h3>Execution fit</h3>
+            <p>Different runtime modes fit different stages of inspection, control, and automation.</p>
+          </article>
+          <article>
+            <h3>Agent usefulness with discipline</h3>
+            <p>Agent-capable execution is valuable only if the underlying decision logic remains understandable.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="architecture">
       <div class="container">
         <div class="section-heading reveal">
@@ -186,7 +313,7 @@
             <img
               src="./docs/architecture.svg"
               data-fallback=""
-              alt="Architecture diagram for MHC Atlas OS showing runtime, orchestration, domain logic, policy, and output layers."
+              alt="Architecture diagram for MHC Atlas OS showing a runtime layer feeding orchestration, domain logic, policy evaluation, and decision outputs such as reports and memory."
             >
             <div class="image-placeholder" hidden>
               <span class="placeholder-label">Architecture figure unavailable</span>
@@ -286,7 +413,7 @@
         <div class="scoring-layout">
           <figure class="image-frame reveal">
             <div class="image-shell compact">
-              <div class="score-diagram" aria-label="Scoring flow diagram showing structural, biochemical, confidence, and consistency signals">
+              <div class="score-diagram" aria-label="Scoring flow diagram for explainable mutation scoring using structural deviation, biochemical severity, confidence signals, and consistency signals">
                 <div class="score-node score-node-input">
                   <span class="score-label">Input evidence</span>
                   <strong>WT vs mutant structure context</strong>
@@ -552,7 +679,7 @@
           <div class="contact-actions">
             <a class="button button-primary" href="https://github.com/manishklach/alphafold-mhc-atlas" target="_blank" rel="noreferrer">Open Repository</a>
             <a class="button" href="https://github.com/manishklach/alphafold-mhc-atlas/issues" target="_blank" rel="noreferrer">Open an Issue</a>
-            <a class="button" href="mailto:maintainer@example.com">Contact Placeholder</a>
+            <a class="button" href="https://github.com/manishklach/alphafold-mhc-atlas" target="_blank" rel="noreferrer">Repository Contact</a>
           </div>
           <p class="license-note">Licensed under MIT where applicable in the repository.</p>
         </div>
