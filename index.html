@@ -184,13 +184,13 @@
         <figure class="image-frame reveal">
           <div class="image-shell">
             <img
-              src="./assets/architecture.png"
-              data-fallback="./docs/architecture.svg"
+              src="./docs/architecture.svg"
+              data-fallback=""
               alt="Architecture diagram for MHC Atlas OS showing runtime, orchestration, domain logic, policy, and output layers."
             >
             <div class="image-placeholder" hidden>
-              <span class="placeholder-label">Architecture figure placeholder</span>
-              <p>Add <code>assets/architecture.png</code> to replace this fallback-safe frame.</p>
+              <span class="placeholder-label">Architecture figure unavailable</span>
+              <p>The architecture figure is expected at <code>docs/architecture.svg</code>.</p>
             </div>
           </div>
           <figcaption>
@@ -286,14 +286,33 @@
         <div class="scoring-layout">
           <figure class="image-frame reveal">
             <div class="image-shell compact">
-              <img
-                src="./assets/scoring-flow.png"
-                data-fallback=""
-                alt="Scoring flow diagram showing structural, biochemical, confidence, and consistency signals."
-              >
-              <div class="image-placeholder" hidden>
-                <span class="placeholder-label">Scoring flow placeholder</span>
-                <p>Add <code>assets/scoring-flow.png</code> to visualize the scoring stack.</p>
+              <div class="score-diagram" aria-label="Scoring flow diagram showing structural, biochemical, confidence, and consistency signals">
+                <div class="score-node score-node-input">
+                  <span class="score-label">Input evidence</span>
+                  <strong>WT vs mutant structure context</strong>
+                </div>
+                <div class="score-grid">
+                  <div class="score-node">
+                    <span class="score-label">Signal group 01</span>
+                    <strong>Structural deviation</strong>
+                  </div>
+                  <div class="score-node">
+                    <span class="score-label">Signal group 02</span>
+                    <strong>Biochemical severity</strong>
+                  </div>
+                  <div class="score-node">
+                    <span class="score-label">Signal group 03</span>
+                    <strong>Confidence signals</strong>
+                  </div>
+                  <div class="score-node">
+                    <span class="score-label">Signal group 04</span>
+                    <strong>Consistency signals</strong>
+                  </div>
+                </div>
+                <div class="score-node score-node-output">
+                  <span class="score-label">Output</span>
+                  <strong>Explainable prioritization score</strong>
+                </div>
               </div>
             </div>
             <figcaption>Readable signal composition across structural, biochemical, confidence, and consistency inputs.</figcaption>

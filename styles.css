@@ -494,6 +494,69 @@ code,
   object-fit: cover;
 }
 
+.score-diagram {
+  width: min(100%, 34rem);
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.score-node {
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(120, 216, 232, 0.16);
+  background:
+    linear-gradient(180deg, rgba(120, 216, 232, 0.08), rgba(120, 216, 232, 0.03)),
+    rgba(6, 11, 17, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.score-node-input,
+.score-node-output {
+  position: relative;
+}
+
+.score-node-input::after,
+.score-node-output::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: 0.95rem;
+  background: linear-gradient(180deg, rgba(120, 216, 232, 0.38), rgba(120, 216, 232, 0));
+  transform: translateX(-50%);
+}
+
+.score-node-input::after {
+  bottom: -1rem;
+}
+
+.score-node-output::before {
+  top: -1rem;
+}
+
+.score-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--text-soft);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.score-node strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
 .image-placeholder {
   display: grid;
   gap: 0.5rem;
@@ -746,6 +809,7 @@ code,
   }
 
   .meta-grid,
+  .score-grid,
   .signal-grid,
   .feature-grid,
   .resource-grid,
