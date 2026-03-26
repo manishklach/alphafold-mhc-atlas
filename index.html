@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MHC Atlas OS | Explainable Structure-Guided Prioritization</title>
+  <meta name="description" content="MHC Atlas OS is a runtime-agnostic, explainable, structure-guided mutation prioritization platform with policy-governed execution and readable decision outputs.">
+  <meta name="theme-color" content="#091018">
+  <meta property="og:title" content="MHC Atlas OS">
+  <meta property="og:description" content="Runtime-agnostic, explainable, structure-guided mutation prioritization.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./assets/demo-ui.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="./assets/favicon.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" id="top">
+    <div class="container nav-shell">
+      <a class="brand" href="#top" aria-label="MHC Atlas OS home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">
+          <strong>MHC Atlas OS</strong>
+          <span>Explainable structure-guided prioritization</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+          Menu
+        </button>
+        <div class="nav-menu" id="nav-menu">
+          <a href="#platform">Platform</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#runtimes">Runtimes</a>
+          <a href="#scoring">Scoring</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#resources">Resources</a>
+          <a href="#contact">Contribute</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero section">
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">Open-source platform</p>
+          <h1>MHC Atlas OS</h1>
+          <p class="hero-subtitle">Runtime-agnostic, explainable, structure-guided mutation prioritization</p>
+          <p class="hero-thesis">
+            A policy-governed platform for structured experimental prioritization using AlphaFold-derived structure data,
+            designed to produce readable signals and decision artifacts without leaning on black-box prediction.
+          </p>
+
+          <dl class="meta-grid" aria-label="Project metadata">
+            <div>
+              <dt>Type</dt>
+              <dd>Open-source platform</dd>
+            </div>
+            <div>
+              <dt>Domain</dt>
+              <dd>Structure-guided prioritization</dd>
+            </div>
+            <div>
+              <dt>Approach</dt>
+              <dd>Explainable / policy-governed</dd>
+            </div>
+            <div>
+              <dt>Runtime</dt>
+              <dd>Local / Nemo / AutoGen</dd>
+            </div>
+          </dl>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/manishklach/alphafold-mhc-atlas" target="_blank" rel="noreferrer">View Repository</a>
+            <a class="button" href="./docs/SPEC.md">Read Documentation</a>
+            <a class="button" href="#architecture">See Architecture</a>
+            <a class="button" href="./QUICKSTART.md">Run Demo / Quickstart</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel reveal" aria-label="Platform summary">
+          <div class="panel-surface">
+            <div class="terminal-header">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="terminal-body">
+              <p class="mono muted">Execution thesis</p>
+              <ul class="signal-list">
+                <li>Parse PDB/mmCIF inputs</li>
+                <li>Compare wild-type and mutant structures</li>
+                <li>Score with interpretable multi-factor signals</li>
+                <li>Apply policy gates before ranking output</li>
+                <li>Write reports and decision memory artifacts</li>
+              </ul>
+              <div class="hero-diagram" aria-hidden="true">
+                <span>Input</span>
+                <span>Runtime</span>
+                <span>Agents</span>
+                <span>Scoring</span>
+                <span>Policy</span>
+                <span>Report</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-tight" id="why">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Why this exists</p>
+          <h2>Structures alone are not decisions.</h2>
+          <p>
+            Experimental teams often have structure files, mutation lists, and fragmented review notes, but not a
+            governed way to translate that material into a prioritized queue. MHC Atlas OS focuses on the missing
+            layer: explainable candidate ranking, policy-aware evaluation, and execution portability across deterministic
+            and agent-capable runtimes.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="platform">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">What the platform does</p>
+          <h2>Structured analysis from input file to decision artifact.</h2>
+          <p>
+            The platform turns AlphaFold-derived inputs into interpretable prioritization outputs designed for review,
+            comparison, and downstream experimental planning.
+          </p>
+        </div>
+
+        <div class="card-grid feature-grid">
+          <article class="card reveal">
+            <h3>Structure parsing</h3>
+            <p>Ingests PDB and mmCIF inputs, normalizes structure context, and prepares analysis-ready representations.</p>
+          </article>
+          <article class="card reveal">
+            <h3>WT vs mutant comparison</h3>
+            <p>Measures structural change between wild-type and variant states to expose deltas that matter for review.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Explainable scoring</h3>
+            <p>Combines multiple explicit signal groups into an interpretable prioritization score rather than opaque inference.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Policy checks</h3>
+            <p>Applies domain and execution rules before recommendation output, making decision logic inspectable and governable.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Readable reports</h3>
+            <p>Produces decision summaries and report artifacts that can be reviewed by engineers, researchers, and collaborators.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Decision memory</h3>
+            <p>Tracks history, rationale, and prior outputs so prioritization can be revisited with context rather than guesswork.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="architecture">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Architecture overview</p>
+          <h2>Runtime-agnostic architecture enabling deterministic, governed, and multi-agent execution modes.</h2>
+          <p>
+            MHC Atlas OS separates runtime concerns from domain logic so the same scoring, policy, and reporting core can
+            operate across local execution, governed runtime contexts, and collaborative agent orchestration.
+          </p>
+        </div>
+
+        <figure class="image-frame reveal">
+          <div class="image-shell">
+            <img
+              src="./assets/architecture.png"
+              data-fallback="./docs/architecture.svg"
+              alt="Architecture diagram for MHC Atlas OS showing runtime, orchestration, domain logic, policy, and output layers."
+            >
+            <div class="image-placeholder" hidden>
+              <span class="placeholder-label">Architecture figure placeholder</span>
+              <p>Add <code>assets/architecture.png</code> to replace this fallback-safe frame.</p>
+            </div>
+          </div>
+          <figcaption>
+            Architecture view of the platform boundary: input enters through a pluggable runtime layer, passes through
+            orchestration and domain logic, then is filtered by policy before decision artifacts are written.
+          </figcaption>
+        </figure>
+
+        <div class="card-grid subsystem-grid">
+          <article class="card reveal">
+            <h3>Runtime layer</h3>
+            <p>Abstracts execution from implementation details so local, governed, or multi-agent modes can share the same core pipeline.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Agent orchestration</h3>
+            <p>Coordinates task routing and collaboration while preserving explicit boundaries around who evaluates what.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Domain logic</h3>
+            <p>Holds structure parsing, comparison, and prioritization logic in deterministic modules rather than runtime-specific glue.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Policy engine</h3>
+            <p>Encodes decision rules, gates, warnings, and governance so output can be defended and re-evaluated consistently.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Decision output</h3>
+            <p>Generates reports, API responses, UI views, and decision memory artifacts that make the system operationally usable.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="runtimes">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Runtime modes</p>
+          <h2>Same domain core, different execution envelopes.</h2>
+          <p>
+            Runtime abstraction is a product strength here, not a side detail. It keeps the platform portable while
+            preserving deterministic domain logic and explainable output semantics.
+          </p>
+        </div>
+
+        <div class="runtime-grid">
+          <article class="runtime-card reveal">
+            <p class="runtime-label">Local Runtime</p>
+            <h3>Deterministic local execution</h3>
+            <p>Direct pipeline execution for development, testing, reproducible evaluation, and low-friction local use.</p>
+            <ul>
+              <li>Best for debugging, batch runs, and direct inspection.</li>
+              <li>Minimal execution overhead and predictable behavior.</li>
+              <li>Useful when decision logic needs to be audited step by step.</li>
+            </ul>
+          </article>
+
+          <article class="runtime-card reveal runtime-card-featured">
+            <p class="runtime-label">Nemo Runtime</p>
+            <h3>Governed execution with policy context</h3>
+            <p>Introduces execution context, policy enforcement, warnings, traceability, and a more controlled decision path.</p>
+            <ul>
+              <li>Best for organizational review, guarded workflows, and provenance-sensitive evaluation.</li>
+              <li>Emphasizes policy gating and observable runtime behavior.</li>
+              <li>Turns prioritization into a governed system rather than an ad hoc script run.</li>
+            </ul>
+          </article>
+
+          <article class="runtime-card reveal">
+            <p class="runtime-label">AutoGen Runtime</p>
+            <h3>Collaborative multi-agent execution</h3>
+            <p>Supports agent-driven evaluation patterns where multiple task roles contribute to the final structured output.</p>
+            <ul>
+              <li>Best for role-based review, delegation, and richer orchestration flows.</li>
+              <li>Extends execution without rewriting domain scoring logic.</li>
+              <li>Shows why runtime abstraction matters beyond a single agent stack.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="scoring">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Scoring model</p>
+          <h2>Interpretable prioritization, not black-box prediction.</h2>
+          <p>
+            The scoring system is designed to expose structured signals that help decide what to validate next. It does
+            not claim to predict binding affinity or biological outcome directly.
+          </p>
+        </div>
+
+        <div class="scoring-layout">
+          <figure class="image-frame reveal">
+            <div class="image-shell compact">
+              <img
+                src="./assets/scoring-flow.png"
+                data-fallback=""
+                alt="Scoring flow diagram showing structural, biochemical, confidence, and consistency signals."
+              >
+              <div class="image-placeholder" hidden>
+                <span class="placeholder-label">Scoring flow placeholder</span>
+                <p>Add <code>assets/scoring-flow.png</code> to visualize the scoring stack.</p>
+              </div>
+            </div>
+            <figcaption>Readable signal composition across structural, biochemical, confidence, and consistency inputs.</figcaption>
+          </figure>
+
+          <div class="signal-grid">
+            <article class="signal-card reveal">
+              <h3>Structural deviation</h3>
+              <p>Geometric change signals capture the degree and character of structural difference between wild-type and mutant states.</p>
+            </article>
+            <article class="signal-card reveal">
+              <h3>Biochemical mutation severity</h3>
+              <p>Residue-class transitions provide explicit mutation severity cues rather than hiding the rationale inside a learned model.</p>
+            </article>
+            <article class="signal-card reveal">
+              <h3>Confidence signals</h3>
+              <p>Model reliability indicators shape how strongly a result should influence prioritization and review attention.</p>
+            </article>
+            <article class="signal-card reveal">
+              <h3>Consistency signals</h3>
+              <p>Agreement across multiple indicators helps distinguish stable prioritization signals from noisy or ambiguous cases.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="philosophy">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Design philosophy</p>
+          <h2>Engineering principles for explainable scientific tooling.</h2>
+        </div>
+
+        <div class="principles-grid">
+          <article class="principle-card reveal">
+            <h3>No black-box ML</h3>
+            <p>Priority comes from explicit, reviewable signals rather than opaque prediction layers.</p>
+          </article>
+          <article class="principle-card reveal">
+            <h3>Explainable scoring</h3>
+            <p>Every score should be legible enough to support discussion, skepticism, and revision.</p>
+          </article>
+          <article class="principle-card reveal">
+            <h3>Policy-driven decisions</h3>
+            <p>Recommendations should pass through declared rules, not just internal heuristics.</p>
+          </article>
+          <article class="principle-card reveal">
+            <h3>Runtime abstraction</h3>
+            <p>The execution framework can change without forcing a rewrite of domain reasoning.</p>
+          </article>
+          <article class="principle-card reveal">
+            <h3>Deterministic domain logic</h3>
+            <p>Core biology and scoring modules remain stable, testable, and portable across orchestration modes.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="not">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">What this is not</p>
+          <h2>Clear boundaries are part of the product.</h2>
+          <p>
+            MHC Atlas OS is intentionally positioned as a decision-support system for structured prioritization. That
+            distinction matters for technical evaluation and for scientific credibility.
+          </p>
+        </div>
+
+        <div class="comparison-grid">
+          <article class="comparison-card reveal">
+            <h3>Not a black-box binding predictor</h3>
+            <p>It does not claim direct affinity prediction or biological truth. It emits structured prioritization signals for validation planning.</p>
+          </article>
+          <article class="comparison-card reveal">
+            <h3>Not an opaque ranking pipeline</h3>
+            <p>Ranking logic is explicit, multi-factor, and policy-aware rather than buried inside a fixed heuristic stack.</p>
+          </article>
+          <article class="comparison-card reveal">
+            <h3>Not a single-runtime agent prototype</h3>
+            <p>Runtime abstraction is built into the architecture so the platform is not trapped inside one orchestration choice.</p>
+          </article>
+          <article class="comparison-card reveal">
+            <h3>Not just a structure viewer</h3>
+            <p>The system includes decision logic, reporting, and memory instead of stopping at inspection or visualization.</p>
+          </article>
+          <article class="comparison-card reveal">
+            <h3>Not a one-off analysis script</h3>
+            <p>The platform is organized around reusable workflows, policy gates, and artifacts that support repeatable review.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workflow">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Workflow / execution flow</p>
+          <h2>From mutation context to stored decision output.</h2>
+        </div>
+
+        <ol class="timeline">
+          <li class="timeline-item reveal">
+            <span class="timeline-index">01</span>
+            <div>
+              <h3>Input structure and mutation context</h3>
+              <p>Provide wild-type and mutant structure data with the candidate context that frames the evaluation task.</p>
+            </div>
+          </li>
+          <li class="timeline-item reveal">
+            <span class="timeline-index">02</span>
+            <div>
+              <h3>Select runtime mode</h3>
+              <p>Choose local, governed, or multi-agent execution based on the level of control, traceability, and orchestration required.</p>
+            </div>
+          </li>
+          <li class="timeline-item reveal">
+            <span class="timeline-index">03</span>
+            <div>
+              <h3>Route orchestration path</h3>
+              <p>Dispatch through the appropriate orchestration layer while keeping the domain core stable.</p>
+            </div>
+          </li>
+          <li class="timeline-item reveal">
+            <span class="timeline-index">04</span>
+            <div>
+              <h3>Run structure analysis</h3>
+              <p>Parse files, compare state changes, and assemble the raw signals required for scoring.</p>
+            </div>
+          </li>
+          <li class="timeline-item reveal">
+            <span class="timeline-index">05</span>
+            <div>
+              <h3>Compute explainable scoring</h3>
+              <p>Integrate structural, biochemical, confidence, and consistency signals into a readable prioritization output.</p>
+            </div>
+          </li>
+          <li class="timeline-item reveal">
+            <span class="timeline-index">06</span>
+            <div>
+              <h3>Apply policy evaluation</h3>
+              <p>Gate, warn, or annotate results according to declared rules before anything is presented as a decision artifact.</p>
+            </div>
+          </li>
+          <li class="timeline-item reveal">
+            <span class="timeline-index">07</span>
+            <div>
+              <h3>Write reports and decision memory</h3>
+              <p>Produce reports, API/UI outputs, and saved decision history for review, comparison, and follow-on work.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" id="resources">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Artifacts / resources</p>
+          <h2>Evaluation paths and operating documents.</h2>
+        </div>
+
+        <div class="card-grid resource-grid">
+          <a class="resource-card reveal" href="https://github.com/manishklach/alphafold-mhc-atlas" target="_blank" rel="noreferrer">
+            <h3>GitHub repository</h3>
+            <p>Source tree, issues, releases, and implementation details.</p>
+          </a>
+          <a class="resource-card reveal" href="./README.md">
+            <h3>README</h3>
+            <p>Site deployment notes and homepage maintenance instructions.</p>
+          </a>
+          <a class="resource-card reveal" href="./QUICKSTART.md">
+            <h3>Quickstart</h3>
+            <p>Fastest path to a demo workflow and first execution.</p>
+          </a>
+          <a class="resource-card reveal" href="./INSTALL.md">
+            <h3>Installation guide</h3>
+            <p>Environment and package installation options.</p>
+          </a>
+          <a class="resource-card reveal" href="./CLI_USAGE.md">
+            <h3>CLI usage</h3>
+            <p>Command-line entry points and usage patterns.</p>
+          </a>
+          <a class="resource-card reveal" href="./DEMOS.md">
+            <h3>Demos</h3>
+            <p>Walkthroughs and evaluation scenarios.</p>
+          </a>
+          <a class="resource-card reveal" href="./PILOT_WORKFLOW.md">
+            <h3>Pilot workflow</h3>
+            <p>Structured evaluation path for collaborative review.</p>
+          </a>
+          <a class="resource-card reveal" href="./CHANGELOG.md">
+            <h3>Release notes</h3>
+            <p>Versioned changes, maturity signals, and evolution history.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="status">
+      <div class="container">
+        <div class="status-panel reveal">
+          <div>
+            <p class="eyebrow">Project status / roadmap</p>
+            <h2>Active, architecture-forward, and still expanding.</h2>
+          </div>
+          <div class="status-grid">
+            <div>
+              <span class="status-kicker">Architecture</span>
+              <p>Core runtime, orchestration, scoring, reporting, and storage layers are already visible as distinct system boundaries.</p>
+            </div>
+            <div>
+              <span class="status-kicker">Explainability</span>
+              <p>Scoring and decision outputs are positioned around readable rationale instead of opaque predictive claims.</p>
+            </div>
+            <div>
+              <span class="status-kicker">Extensibility</span>
+              <p>Future work can expand runtime integrations, plugin surfaces, and scoring policy modules without collapsing the core architecture.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="contact-panel reveal">
+          <div class="section-heading">
+            <p class="eyebrow">Contact / contribution</p>
+            <h2>Built as an open technical system.</h2>
+            <p>
+              Contributions, evaluation feedback, and architecture discussion are best routed through the repository.
+              Replace the placeholder contact below if you want a direct collaborator or diligence contact.
+            </p>
+          </div>
+          <div class="contact-actions">
+            <a class="button button-primary" href="https://github.com/manishklach/alphafold-mhc-atlas" target="_blank" rel="noreferrer">Open Repository</a>
+            <a class="button" href="https://github.com/manishklach/alphafold-mhc-atlas/issues" target="_blank" rel="noreferrer">Open an Issue</a>
+            <a class="button" href="mailto:maintainer@example.com">Contact Placeholder</a>
+          </div>
+          <p class="license-note">Licensed under MIT where applicable in the repository.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-shell">
+      <p>MHC Atlas OS</p>
+      <p>Runtime-agnostic, explainable, structure-guided mutation prioritization.</p>
+    </div>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>

@@ -1,175 +1,127 @@
-# MHC Atlas OS
+# MHC Atlas OS Website
 
-A runtime-agnostic, policy-governed agent system for structure-guided experimental prioritization using AlphaFold-derived data.
+This directory contains the static GitHub Pages microsite for **MHC Atlas OS**. It is intended to present the project as a serious architecture-driven technical platform, not as a startup landing page and not as a README pasted onto the web.
 
-Explainable • Multi-factor • Runtime-agnostic • Agent-driven
+## Files
 
-## System Architecture
+- `index.html` - homepage structure, section content, and link targets
+- `styles.css` - visual system, layout, responsiveness, and component styling
+- `script.js` - sticky navigation, active section highlighting, mobile nav toggle, image fallback behavior, and subtle reveal-on-scroll
+- `.nojekyll` - disables Jekyll processing so GitHub Pages serves the site as plain static files
 
-![Architecture](./docs/architecture.svg)
+## Deploy on GitHub Pages
 
-Runtime-agnostic architecture enabling deterministic, governed, and multi-agent execution modes.
+1. Commit these files to the repository root.
+2. Push the changes to the branch you want to publish, usually `main`.
+3. In GitHub, open `Settings -> Pages`.
+4. Choose:
+   - `Source: Deploy from a branch`
+   - `Branch: main`
+   - `Folder: / (root)`
+5. Save and wait for the Pages deployment to complete.
 
-## Key Capabilities
-- Structure parsing (PDB/mmCIF)
-- WT vs mutant comparison
-- Explainable multi-factor scoring
-- Policy-based decision rules
-- API + UI interface
-- Decision reports
-- Decision memory tracking
-
-MHC Atlas OS is a Peptide-MHC Decision Platform for Structure-Guided Experimental Prioritization. It parses structure files, compares WT and mutant states, ranks candidates with multi-factor scoring, applies policy checks, and generates readable decision outputs through both an API and a lightweight UI.
-
-This system does not attempt to predict binding affinity or biological outcomes directly.
-
-Instead, it provides structured, explainable prioritization signals to guide experimental validation.
-
-## Runtime Modes
-
-- Local Runtime:
-  deterministic pipeline execution
-
-- Nemo Runtime:
-  governed execution with policy enforcement and execution context
-
-- AutoGen Runtime:
-  multi-agent collaborative execution
-
-## Design Philosophy
-
-- no black-box ML
-- explainable scoring
-- policy-driven decisions
-- runtime abstraction
-
-The core system remains runtime-agnostic and portable across different execution frameworks while preserving deterministic domain logic.
-
-## Scoring Model
-
-The system uses a structured, multi-factor scoring model that integrates:
-
-- Structural deviation metrics (geometric changes)
-- Biochemical mutation severity (residue class transitions)
-- Confidence signals (model reliability)
-- Consistency signals across multiple indicators
-
-This approach provides interpretable prioritization without relying on black-box machine learning models.
+For a repository named `alphafold-mhc-atlas`, the published URL is typically:
 
 ```text
-User Input
-   ↓
-Runtime Layer (pluggable)
-   ↓
-Agent Orchestration
-   ↓
-Domain Logic (biology + scoring)
-   ↓
-Policy Engine
-   ↓
-Decision Output + Report + Memory
+https://manishklach.github.io/alphafold-mhc-atlas/
 ```
 
-## Folder Structure
+## Asset placement
+
+Place static visuals in:
 
 ```text
-core/
-  runtime/
-    base_runtime.py
-    local_runtime.py
-    nemo_runtime.py
-    autogen_runtime.py
-  orchestration/
-  policies/
-
-agents/
-biology/
-apps/
+./assets/architecture.png
+./assets/runtime-modes.png
+./assets/scoring-flow.png
+./assets/ui-preview.png
+./assets/pdb-compare.png
+./assets/favicon.png
 ```
 
-## Governed Runtime Mode
+The homepage already points to those paths.
 
-This project supports two primary governed execution patterns:
+### Current asset behavior
 
-- Local Runtime for direct deterministic execution during development and testing
-- Nemo Runtime for execution context, policy gating, logging, warnings, and traceability
+- `./assets/architecture.png` falls back to `./docs/architecture.svg` if the PNG is missing.
+- `./assets/scoring-flow.png` shows a styled placeholder if the image does not exist.
+- `./assets/favicon.png` is optional but recommended.
 
-This is a Nemo-style governed runtime architecture that prepares MHC Atlas OS for future integration with NVIDIA NemoClaw / OpenShell style execution environments.
+## Edit hero metadata
 
-## Quickstart
-1. `pip install -r requirements.txt`
-2. `uvicorn apps.api.main:app --reload`
-3. `streamlit run apps/ui/app.py`
+The hero is defined in `index.html`.
 
-Open:
-- `http://127.0.0.1:8000/docs`
-- `http://127.0.0.1:8501`
+Update these blocks to change the top-of-page positioning:
 
-## Example
-Run the full pipeline with the demo structures:
+- `<h1>` for the project name
+- `<p class="hero-subtitle">` for the subtitle
+- `<p class="hero-thesis">` for the one-line thesis
+- `<dl class="meta-grid">` for the metadata row
+- `<div class="hero-actions">` for CTA button labels and links
+
+## Customize repository, docs, and demo links
+
+Most public-facing links live directly in `index.html`.
+
+Common links you may want to change:
+
+- repository:
+  `https://github.com/manishklach/alphafold-mhc-atlas`
+- docs:
+  `./docs/SPEC.md`
+- quickstart:
+  `./QUICKSTART.md`
+- contribution guide:
+  `./CONTRIBUTING.md`
+- issues:
+  `https://github.com/manishklach/alphafold-mhc-atlas/issues`
+- demo script:
+  `./scripts/demo_showcase.py`
+- UI notes:
+  `./apps/ui/README.md`
+
+If you rename sections or IDs, also update the matching navigation links in the header.
+
+## Swap in real architecture and UI screenshots later
+
+The site is already prepared for production visuals.
+
+Recommended replacements:
+
+- `architecture.png`
+  Use this for the primary system architecture figure.
+- `runtime-modes.png`
+  Reserved for a future runtime comparison image if you want one.
+- `scoring-flow.png`
+  Use this for a dedicated scoring or signal-composition diagram.
+- `ui-preview.png`
+  Use this for Open Graph preview and future UI section visuals.
+- `pdb-compare.png`
+  Use this for a WT vs mutant comparison image if you add one later.
+
+Keep all new images under `./assets/` and link them with relative paths.
+
+## .nojekyll
+
+Keep `.nojekyll` in the published root. This ensures GitHub Pages serves the site as plain static files and does not try to process the site through Jekyll.
+
+## Local preview
+
+Any static file server will work. For example:
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/pipeline" ^
-  -H "Content-Type: application/json" ^
-  -d "{\"wt_file\":\"data/demo_structures/wt_example.pdb\",\"mutant_file\":\"data/demo_structures/mutant_example_a.pdb\",\"candidate_id\":\"demo\"}"
+python -m http.server 8000
 ```
 
-Or use the same payload in the FastAPI docs page at `http://127.0.0.1:8000/docs`.
+Then open:
 
-The `/pipeline` endpoint:
-- parses the WT structure
-- parses the mutant structure
-- compares both structures
-- ranks the candidate
-- applies policy checks
-- saves a decision record
-- writes a markdown decision report under `reports/`
-
-## Demo Workflow
-1. Input WT and mutant structures
-2. Run analysis
-3. System outputs:
-   - structural comparison
-   - prioritization score
-   - explanation
-   - flags
-4. Generate decision report
-
-### End-to-End Demo Script
-
-Run the scripted showcase:
-
-```bash
-python scripts/demo_showcase.py
+```text
+http://localhost:8000/
 ```
 
-What it demonstrates:
-- single mutation analysis
-- batch ranking shortlist
-- decision history review
-- governed runtime example
+## Notes
 
-Demo talk track:
-
-- “Here’s a wild-type and mutant structure”
-- “This system explains why a mutation matters, not just scoring it”
-- “Now instead of one mutation, I can evaluate 20 at once”
-- “This gives me a shortlist of candidates to test experimentally”
-- “And the system tracks past decisions, so we can compare over time”
-- “The system is runtime-agnostic — I can run it locally or in a governed execution environment like Nemo-style systems with policy enforcement.”
-
-## UI Preview
-
-![UI](./docs/ui.png)
-
-## Why This Matters
-
-Most AlphaFold-based tools focus on structure prediction or visualization.
-
-This system focuses on:
-- decision-making
-- prioritization
-- explainability
-- reproducibility
-
-It is designed to assist in experimental planning, not replace it.
+- The site is intentionally framework-free: plain HTML, CSS, and vanilla JavaScript only.
+- It is responsive and keyboard-friendly.
+- JavaScript is optional enhancement; navigation and content remain accessible without it.
+- The color system and major spacing tokens live in `:root` at the top of `styles.css`.
